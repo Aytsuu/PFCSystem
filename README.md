@@ -17,6 +17,7 @@ View member details by double-clicking on a specific row in the list table. <br 
 Fields that ask for integer type values, must be fixed to accept digits only. <br />
 Instructor combo box, must be populated. <br />
 Should not proceed to payment page if instructor combo box == 'Instructor' (but accepts none value) or service combo box == 'Service'. <br />
+Make search bar functional.
 
 
 
