@@ -19,5 +19,7 @@ Add indicators on required fields in the membership registration form. <br/>
 Change UI of the view mem details, make the text more visible. <br/>
 Appropriate success and error message in update and adding areas. <br/>
 Error trap unique phone number. <br/>
+<br/>
+<br/>
 
 
