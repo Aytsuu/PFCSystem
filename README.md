@@ -13,6 +13,7 @@ Prototype <br />
 CODE: <br />
 Instructor combo box, must be populated. (Renew) <br />
 Make search bar functional.<br/>
+Automatically delete a member, if yearly membership has expired. <br/>
 <br/>
 <br/>
 
