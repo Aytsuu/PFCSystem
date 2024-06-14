@@ -21,6 +21,7 @@ Renew area still have to double check. <br/>
 Update service amount field can still enter characters <br/>
 Services area still have to double check for error traps <br/>
 Edit employee (admin option in combo box should not be available or remove combo box) <br/>
+Employee table in db should have a unary relationship. <br/>
 <br/>
 
 
