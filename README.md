@@ -4,7 +4,6 @@ Team Collab
 #MGA KUWANG CHUCHU
 
 PAPER: <br />
-EERD <br />
 Data Dictionary <br />
 Physical Model <br />
 Prototype <br />
