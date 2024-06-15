@@ -4,6 +4,7 @@ Team Collab
 #MGA KUWANG CHUCHU
 
 PAPER: <br />
+REVISE ERD etc. <br/>
 Physical Model <br />
 Prototype <br />
 
