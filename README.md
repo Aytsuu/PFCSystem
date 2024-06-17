@@ -16,7 +16,6 @@ notification <br/>
 trap if yearly is less than a month add ui to renew yearly <br/>
 cannot delete service if someone is using <br/>
 notify yearly expire (30 days, 15, 3 days) <br/>
-active and expired <br/>
 check the updates and deletes <br/>
 <br/>
 
