@@ -14,7 +14,6 @@ admin not deletable <br/>
 Renew area still have to double check. <br/> 
 notification <br/>
 trap if yearly is less than a month add ui to renew yearly <br/>
-cannot delete service if someone is using <br/>
 check the updates and deletes <br/>
 <br/>
 
