@@ -9,11 +9,15 @@ Prototype <br />
 
 
 CODE: <br />
-admin not deletable <br/>
 Renew area still have to double check. <br/> 
+
 notification <br/>
-trap if yearly is less than a month add ui to renew yearly <br/>
-check the updates and deletes <br/>
+
+create ui confirmation 'Your yearly membership will expire within {remaining_days} day/s. Would you like to proceed with the monthly service access renewal or renew yearly membership first?' OPTIONS: Renew yearly membership OR Renew monthly <br/>
+IF selects RENEW YEARLY MEMBERSHIP : view ui for renew yearly <br/>
+OTHERWISE: view renew_popup <br/>
+
+TEST RUN MALALA PLEASE FOR MORE LOOPHOLES<br/>
 <br/>
 
 
