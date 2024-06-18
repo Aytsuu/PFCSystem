@@ -4,7 +4,6 @@ Team Collab
 #MGA KUWANG CHUCHU
 
 PAPER: <br />
-DATA DICTIONARY <br/>
 Prototype <br />
 
 
