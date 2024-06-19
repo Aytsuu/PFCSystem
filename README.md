@@ -4,6 +4,7 @@ Team Collab
 #MGA KUWANG CHUCHU
 
 PAPER: <br />
+title page, table of contents etc. <br/>
 Prototype <br />
 
 
