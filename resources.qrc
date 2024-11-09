@@ -1,0 +1,30 @@
+<RCC>
+  <qresource prefix="loginRES">
+    <file>icons/exit.png</file>
+    <file>icons/minimize.png</file>
+    <file>42a5b706fb93fb17337d4cbf2eab49ec.jpg</file>
+    <file>gym-exercise-equipment-2d-animation-video.jpg</file>
+    <file>logo.png</file>
+  </qresource>
+  <qresource prefix="icons">
+    <file>icons/r_check.png</file>
+    <file>icons/r_trash.png</file>
+    <file>icons/w_exit.png</file>
+    <file>icons/Double Down.png</file>
+    <file>icons/Double Up.png</file>
+    <file>icons/new_notif.png</file>
+    <file>icons/notice.png</file>
+    <file>icons/Checkmark.png</file>
+    <file>icons/ArrowNext.png</file>
+    <file>icons/ArrowPrev.png</file>
+    <file>icons/editblack.png</file>
+    <file>icons/Calendar.png</file>
+    <file>icons/Drop Down.png</file>
+    <file>icons/edit.png</file>
+    <file>icons/icons8-remove-100 1.png</file>
+    <file>icons/icons8-add-100 1.png</file>
+    <file>42a5b706fb93fb17337d4cbf2eab49ec.jpg</file>
+    <file>icons/icons8-search-50 1.png</file>
+    <file>icons/icons8-bell-100 (1) 1.png</file>
+  </qresource>
+</RCC>
