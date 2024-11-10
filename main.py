@@ -1,7 +1,7 @@
+from pymongo import MongoClient
 from PySide6 import QtWidgets, QtCore
 from ui_loginUI import *
 from ui_mainUI import *
-from config import config
 from PySide6.QtGui import *
 import psycopg2
 import datetime
