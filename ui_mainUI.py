@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 ################################################################################
-## Form generated from reading UI file 'mainUIobFWxm.ui'
+## Form generated from reading UI file 'mainUIJMXUZg.ui'
 ##
 ## Created by: Qt User Interface Compiler version 5.15.2
 ##
@@ -64,15 +64,6 @@ class Ui_MainWindow(object):
 "QPushButton:hover{\n"
 "background-color: rgba(255,255,255,50);\n"
 "}")
-        self.cl1 = QWidget(self.centralwidget)
-        self.cl1.setObjectName(u"cl1")
-        self.cl1.setGeometry(QRect(1320, 20, 15, 15))
-        self.cl2 = QWidget(self.centralwidget)
-        self.cl2.setObjectName(u"cl2")
-        self.cl2.setGeometry(QRect(1295, 20, 15, 15))
-        self.cl3 = QWidget(self.centralwidget)
-        self.cl3.setObjectName(u"cl3")
-        self.cl3.setGeometry(QRect(1270, 20, 15, 15))
         self.menubar = QWidget(self.centralwidget)
         self.menubar.setObjectName(u"menubar")
         self.menubar.setGeometry(QRect(90, -10, 331, 911))
@@ -4854,9 +4845,6 @@ class Ui_MainWindow(object):
 "color: #222020;")
         self.label_46.setAlignment(Qt.AlignCenter)
         MainWindow.setCentralWidget(self.centralwidget)
-        self.cl1.raise_()
-        self.cl2.raise_()
-        self.cl3.raise_()
         self.menubar.raise_()
         self.menu_container.raise_()
         self.view_details_popup.raise_()

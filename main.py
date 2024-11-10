@@ -1,5 +1,6 @@
 from pymongo import MongoClient
 from pymongo.errors import DuplicateKeyError
+from bson import ObjectId
 from PySide6 import QtWidgets, QtCore
 from ui_loginUI import *
 from ui_mainUI import *
@@ -573,9 +574,30 @@ class MainWindow(QtWidgets.QMainWindow):
         serv_type = self.ui.service_Update.text().upper()
         serv_price = float(self.ui.service_Amount.text())
 
-        sql = "UPDATE SERVICE SET SERV_TYPE = %s, SERV_PRICE = %s WHERE SERV_ID = %s;"
-        values = (serv_type, serv_price, serv_id.text())
-        conn = None
+        is_service_exist = self.servicesdb.count_documents({"type" : serv_type})
+
+        if is_service_exist == 0:
+            update_service = {
+                "$set" : {
+                    "type" : serv_type,
+                    "price" : serv_price
+                }
+            }
+
+            result = self.servicesdb.update_one({"_id" : int(serv_id.text())}, update_service)
+
+            if result:
+                self.ui.services_widget.setFixedWidth(701)
+                self.ui.update_service_widget.setFixedWidth(0) 
+                self.ui.service_Update.setText('')
+                self.ui.service_Amount.setText('')
+                self.retrieve_services_from_DB()
+                self.populate_services_table()
+        else:
+            self.ui.fieldNotice.setText('Service already exists.')
+            self.ui.invalid_notice.setFixedWidth(391)
+            QtCore.QTimer.singleShot(1300, lambda: self.ui.invalid_notice.setFixedWidth(0)) 
+
         # try:
         #     params = config()
         #     conn = psycopg2.connect(**params)
@@ -626,7 +648,14 @@ class MainWindow(QtWidgets.QMainWindow):
 
         if selected_row != -1:
             serv_id = self.ui.services_table.item(selected_row, 0)
-            conn = None
+
+            result = self.servicesdb.delete_one({"_id" : int(serv_id.text())})
+
+            if result:
+                self.ui.services_table.removeRow(selected_row)
+                self.retrieve_services_from_DB()
+                self.populate_services_table()
+
             # try:
             #     params = config()
             #     conn = psycopg2.connect(**params)
