@@ -8,31 +8,6 @@ import datetime
 import threading
 import time
 
-#db connection
-def connect():
-    connection = None
-    try:
-        params = config()
-        print('Connecting...')
-        connection = psycopg2.connect(**params)
- 
-        #create cursor
-
-        crsr = connection.cursor()
-        print('PostgreSQL database version: ')
-        crsr.execute('SELECT version()')
-        db_version = crsr.fetchone()
-        print(db_version)
-        crsr.close()
-    except(Exception, psycopg2.DataError) as error:
-        print(error)
-    finally:
-        if connection is not None:
-            connection.close()
-            print('DB connection terminated.')
-
-
-
 class LoginWindow(QtWidgets.QMainWindow):
     def __init__(self):
         QtWidgets.QMainWindow.__init__(self)
@@ -429,27 +404,29 @@ class MainWindow(QtWidgets.QMainWindow):
     # ===========================================================================================================================================================================
     
     def adminIsExist(self):
-        try:
-            params = config()
-            conn = psycopg2.connect(**params)
 
-            cursor = conn.cursor()
-            cursor.execute("SELECT EMP_ID FROM EMPLOYEE WHERE EMP_POSITION = 'ADMINISTRATOR'")
-            admin = cursor.fetchone()
+        pass
+        # try:
+        #     params = config()
+        #     conn = psycopg2.connect(**params)
 
-            if admin:
-                self.AllowOperations = True
-            else:
-                self.ui.addAdmin_notice.setFixedWidth(1361)
+        #     cursor = conn.cursor()
+        #     cursor.execute("SELECT EMP_ID FROM EMPLOYEE WHERE EMP_POSITION = 'ADMINISTRATOR'")
+        #     admin = cursor.fetchone()
+
+        #     if admin:
+        #         self.AllowOperations = True
+        #     else:
+        #         self.ui.addAdmin_notice.setFixedWidth(1361)
 
 
-        except (Exception, psycopg2.Error) as error:
-            print("Error retrieving data from the database:", error)
+        # except (Exception, psycopg2.Error) as error:
+        #     print("Error retrieving data from the database:", error)
 
-        finally:
-            # Close the cursor and database connection
-            if conn is not None:
-                conn.close()
+        # finally:
+        #     # Close the cursor and database connection
+        #     if conn is not None:
+        #         conn.close()
 
     # ===========================================================================================================================================================================
     # Previous Page
@@ -542,30 +519,30 @@ class MainWindow(QtWidgets.QMainWindow):
             self.ui.update_service_widget.setFixedWidth(701)  
             service_id = self.ui.services_table.item(selected_row, 0)
             conn = None
-            try:
-                params = config()
-                conn = psycopg2.connect(**params)
+            # try:
+            #     params = config()
+            #     conn = psycopg2.connect(**params)
 
-                cursor = conn.cursor()
-                cursor.execute("SELECT SERV_TYPE, SERV_PRICE FROM SERVICE WHERE SERV_ID = '" + service_id.text() +"';")
-                service = cursor.fetchone()
+            #     cursor = conn.cursor()
+            #     cursor.execute("SELECT SERV_TYPE, SERV_PRICE FROM SERVICE WHERE SERV_ID = '" + service_id.text() +"';")
+            #     service = cursor.fetchone()
 
-                if service:
-                    serv_type, serv_price = service
-                    self.ui.service_Update.setText(str(serv_type))
-                    self.ui.service_Amount.setText(str(serv_price))
+            #     if service:
+            #         serv_type, serv_price = service
+            #         self.ui.service_Update.setText(str(serv_type))
+            #         self.ui.service_Amount.setText(str(serv_price))
 
-                else:
-                    print("No service found for SERV_ID:", service_id.text())
+            #     else:
+            #         print("No service found for SERV_ID:", service_id.text())
 
 
-            except (Exception, psycopg2.Error) as error:
-                print("Error retrieving data from the database:", error)
+            # except (Exception, psycopg2.Error) as error:
+            #     print("Error retrieving data from the database:", error)
 
-            finally:
-                # Close the cursor and database connection
-                if conn is not None:
-                    conn.close()
+            # finally:
+            #     # Close the cursor and database connection
+            #     if conn is not None:
+            #         conn.close()
         else:
             self.ui.rowSelection_notice.setFixedWidth(301)
             QtCore.QTimer.singleShot(1300, lambda: self.ui.rowSelection_notice.setFixedWidth(0))  
@@ -580,30 +557,30 @@ class MainWindow(QtWidgets.QMainWindow):
         sql = "UPDATE SERVICE SET SERV_TYPE = %s, SERV_PRICE = %s WHERE SERV_ID = %s;"
         values = (serv_type, serv_price, serv_id.text())
         conn = None
-        try:
-            params = config()
-            conn = psycopg2.connect(**params)
-            cursor = conn.cursor()
-            cursor.execute(sql, values)
-            conn.commit()
-            print("Service details updated successfully.")
-            self.ui.services_widget.setFixedWidth(701)
-            self.ui.update_service_widget.setFixedWidth(0) 
-            self.ui.service_Update.setText('')
-            self.ui.service_Amount.setText('')
-            self.retrieve_services_from_DB()
-            self.populate_services_table()
-            self.retrieve_employee_from_DB()
-            self.retrieve_employee_from_DB_renew()
+        # try:
+        #     params = config()
+        #     conn = psycopg2.connect(**params)
+        #     cursor = conn.cursor()
+        #     cursor.execute(sql, values)
+        #     conn.commit()
+        #     print("Service details updated successfully.")
+        #     self.ui.services_widget.setFixedWidth(701)
+        #     self.ui.update_service_widget.setFixedWidth(0) 
+        #     self.ui.service_Update.setText('')
+        #     self.ui.service_Amount.setText('')
+        #     self.retrieve_services_from_DB()
+        #     self.populate_services_table()
+        #     self.retrieve_employee_from_DB()
+        #     self.retrieve_employee_from_DB_renew()
 
-        except (Exception, psycopg2.Error) as error:
-            self.ui.fieldNotice.setText('Service already exists.')
-            self.ui.invalid_notice.setFixedWidth(391)
-            QtCore.QTimer.singleShot(1300, lambda: self.ui.invalid_notice.setFixedWidth(0)) 
+        # except (Exception, psycopg2.Error) as error:
+        #     self.ui.fieldNotice.setText('Service already exists.')
+        #     self.ui.invalid_notice.setFixedWidth(391)
+        #     QtCore.QTimer.singleShot(1300, lambda: self.ui.invalid_notice.setFixedWidth(0)) 
 
-        finally:
-            if conn is not None:
-                conn.close()
+        # finally:
+        #     if conn is not None:
+        #         conn.close()
 
     #Cancel deleting a service
     def cancel_delete_service(self):
@@ -631,30 +608,30 @@ class MainWindow(QtWidgets.QMainWindow):
         if selected_row != -1:
             serv_id = self.ui.services_table.item(selected_row, 0)
             conn = None
-            try:
-                params = config()
-                conn = psycopg2.connect(**params)
-                cursor = conn.cursor()
-                cursor.execute("DELETE FROM SERVICE WHERE SERV_ID = '" + serv_id.text() + "';")
-                conn.commit()
-                self.ui.services_table.removeRow(selected_row)
-                self.retrieve_services_from_DB()
-                self.populate_services_table()
-                self.retrieve_employee_from_DB()
-                self.retrieve_employee_from_DB_renew()
+            # try:
+            #     params = config()
+            #     conn = psycopg2.connect(**params)
+            #     cursor = conn.cursor()
+            #     cursor.execute("DELETE FROM SERVICE WHERE SERV_ID = '" + serv_id.text() + "';")
+            #     conn.commit()
+            #     self.ui.services_table.removeRow(selected_row)
+            #     self.retrieve_services_from_DB()
+            #     self.populate_services_table()
+            #     self.retrieve_employee_from_DB()
+            #     self.retrieve_employee_from_DB_renew()
                 
-            except (Exception, psycopg2.Error) as error:
-                exception_flag = True
-                self.ui.fieldNotice.setText('Unable to delete: Service in use.')
-                self.ui.invalid_notice.setFixedWidth(391)
-                QtCore.QTimer.singleShot(1300, lambda: self.ui.invalid_notice.setFixedWidth(0)) 
-            finally:
-                if conn is not None:
-                    conn.close()     
+            # except (Exception, psycopg2.Error) as error:
+            #     exception_flag = True
+            #     self.ui.fieldNotice.setText('Unable to delete: Service in use.')
+            #     self.ui.invalid_notice.setFixedWidth(391)
+            #     QtCore.QTimer.singleShot(1300, lambda: self.ui.invalid_notice.setFixedWidth(0)) 
+            # finally:
+            #     if conn is not None:
+            #         conn.close()     
                     
-                    if not exception_flag:
-                        self.ui.delete_notif.setFixedWidth(81)
-                        QtCore.QTimer.singleShot(1300, lambda: self.ui.delete_notif.setFixedWidth(0)) 
+            #         if not exception_flag:
+            #             self.ui.delete_notif.setFixedWidth(81)
+            #             QtCore.QTimer.singleShot(1300, lambda: self.ui.delete_notif.setFixedWidth(0)) 
 
         self.ui.service_delete_popup.setFixedWidth(0)
         self.ui.services_popup.setFixedWidth(1381)
@@ -672,87 +649,87 @@ class MainWindow(QtWidgets.QMainWindow):
         values = (serv_type, serv_price)
 
         conn = None
-        try:
-            params = config()
-            conn = psycopg2.connect(**params)
+        # try:
+        #     params = config()
+        #     conn = psycopg2.connect(**params)
 
-            cur= conn.cursor()
-            cur.execute(sql, values)
-            conn.commit()
-            cur.close
+        #     cur= conn.cursor()
+        #     cur.execute(sql, values)
+        #     conn.commit()
+        #     cur.close
             
-            self.ui.success_widget.setFixedWidth(371)
-            QtCore.QTimer.singleShot(1300, lambda: self.ui.success_widget.setFixedWidth(0))   
+        #     self.ui.success_widget.setFixedWidth(371)
+        #     QtCore.QTimer.singleShot(1300, lambda: self.ui.success_widget.setFixedWidth(0))   
 
-            #clears text fields
-            self.ui.services_widget.setFixedWidth(701)  
-            self.ui.add_service_widget.setFixedWidth(0)
-            self.ui.addService_name.setText('')
-            self.ui.addService_amount.setText('')
-            self.retrieve_services_from_DB()
-            self.populate_services_table()
-        except(Exception, psycopg2.DataError) as error:
-            self.ui.fieldNotice.setText('Service already exists.')
-            self.ui.invalid_notice.setFixedWidth(391)
-            QtCore.QTimer.singleShot(1300, lambda: self.ui.invalid_notice.setFixedWidth(0)) 
+        #     #clears text fields
+        #     self.ui.services_widget.setFixedWidth(701)  
+        #     self.ui.add_service_widget.setFixedWidth(0)
+        #     self.ui.addService_name.setText('')
+        #     self.ui.addService_amount.setText('')
+        #     self.retrieve_services_from_DB()
+        #     self.populate_services_table()
+        # except(Exception, psycopg2.DataError) as error:
+        #     self.ui.fieldNotice.setText('Service already exists.')
+        #     self.ui.invalid_notice.setFixedWidth(391)
+        #     QtCore.QTimer.singleShot(1300, lambda: self.ui.invalid_notice.setFixedWidth(0)) 
 
-        finally:
-            if conn is not None:
-                conn.close()
+        # finally:
+        #     if conn is not None:
+        #         conn.close()
                 
     #Display all services in the table
     def populate_services_table(self):
         conn = None
-        try:
-            params = config()
-            conn = psycopg2.connect(**params)
+        # try:
+        #     params = config()
+        #     conn = psycopg2.connect(**params)
 
-            sql = "SELECT * FROM SERVICE"
-            cursor = conn.cursor()
-            cursor.execute(sql)
-            result = cursor.fetchall()
+        #     sql = "SELECT * FROM SERVICE"
+        #     cursor = conn.cursor()
+        #     cursor.execute(sql)
+        #     result = cursor.fetchall()
             
-            self.ui.services_table.setRowCount(0)
+        #     self.ui.services_table.setRowCount(0)
 
-            for row_number, row_data in enumerate(result):
-                self.ui.services_table.insertRow(row_number)
-                for column_number, data in enumerate(row_data):
-                    item = QtWidgets.QTableWidgetItem(str(data))
-                    item.setTextAlignment(Qt.AlignHCenter)
-                    self.ui.services_table.setItem(row_number, column_number, item)
+        #     for row_number, row_data in enumerate(result):
+        #         self.ui.services_table.insertRow(row_number)
+        #         for column_number, data in enumerate(row_data):
+        #             item = QtWidgets.QTableWidgetItem(str(data))
+        #             item.setTextAlignment(Qt.AlignHCenter)
+        #             self.ui.services_table.setItem(row_number, column_number, item)
             
-        except (Exception, psycopg2.Error) as error:
-            print("Error retrieving data from the database:", error)
+        # except (Exception, psycopg2.Error) as error:
+        #     print("Error retrieving data from the database:", error)
         
-        finally:
-            if conn is not None:
-                conn.close()
+        # finally:
+        #     if conn is not None:
+        #         conn.close()
     
     #Displaying services in the combo box, for registration and renewal of monthly service access
     def retrieve_services_from_DB(self):
         conn = None
-        try:
-            params = config()
-            conn = psycopg2.connect(**params)
+        # try:
+        #     params = config()
+        #     conn = psycopg2.connect(**params)
 
-            cursor = conn.cursor()
-            cursor.execute("SELECT SERV_TYPE FROM SERVICE")
-            services = cursor.fetchall()
-            self.ui.paymentServices_cmbBox.clear()
+        #     cursor = conn.cursor()
+        #     cursor.execute("SELECT SERV_TYPE FROM SERVICE")
+        #     services = cursor.fetchall()
+        #     self.ui.paymentServices_cmbBox.clear()
 
-            self.ui.paymentServices_cmbBox.addItem('Service')
-            for service in services:
-                service_type = service[0]
-                self.ui.paymentServices_cmbBox.addItem(service_type)
-                self.ui.renewService_comboBox.addItem(service_type)
+        #     self.ui.paymentServices_cmbBox.addItem('Service')
+        #     for service in services:
+        #         service_type = service[0]
+        #         self.ui.paymentServices_cmbBox.addItem(service_type)
+        #         self.ui.renewService_comboBox.addItem(service_type)
 
-        except (Exception, psycopg2.Error) as error:
-            print("Error retrieving data from the database:", error)
+        # except (Exception, psycopg2.Error) as error:
+        #     print("Error retrieving data from the database:", error)
 
-        finally:
-            # Close the cursor and database connection
-            if conn is not None:
-                conn.close()
+        # finally:
+        #     # Close the cursor and database connection
+        #     if conn is not None:
+        #         conn.close()
 
     # =========================================================================================================================================================================== 
     # Monthly Service Log menu functions 
@@ -815,33 +792,33 @@ class MainWindow(QtWidgets.QMainWindow):
     def retrieve_employee_from_DB_renew(self):
         self.employeeIDList = []
         conn = None
-        try:
-            params = config()
-            conn = psycopg2.connect(**params)
+        # try:
+        #     params = config()
+        #     conn = psycopg2.connect(**params)
 
-            cursor = conn.cursor()
-            cursor.execute("SELECT EMP_ID, CONCAT(EMP_FNAME,' ', EMP_LNAME) FROM EMPLOYEE WHERE EMP_POSITION = 'INSTRUCTOR';")
-            employees = cursor.fetchall()
-            self.ui.renew_instructor.clear()
+        #     cursor = conn.cursor()
+        #     cursor.execute("SELECT EMP_ID, CONCAT(EMP_FNAME,' ', EMP_LNAME) FROM EMPLOYEE WHERE EMP_POSITION = 'INSTRUCTOR';")
+        #     employees = cursor.fetchall()
+        #     self.ui.renew_instructor.clear()
 
-            self.ui.renew_instructor.addItem('Instructor')
-            self.employeeIDList.append(None)
+        #     self.ui.renew_instructor.addItem('Instructor')
+        #     self.employeeIDList.append(None)
             
-            for employee in employees:
-                emp_id = employee[0]
-                emp_name = employee[1]
-                self.employeeIDList.append(emp_id)
-                self.ui.renew_instructor.addItem(emp_name)
+        #     for employee in employees:
+        #         emp_id = employee[0]
+        #         emp_name = employee[1]
+        #         self.employeeIDList.append(emp_id)
+        #         self.ui.renew_instructor.addItem(emp_name)
 
-            self.ui.renew_instructor.addItem('None')
-            self.employeeIDList.append(None)
-        except (Exception, psycopg2.Error) as error:
-            print("Error retrieving data from the database:", error)
+        #     self.ui.renew_instructor.addItem('None')
+        #     self.employeeIDList.append(None)
+        # except (Exception, psycopg2.Error) as error:
+        #     print("Error retrieving data from the database:", error)
 
-        finally:
-            # Close the cursor and database connection
-            if conn is not None:
-                conn.close()
+        # finally:
+        #     # Close the cursor and database connection
+        #     if conn is not None:
+        #         conn.close()
 
     #Shows renew page
     def renew_popup(self):
@@ -869,29 +846,29 @@ class MainWindow(QtWidgets.QMainWindow):
         if selected_row != -1:
             mon_id = self.ui.mon_serviceLog_table.item(selected_row, 0)
             conn = None
-            try:
-                params = config()
-                conn = psycopg2.connect(**params)
+            # try:
+            #     params = config()
+            #     conn = psycopg2.connect(**params)
 
-                sql = "SELECT MEM_MEMBERSHIP_END_DATE FROM MONTHLY_SERVICE_LOG INNER JOIN MEMBER ON MEMBER.MEM_ID = MONTHLY_SERVICE_LOG.MEM_ID WHERE MON_SERVICE_LOG_ID = '" + mon_id.text() + "';"
-                cursor = conn.cursor()
-                cursor.execute(sql)
-                membership_exp = cursor.fetchone()
+            #     sql = "SELECT MEM_MEMBERSHIP_END_DATE FROM MONTHLY_SERVICE_LOG INNER JOIN MEMBER ON MEMBER.MEM_ID = MONTHLY_SERVICE_LOG.MEM_ID WHERE MON_SERVICE_LOG_ID = '" + mon_id.text() + "';"
+            #     cursor = conn.cursor()
+            #     cursor.execute(sql)
+            #     membership_exp = cursor.fetchone()
 
-                if membership_exp:
-                    expiry_date = membership_exp[0].date()
-                    today = datetime.datetime.today().date()
-                    remaining_days = (expiry_date - today).days
-                    if remaining_days < 30:
-                        self.ui.reminder_text.setText(f"This member's membership will expire within {remaining_days} day/s. Would you like to proceed with the monthly service access renewal or renew membership first?")
-                        self.ui.renewal_reminder_popup.setFixedWidth(1381)   
-                    else:
-                        self.ui.renew_popup.setFixedWidth(1381)   
-            except(Exception, psycopg2.Error) as error:
-                print(error)
-            finally:
-                if conn is not None:  
-                    conn.close()
+            #     if membership_exp:
+            #         expiry_date = membership_exp[0].date()
+            #         today = datetime.datetime.today().date()
+            #         remaining_days = (expiry_date - today).days
+            #         if remaining_days < 30:
+            #             self.ui.reminder_text.setText(f"This member's membership will expire within {remaining_days} day/s. Would you like to proceed with the monthly service access renewal or renew membership first?")
+            #             self.ui.renewal_reminder_popup.setFixedWidth(1381)   
+            #         else:
+            #             self.ui.renew_popup.setFixedWidth(1381)   
+            # except(Exception, psycopg2.Error) as error:
+            #     print(error)
+            # finally:
+            #     if conn is not None:  
+            #         conn.close()
 
     #Cancel renew
     def cancel_renew(self):
@@ -906,92 +883,92 @@ class MainWindow(QtWidgets.QMainWindow):
         selected_row = self.ui.mon_serviceLog_table.currentRow()
         monserv_id = self.ui.mon_serviceLog_table.item(selected_row, 0).text()
         mon_id = monserv_id
-        try:
-            params = config()
-            conn = psycopg2.connect(**params)
+        # try:
+        #     params = config()
+        #     conn = psycopg2.connect(**params)
 
-            sql = "UPDATE MONTHLY_SERVICE_LOG SET SERV_ID = %s, EMP_ID = %s, MON_SERVICE_START_DATE = CURRENT_TIMESTAMP, MON_SERVICE_END_DATE = CURRENT_TIMESTAMP +  INTERVAL '30 days' WHERE MON_SERVICE_LOG_ID = %s;"
-            cursor = conn.cursor()
-            cursor.execute(sql, (service_id, self.emp_id, monserv_id))    
-            conn.commit()
-            rows_changed = cursor.rowcount
-            if rows_changed > 0:
-                self.ui.savechanges_widget.setFixedWidth(341)
-                QtCore.QTimer.singleShot(1300, lambda: self.ui.savechanges_widget.setFixedWidth(0)) 
-                self.ui.renew_popup.setFixedWidth(0)
+        #     sql = "UPDATE MONTHLY_SERVICE_LOG SET SERV_ID = %s, EMP_ID = %s, MON_SERVICE_START_DATE = CURRENT_TIMESTAMP, MON_SERVICE_END_DATE = CURRENT_TIMESTAMP +  INTERVAL '30 days' WHERE MON_SERVICE_LOG_ID = %s;"
+        #     cursor = conn.cursor()
+        #     cursor.execute(sql, (service_id, self.emp_id, monserv_id))    
+        #     conn.commit()
+        #     rows_changed = cursor.rowcount
+        #     if rows_changed > 0:
+        #         self.ui.savechanges_widget.setFixedWidth(341)
+        #         QtCore.QTimer.singleShot(1300, lambda: self.ui.savechanges_widget.setFixedWidth(0)) 
+        #         self.ui.renew_popup.setFixedWidth(0)
 
-                self.populate_mem_table()
-                self.populate_monServiceLog()
+        #         self.populate_mem_table()
+        #         self.populate_monServiceLog()
                 
-                sql = "SELECT MEM_TELEPHONE FROM MONTHLY_SERVICE_LOG JOIN MEMBER ON MEMBER.MEM_ID = MONTHLY_SERVICE_LOG.MEM_ID WHERE MON_SERVICE_LOG_ID = '" + mon_id + "';"
-                cursor = conn.cursor()
-                cursor.execute(sql)    
-                result = cursor.fetchone()
+        #         sql = "SELECT MEM_TELEPHONE FROM MONTHLY_SERVICE_LOG JOIN MEMBER ON MEMBER.MEM_ID = MONTHLY_SERVICE_LOG.MEM_ID WHERE MON_SERVICE_LOG_ID = '" + mon_id + "';"
+        #         cursor = conn.cursor()
+        #         cursor.execute(sql)    
+        #         result = cursor.fetchone()
 
-                if result:
-                    mem_contact = result
-                    self.add_transaction_DB(service_id, renew_amt, renew_tendered, mem_contact)
+        #         if result:
+        #             mem_contact = result
+        #             self.add_transaction_DB(service_id, renew_amt, renew_tendered, mem_contact)
             
-        except (Exception, psycopg2.Error) as error:
-            print("Error retrieving data from the database:", error)
+        # except (Exception, psycopg2.Error) as error:
+        #     print("Error retrieving data from the database:", error)
         
-        finally: 
-            if conn is not None:  
-                conn.close()
+        # finally: 
+        #     if conn is not None:  
+        #         conn.close()
 
-                if float(renew_tendered) > float(renew_amt):
-                    self.ui.change_popup.setFixedWidth(1381)
-                    change = float(renew_tendered) - float(renew_amt)
-                    self.ui.change_field.setText(f"{change:.2f}")
-                    self.populate_monServiceLog()
-                self.ui.renew_popup.setFixedWidth(0) 
+        #         if float(renew_tendered) > float(renew_amt):
+        #             self.ui.change_popup.setFixedWidth(1381)
+        #             change = float(renew_tendered) - float(renew_amt)
+        #             self.ui.change_field.setText(f"{change:.2f}")
+        #             self.populate_monServiceLog()
+        #         self.ui.renew_popup.setFixedWidth(0) 
 
 
     #Displaying all members with monthly service access
     def populate_monServiceLog(self):
         conn = None
         now = datetime.datetime.today()
-        try:
-            params = config()
-            conn = psycopg2.connect(**params)
+        # try:
+        #     params = config()
+        #     conn = psycopg2.connect(**params)
 
-            sql = "SELECT MON_SERVICE_LOG_ID, MEM_FNAME, MEM_LNAME, SERV_TYPE, CONCAT(EMP_FNAME ,' ', EMP_LNAME), DATE(MON_SERVICE_START_DATE), MON_SERVICE_END_DATE FROM MONTHLY_SERVICE_LOG JOIN MEMBER ON MEMBER.MEM_ID = MONTHLY_SERVICE_LOG.MEM_ID JOIN SERVICE ON SERVICE.SERV_ID = MONTHLY_SERVICE_LOG.SERV_ID LEFT JOIN EMPLOYEE ON EMPLOYEE.EMP_ID = MONTHLY_SERVICE_LOG.EMP_ID"
-            cursor = conn.cursor()
-            cursor.execute(sql)
-            result = cursor.fetchall()
+        #     sql = "SELECT MON_SERVICE_LOG_ID, MEM_FNAME, MEM_LNAME, SERV_TYPE, CONCAT(EMP_FNAME ,' ', EMP_LNAME), DATE(MON_SERVICE_START_DATE), MON_SERVICE_END_DATE FROM MONTHLY_SERVICE_LOG JOIN MEMBER ON MEMBER.MEM_ID = MONTHLY_SERVICE_LOG.MEM_ID JOIN SERVICE ON SERVICE.SERV_ID = MONTHLY_SERVICE_LOG.SERV_ID LEFT JOIN EMPLOYEE ON EMPLOYEE.EMP_ID = MONTHLY_SERVICE_LOG.EMP_ID"
+        #     cursor = conn.cursor()
+        #     cursor.execute(sql)
+        #     result = cursor.fetchall()
             
-            self.ui.mon_serviceLog_table.setRowCount(0)
+        #     self.ui.mon_serviceLog_table.setRowCount(0)
             
-            if result:
-                for row_number, row_data in enumerate(result):
-                    self.ui.mon_serviceLog_table.insertRow(row_number)
-                    for column_number, data in enumerate(row_data):
+        #     if result:
+        #         for row_number, row_data in enumerate(result):
+        #             self.ui.mon_serviceLog_table.insertRow(row_number)
+        #             for column_number, data in enumerate(row_data):
                 
-                        if column_number == 6:
+        #                 if column_number == 6:
                             
-                            end_date = data
-                            new_data = str(data).split(" ")
-                            data = new_data[0]
+        #                     end_date = data
+        #                     new_data = str(data).split(" ")
+        #                     data = new_data[0]
 
-                            if now < end_date:
-                                item = QtWidgets.QTableWidgetItem('ACTIVE')
-                                item.setTextAlignment(Qt.AlignHCenter)
-                                self.ui.mon_serviceLog_table.setItem(row_number, 7, item)
-                            else:
-                                item = QtWidgets.QTableWidgetItem('EXPIRED')
-                                item.setTextAlignment(Qt.AlignHCenter)
-                                self.ui.mon_serviceLog_table.setItem(row_number, 7, item)
+        #                     if now < end_date:
+        #                         item = QtWidgets.QTableWidgetItem('ACTIVE')
+        #                         item.setTextAlignment(Qt.AlignHCenter)
+        #                         self.ui.mon_serviceLog_table.setItem(row_number, 7, item)
+        #                     else:
+        #                         item = QtWidgets.QTableWidgetItem('EXPIRED')
+        #                         item.setTextAlignment(Qt.AlignHCenter)
+        #                         self.ui.mon_serviceLog_table.setItem(row_number, 7, item)
                         
-                        item = QtWidgets.QTableWidgetItem(str(data))
-                        item.setTextAlignment(Qt.AlignHCenter)
-                        self.ui.mon_serviceLog_table.setItem(row_number, column_number, item)
+        #                 item = QtWidgets.QTableWidgetItem(str(data))
+        #                 item.setTextAlignment(Qt.AlignHCenter)
+        #                 self.ui.mon_serviceLog_table.setItem(row_number, column_number, item)
 
-        except (Exception, psycopg2.Error) as error:
-            print("Error retrieving data from the database:", error)
+        # except (Exception, psycopg2.Error) as error:
+        #     print("Error retrieving data from the database:", error)
         
-        finally:
-            if conn is not None:
-                conn.close()
+        # finally:
+        #     if conn is not None:
+        #         conn.close()
     
     def check_memRenew_fields(self):
         if( not self.ui.mem_fee.text() or
@@ -1016,77 +993,77 @@ class MainWindow(QtWidgets.QMainWindow):
         selected_row = self.ui.mon_serviceLog_table.currentRow()
         monservId = self.ui.mon_serviceLog_table.item(selected_row, 0)
         mon_id = monservId.text()
-        try:
-            params = config()
-            conn = psycopg2.connect(**params)
+        # try:
+        #     params = config()
+        #     conn = psycopg2.connect(**params)
 
-            sql = "UPDATE MEMBER SET MEM_MEMBERSHIP_START_DATE = CURRENT_TIMESTAMP, MEM_MEMBERSHIP_END_DATE = CURRENT_TIMESTAMP +  INTERVAL '365 days' WHERE MEM_ID = (SELECT MEM_ID FROM MONTHLY_SERVICE_LOG WHERE MON_SERVICE_LOG_ID = '" + monservId.text() + "');"
-            cursor = conn.cursor()
-            cursor.execute(sql)    
-            conn.commit()
-            rows_changed = cursor.rowcount
+        #     sql = "UPDATE MEMBER SET MEM_MEMBERSHIP_START_DATE = CURRENT_TIMESTAMP, MEM_MEMBERSHIP_END_DATE = CURRENT_TIMESTAMP +  INTERVAL '365 days' WHERE MEM_ID = (SELECT MEM_ID FROM MONTHLY_SERVICE_LOG WHERE MON_SERVICE_LOG_ID = '" + monservId.text() + "');"
+        #     cursor = conn.cursor()
+        #     cursor.execute(sql)    
+        #     conn.commit()
+        #     rows_changed = cursor.rowcount
 
-            if rows_changed > 0:
-                self.ui.savechanges_widget.setFixedWidth(341)
-                QtCore.QTimer.singleShot(1300, lambda: self.ui.savechanges_widget.setFixedWidth(0)) 
-                self.ui.renew_popup.setFixedWidth(0)
+        #     if rows_changed > 0:
+        #         self.ui.savechanges_widget.setFixedWidth(341)
+        #         QtCore.QTimer.singleShot(1300, lambda: self.ui.savechanges_widget.setFixedWidth(0)) 
+        #         self.ui.renew_popup.setFixedWidth(0)
 
-                self.populate_mem_table()
-                self.populate_monServiceLog()
+        #         self.populate_mem_table()
+        #         self.populate_monServiceLog()
 
-                sql = "SELECT MEM_TELEPHONE FROM MONTHLY_SERVICE_LOG JOIN MEMBER ON MEMBER.MEM_ID = MONTHLY_SERVICE_LOG.MEM_ID WHERE MON_SERVICE_LOG_ID = '" + mon_id + "';"
-                cursor = conn.cursor()
-                cursor.execute(sql)    
-                result = cursor.fetchone()
+        #         sql = "SELECT MEM_TELEPHONE FROM MONTHLY_SERVICE_LOG JOIN MEMBER ON MEMBER.MEM_ID = MONTHLY_SERVICE_LOG.MEM_ID WHERE MON_SERVICE_LOG_ID = '" + mon_id + "';"
+        #         cursor = conn.cursor()
+        #         cursor.execute(sql)    
+        #         result = cursor.fetchone()
 
-                if result:
-                    mem_contact = result
-                    self.add_transaction_DB(None, mship_fee, mshipRenew_tendered, mem_contact)
+        #         if result:
+        #             mem_contact = result
+        #             self.add_transaction_DB(None, mship_fee, mshipRenew_tendered, mem_contact)
             
-        except (Exception, psycopg2.Error) as error:
-            print("Error retrieving data from the database:", error)
+        # except (Exception, psycopg2.Error) as error:
+        #     print("Error retrieving data from the database:", error)
         
-        finally: 
-            if conn is not None:  
-                conn.close()
+        # finally: 
+        #     if conn is not None:  
+        #         conn.close()
 
-                if float(mshipRenew_tendered) > float(mship_fee):
-                    self.ui.change_popup.setFixedWidth(1381)
-                    change = float(mshipRenew_tendered) - float(mship_fee)
-                    self.ui.change_field.setText(f"{change:.2f}")
-                    self.populate_monServiceLog()
-                self.ui.membership_renewal_popup.setFixedWidth(0) 
+        #         if float(mshipRenew_tendered) > float(mship_fee):
+        #             self.ui.change_popup.setFixedWidth(1381)
+        #             change = float(mshipRenew_tendered) - float(mship_fee)
+        #             self.ui.change_field.setText(f"{change:.2f}")
+        #             self.populate_monServiceLog()
+        #         self.ui.membership_renewal_popup.setFixedWidth(0) 
 
     #Display details of all membership
     def populate_mshipStat(self):
         conn = None
         now = datetime.date.today()
-        try:
-            params = config()
-            conn = psycopg2.connect(**params)
+        # try:
+        #     params = config()
+        #     conn = psycopg2.connect(**params)
 
-            sql = "SELECT MEM_ID, MEM_FNAME, MEM_LNAME, DATE(MEM_MEMBERSHIP_START_DATE), DATE(MEM_MEMBERSHIP_END_DATE) FROM MEMBER"
-            cursor = conn.cursor()
-            cursor.execute(sql)
-            result = cursor.fetchall()
+        #     sql = "SELECT MEM_ID, MEM_FNAME, MEM_LNAME, DATE(MEM_MEMBERSHIP_START_DATE), DATE(MEM_MEMBERSHIP_END_DATE) FROM MEMBER"
+        #     cursor = conn.cursor()
+        #     cursor.execute(sql)
+        #     result = cursor.fetchall()
             
-            self.ui.mshipStat_table.setRowCount(0)
+        #     self.ui.mshipStat_table.setRowCount(0)
 
-            for row_number, row_data in enumerate(result):
-                self.ui.mshipStat_table.insertRow(row_number)
-                for column_number, data in enumerate(row_data):
+        #     for row_number, row_data in enumerate(result):
+        #         self.ui.mshipStat_table.insertRow(row_number)
+        #         for column_number, data in enumerate(row_data):
                     
-                    item = QtWidgets.QTableWidgetItem(str(data))
-                    item.setTextAlignment(Qt.AlignHCenter)
-                    self.ui.mshipStat_table.setItem(row_number, column_number, item)
+        #             item = QtWidgets.QTableWidgetItem(str(data))
+        #             item.setTextAlignment(Qt.AlignHCenter)
+        #             self.ui.mshipStat_table.setItem(row_number, column_number, item)
         
             
-        except (Exception, psycopg2.Error) as error:
-            print("Error retrieving data from the database:", error)
+        # except (Exception, psycopg2.Error) as error:
+        #     print("Error retrieving data from the database:", error)
         
-        finally:
-            if conn is not None:
-                conn.close()
+        # finally:
+        #     if conn is not None:
+        #         conn.close()
 
     # ===========================================================================================================================================================================
     # List of member functions 
@@ -1132,41 +1109,41 @@ class MainWindow(QtWidgets.QMainWindow):
         if selected_row != -1:
             mem_id = self.ui.mem_table.item(selected_row, 0)
             conn = None
-            try:
-                params = config()
-                conn = psycopg2.connect(**params)
+            # try:
+            #     params = config()
+            #     conn = psycopg2.connect(**params)
 
-                sql = "SELECT * FROM MEMBER WHERE MEM_ID = '" + mem_id.text() + "';"
-                cursor = conn.cursor()
-                cursor.execute(sql)
-                member = cursor.fetchone()
+            #     sql = "SELECT * FROM MEMBER WHERE MEM_ID = '" + mem_id.text() + "';"
+            #     cursor = conn.cursor()
+            #     cursor.execute(sql)
+            #     member = cursor.fetchone()
 
-                if member:
-                    mmbr_id, mmbr_fname, mmbr_lname, mmbr_birthdate, mmbr_address, mmbr_telephone, mmbr_physical, mmbr_ailment, mmbr_weight, mmbr_height, mmbr_bp, mmbr_gender, mmbr_status, mmbr_type, mmbr_prevGym, mmbr_start_date, mmbr_end_date, admin = member  
-                    full_name = mmbr_fname + " " + mmbr_lname
-                    self.ui.viewmem_Id.setText(str(mmbr_id))
-                    self.ui.viewmem_name.setText(str(full_name))
-                    self.ui.viewmem_Gender.setText(str(mmbr_gender))
-                    self.ui.viewmem_BP.setText(str(mmbr_bp))
-                    self.ui.viewmem_address.setText(str(mmbr_address))
-                    self.ui.viewmem_DOB.setText(str(mmbr_birthdate))
-                    self.ui.viewmem_height.setText(str(mmbr_height))
-                    self.ui.viewmem_medicalAilments.setText(str(mmbr_ailment))
-                    self.ui.viewmem_physicalAct.setText(str(mmbr_physical))
-                    self.ui.viewmem_telnum.setText(str(mmbr_telephone))
-                    self.ui.viewmem_weight.setText(str(mmbr_weight))
-                    self.ui.viewmem_status.setText(str(mmbr_status))
-                    self.ui.viewmem_type.setText(str(mmbr_type))
-                    self.ui.viewmem_prevGym.setText(str(mmbr_prevGym))
-                else:
-                    return None, None
+            #     if member:
+            #         mmbr_id, mmbr_fname, mmbr_lname, mmbr_birthdate, mmbr_address, mmbr_telephone, mmbr_physical, mmbr_ailment, mmbr_weight, mmbr_height, mmbr_bp, mmbr_gender, mmbr_status, mmbr_type, mmbr_prevGym, mmbr_start_date, mmbr_end_date, admin = member  
+            #         full_name = mmbr_fname + " " + mmbr_lname
+            #         self.ui.viewmem_Id.setText(str(mmbr_id))
+            #         self.ui.viewmem_name.setText(str(full_name))
+            #         self.ui.viewmem_Gender.setText(str(mmbr_gender))
+            #         self.ui.viewmem_BP.setText(str(mmbr_bp))
+            #         self.ui.viewmem_address.setText(str(mmbr_address))
+            #         self.ui.viewmem_DOB.setText(str(mmbr_birthdate))
+            #         self.ui.viewmem_height.setText(str(mmbr_height))
+            #         self.ui.viewmem_medicalAilments.setText(str(mmbr_ailment))
+            #         self.ui.viewmem_physicalAct.setText(str(mmbr_physical))
+            #         self.ui.viewmem_telnum.setText(str(mmbr_telephone))
+            #         self.ui.viewmem_weight.setText(str(mmbr_weight))
+            #         self.ui.viewmem_status.setText(str(mmbr_status))
+            #         self.ui.viewmem_type.setText(str(mmbr_type))
+            #         self.ui.viewmem_prevGym.setText(str(mmbr_prevGym))
+            #     else:
+            #         return None, None
             
-            except (Exception, psycopg2.Error) as error:
-                print("Error retrieving data from the database:", error)
+            # except (Exception, psycopg2.Error) as error:
+            #     print("Error retrieving data from the database:", error)
             
-            finally:
-                if conn is not None:
-                    conn.close()
+            # finally:
+            #     if conn is not None:
+            #         conn.close()
 
     #Validating payment fields
     def check_payment_fields(self):
@@ -1270,29 +1247,29 @@ class MainWindow(QtWidgets.QMainWindow):
     #Displaying instructors in the combo box
     def retrieve_employee_from_DB(self):
         conn = None
-        try:
-            params = config()
-            conn = psycopg2.connect(**params)
+        # try:
+        #     params = config()
+        #     conn = psycopg2.connect(**params)
 
-            cursor = conn.cursor()
-            cursor.execute("SELECT CONCAT(EMP_FNAME, ' ', EMP_LNAME) FROM EMPLOYEE WHERE EMP_POSITION = 'INSTRUCTOR';")
-            employees = cursor.fetchall()
-            self.ui.payment_instructor.clear()
+        #     cursor = conn.cursor()
+        #     cursor.execute("SELECT CONCAT(EMP_FNAME, ' ', EMP_LNAME) FROM EMPLOYEE WHERE EMP_POSITION = 'INSTRUCTOR';")
+        #     employees = cursor.fetchall()
+        #     self.ui.payment_instructor.clear()
 
-            self.ui.payment_instructor.addItem('Instructor')
-            for employee in employees:
-                emp_name = employee[0]
-                self.ui.payment_instructor.addItem(emp_name)
+        #     self.ui.payment_instructor.addItem('Instructor')
+        #     for employee in employees:
+        #         emp_name = employee[0]
+        #         self.ui.payment_instructor.addItem(emp_name)
 
-            self.ui.payment_instructor.addItem('None')
+        #     self.ui.payment_instructor.addItem('None')
 
-        except (Exception, psycopg2.Error) as error:
-            print("Error retrieving data from the database:", error)
+        # except (Exception, psycopg2.Error) as error:
+        #     print("Error retrieving data from the database:", error)
 
-        finally:
-            # Close the cursor and database connection
-            if conn is not None:
-                conn.close()
+        # finally:
+        #     # Close the cursor and database connection
+        #     if conn is not None:
+        #         conn.close()
 
     #Shows the add member page
     def add_member(self):
@@ -1381,25 +1358,25 @@ class MainWindow(QtWidgets.QMainWindow):
         if selected_row != -1:
             mem_id = self.ui.mem_table.item(selected_row, 0)
             conn = None
-            try:
-                params = config()
-                conn = psycopg2.connect(**params)
+            # try:
+            #     params = config()
+            #     conn = psycopg2.connect(**params)
 
-                cursor = conn.cursor()
-                cursor.execute("DELETE FROM MEMBER WHERE MEM_ID = '" + mem_id.text() + "';")
-                conn.commit()
-                self.ui.mem_table.removeRow(selected_row)
-                self.ui.member_delete_popup.setFixedWidth(0)
-                self.populate_mem_table()
+            #     cursor = conn.cursor()
+            #     cursor.execute("DELETE FROM MEMBER WHERE MEM_ID = '" + mem_id.text() + "';")
+            #     conn.commit()
+            #     self.ui.mem_table.removeRow(selected_row)
+            #     self.ui.member_delete_popup.setFixedWidth(0)
+            #     self.populate_mem_table()
                 
-            except (Exception, psycopg2.Error) as error:
-                print("Error retrieving data from the database:", error)
-            finally:
-                if conn is not None:
-                    conn.close()    
+            # except (Exception, psycopg2.Error) as error:
+            #     print("Error retrieving data from the database:", error)
+            # finally:
+            #     if conn is not None:
+            #         conn.close()    
 
-                    self.ui.delete_notif.setFixedWidth(81)
-                    QtCore.QTimer.singleShot(1300, lambda: self.ui.delete_notif.setFixedWidth(0)) 
+            #         self.ui.delete_notif.setFixedWidth(81)
+            #         QtCore.QTimer.singleShot(1300, lambda: self.ui.delete_notif.setFixedWidth(0)) 
      
             
     #Displaying the member details in the edit page
@@ -1413,41 +1390,41 @@ class MainWindow(QtWidgets.QMainWindow):
             self.ui.edit_details_popup.setFixedWidth(1381)
             mem_id = self.ui.mem_table.item(selected_row, 0)
             conn = None
-            try:
-                params = config()
-                conn = psycopg2.connect(**params)
+            # try:
+            #     params = config()
+            #     conn = psycopg2.connect(**params)
 
-                cursor = conn.cursor()
-                cursor.execute("SELECT MEM_FNAME, MEM_LNAME, MEM_BIRTHDATE, MEM_ADDRESS, MEM_TELEPHONE, MEM_PHYSICAL_ACT, MEM_MED_AILMENT, MEM_WEIGHT, MEM_HEIGHT," +
-                                "MEM_BP, MEM_GENDER, MEM_STATUS, MEM_TYPE, MEM_PREV_GYM FROM MEMBER WHERE MEM_ID = '" + mem_id.text() + "';")
-                member = cursor.fetchone()
+            #     cursor = conn.cursor()
+            #     cursor.execute("SELECT MEM_FNAME, MEM_LNAME, MEM_BIRTHDATE, MEM_ADDRESS, MEM_TELEPHONE, MEM_PHYSICAL_ACT, MEM_MED_AILMENT, MEM_WEIGHT, MEM_HEIGHT," +
+            #                     "MEM_BP, MEM_GENDER, MEM_STATUS, MEM_TYPE, MEM_PREV_GYM FROM MEMBER WHERE MEM_ID = '" + mem_id.text() + "';")
+            #     member = cursor.fetchone()
 
-                if member:
-                    mem_fname, mem_lname, mem_bod, mem_add, mem_tel, mem_phys_act, mem_med_ailment, mem_weight, mem_height, mem_bp, mem_gender, mem_stat, mem_type, mem_prev_gym = member
-                    self.ui.mem_fname.setText(str(mem_fname))
-                    self.ui.mem_lname.setText(str(mem_lname))
-                    self.ui.mem_DOB.setDate(mem_bod)
-                    self.ui.mem_address.setText(str(mem_add))
-                    self.ui.mem_contact.setText(str(mem_tel))
-                    self.ui.mem_physicalAct.setText(str(mem_phys_act))
-                    self.ui.mem_medic_ailments.setText(str(mem_med_ailment))
-                    self.ui.mem_weight.setText(str(mem_weight))
-                    self.ui.mem_height.setText(str(mem_height))
-                    self.ui.mem_BP.setText(str(mem_bp))
-                    self.ui.memGender_comboBox.setCurrentText(str(mem_gender))
-                    self.ui.memStat_comboBox.setCurrentText(str(mem_stat))
-                    if mem_type == 'STUDENT':
-                        self.ui.memStud_radiobtn.setChecked(True)
-                    else:
-                        self.ui.memProf_radiobtn.setChecked(True)
-                    self.ui.mem_prevGym.setText(str(mem_prev_gym))
-                else:
-                    print("No member found for MEM_ID:", mem_id.text())
-            except (Exception, psycopg2.Error) as error:
-                print("Error retrieving data from the database:", error)
-            finally:
-                if conn is not None:
-                    conn.close()                       
+            #     if member:
+            #         mem_fname, mem_lname, mem_bod, mem_add, mem_tel, mem_phys_act, mem_med_ailment, mem_weight, mem_height, mem_bp, mem_gender, mem_stat, mem_type, mem_prev_gym = member
+            #         self.ui.mem_fname.setText(str(mem_fname))
+            #         self.ui.mem_lname.setText(str(mem_lname))
+            #         self.ui.mem_DOB.setDate(mem_bod)
+            #         self.ui.mem_address.setText(str(mem_add))
+            #         self.ui.mem_contact.setText(str(mem_tel))
+            #         self.ui.mem_physicalAct.setText(str(mem_phys_act))
+            #         self.ui.mem_medic_ailments.setText(str(mem_med_ailment))
+            #         self.ui.mem_weight.setText(str(mem_weight))
+            #         self.ui.mem_height.setText(str(mem_height))
+            #         self.ui.mem_BP.setText(str(mem_bp))
+            #         self.ui.memGender_comboBox.setCurrentText(str(mem_gender))
+            #         self.ui.memStat_comboBox.setCurrentText(str(mem_stat))
+            #         if mem_type == 'STUDENT':
+            #             self.ui.memStud_radiobtn.setChecked(True)
+            #         else:
+            #             self.ui.memProf_radiobtn.setChecked(True)
+            #         self.ui.mem_prevGym.setText(str(mem_prev_gym))
+            #     else:
+            #         print("No member found for MEM_ID:", mem_id.text())
+            # except (Exception, psycopg2.Error) as error:
+            #     print("Error retrieving data from the database:", error)
+            # finally:
+            #     if conn is not None:
+            #         conn.close()                       
 
         else:
             self.ui.rowSelection_notice.setFixedWidth(301)
@@ -1487,40 +1464,40 @@ class MainWindow(QtWidgets.QMainWindow):
         sql = "UPDATE MEMBER SET MEM_FNAME = %s, MEM_LNAME = %s, MEM_BIRTHDATE = %s, MEM_ADDRESS = %s, MEM_TELEPHONE = %s, MEM_PHYSICAL_ACT = %s, MEM_MED_AILMENT = %s, MEM_WEIGHT = %s, MEM_HEIGHT = %s, MEM_BP = %s, MEM_GENDER = %s, MEM_STATUS = %s, MEM_TYPE = %s, MEM_PREV_GYM = %s WHERE MEM_ID = %s;"
         values = (update_fname.upper(), update_lname.upper(), update_DOB, update_address.upper(), update_contact, update_physAct.upper(), update_medical.upper(), update_weight, update_height, update_BP, update_gender.upper(), update_stat.upper(), update_type.upper(), update_prevgym.upper(), mem_id.text())
         conn = None
-        try:
-            params = config()
-            conn = psycopg2.connect(**params)
-            cursor = conn.cursor()
-            cursor.execute(sql, values)
-            conn.commit()
-            self.ui.mem_fname.setText('')
-            self.ui.mem_lname.setText('')
-            self.ui.mem_DOB.setDate(QDate(2000, 1, 1))
-            self.ui.mem_address.setText('')
-            self.ui.mem_contact.setText('')
-            self.ui.mem_physicalAct.setText('')
-            self.ui.mem_medic_ailments.setText('')
-            self.ui.mem_weight.setText('')
-            self.ui.mem_height.setText('')
-            self.ui.mem_BP.setText('')
-            self.ui.memGender_comboBox.setCurrentText('Gender')
-            self.ui.memStat_comboBox.setCurrentText('Status')
-            self.ui.memProf_radiobtn.setChecked(False)
-            self.ui.memStud_radiobtn.setChecked(False)
-            self.ui.mem_prevGym.setText('')
-            self.populate_mem_table()
-            self.ui.edit_details_popup.setFixedWidth(0)
-            self.ui.savechanges_widget.setFixedWidth(341)
-            QtCore.QTimer.singleShot(1300, lambda: self.ui.savechanges_widget.setFixedWidth(0))  
+        # try:
+        #     params = config()
+        #     conn = psycopg2.connect(**params)
+        #     cursor = conn.cursor()
+        #     cursor.execute(sql, values)
+        #     conn.commit()
+        #     self.ui.mem_fname.setText('')
+        #     self.ui.mem_lname.setText('')
+        #     self.ui.mem_DOB.setDate(QDate(2000, 1, 1))
+        #     self.ui.mem_address.setText('')
+        #     self.ui.mem_contact.setText('')
+        #     self.ui.mem_physicalAct.setText('')
+        #     self.ui.mem_medic_ailments.setText('')
+        #     self.ui.mem_weight.setText('')
+        #     self.ui.mem_height.setText('')
+        #     self.ui.mem_BP.setText('')
+        #     self.ui.memGender_comboBox.setCurrentText('Gender')
+        #     self.ui.memStat_comboBox.setCurrentText('Status')
+        #     self.ui.memProf_radiobtn.setChecked(False)
+        #     self.ui.memStud_radiobtn.setChecked(False)
+        #     self.ui.mem_prevGym.setText('')
+        #     self.populate_mem_table()
+        #     self.ui.edit_details_popup.setFixedWidth(0)
+        #     self.ui.savechanges_widget.setFixedWidth(341)
+        #     QtCore.QTimer.singleShot(1300, lambda: self.ui.savechanges_widget.setFixedWidth(0))  
     
-        except (Exception, psycopg2.Error) as error:
-            self.ui.fieldNotice.setText('Phone number is already used.')
-            self.ui.invalid_notice.setFixedWidth(391)
-            QtCore.QTimer.singleShot(1300, lambda: self.ui.invalid_notice.setFixedWidth(0))
+        # except (Exception, psycopg2.Error) as error:
+        #     self.ui.fieldNotice.setText('Phone number is already used.')
+        #     self.ui.invalid_notice.setFixedWidth(391)
+        #     QtCore.QTimer.singleShot(1300, lambda: self.ui.invalid_notice.setFixedWidth(0))
 
-        finally:
-            if conn is not None:
-                conn.close()
+        # finally:
+        #     if conn is not None:
+        #         conn.close()
 
     #Cancel edit member
     def cancel_edit_mem(self):
@@ -1550,80 +1527,81 @@ class MainWindow(QtWidgets.QMainWindow):
 
     #Getting the id of the selected service type
     def get_service_id(self, servicename):
-        try:
-            params = config()
-            conn = psycopg2.connect(**params)
-            cursor = conn.cursor()
+        pass
+        # try:
+        #     params = config()
+        #     conn = psycopg2.connect(**params)
+        #     cursor = conn.cursor()
 
-            cursor.execute("SELECT SERV_ID, SERV_PRICE FROM SERVICE WHERE SERV_TYPE = %s;", (servicename,))
-            service = cursor.fetchone() 
-            if service:
-                serv_id, serv_price = service  
-                return serv_id, serv_price
-            else:
-                return None, None
+        #     cursor.execute("SELECT SERV_ID, SERV_PRICE FROM SERVICE WHERE SERV_TYPE = %s;", (servicename,))
+        #     service = cursor.fetchone() 
+        #     if service:
+        #         serv_id, serv_price = service  
+        #         return serv_id, serv_price
+        #     else:
+        #         return None, None
 
-        except (Exception, psycopg2.Error) as error:
-            print("Error retrieving data from the database:", error)
-            return None, None
-        finally:
-            if conn is not None:
-                conn.close()
+        # except (Exception, psycopg2.Error) as error:
+        #     print("Error retrieving data from the database:", error)
+        #     return None, None
+        # finally:
+        #     if conn is not None:
+        #         conn.close()
 
 
     #Displaying all members in the members list table
     def populate_mem_table(self):
         conn = None
-        try:
-            params = config()
-            conn = psycopg2.connect(**params)
+        # try:
+        #     params = config()
+        #     conn = psycopg2.connect(**params)
 
-            sql = "SELECT MEM_ID, MEM_FNAME, MEM_LNAME, MEM_BIRTHDATE, MEM_GENDER, MEM_ADDRESS FROM MEMBER"
-            cursor = conn.cursor()
-            cursor.execute(sql)
-            result = cursor.fetchall()
+        #     sql = "SELECT MEM_ID, MEM_FNAME, MEM_LNAME, MEM_BIRTHDATE, MEM_GENDER, MEM_ADDRESS FROM MEMBER"
+        #     cursor = conn.cursor()
+        #     cursor.execute(sql)
+        #     result = cursor.fetchall()
             
-            self.ui.mem_table.setRowCount(0)
+        #     self.ui.mem_table.setRowCount(0)
 
-            for row_number, row_data in enumerate(result):
-                self.ui.mem_table.insertRow(row_number)
-                for column_number, data in enumerate(row_data):
-                    item = QtWidgets.QTableWidgetItem(str(data))
-                    item.setTextAlignment(Qt.AlignHCenter)
-                    self.ui.mem_table.setItem(row_number, column_number, item)
+        #     for row_number, row_data in enumerate(result):
+        #         self.ui.mem_table.insertRow(row_number)
+        #         for column_number, data in enumerate(row_data):
+        #             item = QtWidgets.QTableWidgetItem(str(data))
+        #             item.setTextAlignment(Qt.AlignHCenter)
+        #             self.ui.mem_table.setItem(row_number, column_number, item)
             
-        except (Exception, psycopg2.Error) as error:
-            print("Error retrieving data from the database:", error)
+        # except (Exception, psycopg2.Error) as error:
+        #     print("Error retrieving data from the database:", error)
         
-        finally:
-            if conn is not None:
-                conn.close()
+        # finally:
+        #     if conn is not None:
+        #         conn.close()
 
     def check_duplicate_phone_number(self):
         phonenum = self.ui.regismem_contact.text()
         conn = None
-        try:
-            params = config()
-            conn = psycopg2.connect(**params)
+        # try:
+        #     params = config()
+        #     conn = psycopg2.connect(**params)
 
-            sql = "SELECT * FROM MEMBER WHERE MEM_TELEPHONE = '" + phonenum + "';"
-            cursor = conn.cursor()
-            cursor.execute(sql)
-            check = cursor.fetchall()
+        #     sql = "SELECT * FROM MEMBER WHERE MEM_TELEPHONE = '" + phonenum + "';"
+        #     cursor = conn.cursor()
+        #     cursor.execute(sql)
+        #     check = cursor.fetchall()
             
-            if check:
-                self.ui.fieldNotice.setText('Phone number is already used.')
-                self.ui.invalid_notice.setFixedWidth(391)
-                QtCore.QTimer.singleShot(1300, lambda: self.ui.invalid_notice.setFixedWidth(0)) 
-            else:
-                self.regis_save()
+        #     if check:
+        #         self.ui.fieldNotice.setText('Phone number is already used.')
+        #         self.ui.invalid_notice.setFixedWidth(391)
+        #         QtCore.QTimer.singleShot(1300, lambda: self.ui.invalid_notice.setFixedWidth(0)) 
+        #     else:
+        #         self.regis_save()
 
-        except (Exception, psycopg2.Error) as error:
-            print("Error retrieving data from the database:", error)
+        # except (Exception, psycopg2.Error) as error:
+        #     print("Error retrieving data from the database:", error)
         
-        finally:
-            if conn is not None:
-                conn.close()
+        # finally:
+        #     if conn is not None:
+        #         conn.close()
 
     #Add a member to DB
     def add_member_into_DB(self):
@@ -1653,34 +1631,34 @@ class MainWindow(QtWidgets.QMainWindow):
 
         conn = None
 
-        try:
-            params = config()
-            conn = psycopg2.connect(**params)
+        # try:
+        #     params = config()
+        #     conn = psycopg2.connect(**params)
 
-            cur= conn.cursor()
-            cur.execute(sql, values)
-            conn.commit()
-            cur.close
+        #     cur= conn.cursor()
+        #     cur.execute(sql, values)
+        #     conn.commit()
+        #     cur.close
 
-            if float(tendered_amount) > (float(serv_price) + float(mship_fee)):
-                    self.ui.change_popup.setFixedWidth(1381)
-                    change = float(tendered_amount) - (float(serv_price) + float(mship_fee))
-                    self.ui.change_field.setText(f"{change:.2f}")
-                    self.populate_mem_table()
-            self.ui.register_popup.setFixedWidth(0)
-            self.ui.payment_popup.setFixedWidth(0) 
+        #     if float(tendered_amount) > (float(serv_price) + float(mship_fee)):
+        #             self.ui.change_popup.setFixedWidth(1381)
+        #             change = float(tendered_amount) - (float(serv_price) + float(mship_fee))
+        #             self.ui.change_field.setText(f"{change:.2f}")
+        #             self.populate_mem_table()
+        #     self.ui.register_popup.setFixedWidth(0)
+        #     self.ui.payment_popup.setFixedWidth(0) 
 
-            self.ui.success_widget.setFixedWidth(371)
-            QtCore.QTimer.singleShot(1300, lambda: self.ui.success_widget.setFixedWidth(0))  
+        #     self.ui.success_widget.setFixedWidth(371)
+        #     QtCore.QTimer.singleShot(1300, lambda: self.ui.success_widget.setFixedWidth(0))  
       
-            self.add_service_log_into_DB(service_id, mem_contact)
-            self.add_transaction_DB(service_id, float(serv_price) + float(mship_fee), tendered_amount, mem_contact)  
+        #     self.add_service_log_into_DB(service_id, mem_contact)
+        #     self.add_transaction_DB(service_id, float(serv_price) + float(mship_fee), tendered_amount, mem_contact)  
 
-        except (Exception, psycopg2.Error) as error:
-            print(error)
-        finally:
-            if conn is not None:
-                conn.close()
+        # except (Exception, psycopg2.Error) as error:
+        #     print(error)
+        # finally:
+        #     if conn is not None:
+        #         conn.close()
                             
     #Record for registration and/or renewal is done
     def record_done(self): 
@@ -1739,20 +1717,20 @@ class MainWindow(QtWidgets.QMainWindow):
         sql = "INSERT INTO TRANSACTION_HISTORY(TRAN_DATE, SERV_ID, TRAN_PRICE, TRAN_TENDERED, MEM_ID) VALUES(CURRENT_DATE, %s, %s, %s, (SELECT MEM_ID FROM MEMBER WHERE MEM_TELEPHONE = %s))"
         values = (serv_id, pay_totalAmount, pay_tenderedAmount, mem_contact)
 
-        try:
-            params = config()
-            conn = psycopg2.connect(**params)
+        # try:
+        #     params = config()
+        #     conn = psycopg2.connect(**params)
 
-            cur= conn.cursor()
-            cur.execute(sql, values)
-            conn.commit()
-            cur.close
+        #     cur= conn.cursor()
+        #     cur.execute(sql, values)
+        #     conn.commit()
+        #     cur.close
 
-        except(Exception, psycopg2.DataError) as error:
-            print(error)
-        finally:
-            if conn is not None:
-                conn.close()
+        # except(Exception, psycopg2.DataError) as error:
+        #     print(error)
+        # finally:
+        #     if conn is not None:
+        #         conn.close()
 
         self.populate_transact_table()
 
@@ -1761,33 +1739,33 @@ class MainWindow(QtWidgets.QMainWindow):
         conn = None
         sql = "SELECT TRAN_ID, MEM_ID, CONCAT(MEM_FNAME, ' ', MEM_LNAME), DATE(TRAN_DATE), SERV_TYPE, TRAN_PRICE, TRAN_TENDERED FROM TRANSACTION_HISTORY LEFT JOIN SERVICE ON TRANSACTION_HISTORY.SERV_ID = SERVICE.SERV_ID NATURAL JOIN MEMBER"
 
-        try:
-            params = config()
-            conn = psycopg2.connect(**params)
+        # try:
+        #     params = config()
+        #     conn = psycopg2.connect(**params)
 
-            cur= conn.cursor()
-            cur.execute(sql)
-            result = cur.fetchall()
+        #     cur= conn.cursor()
+        #     cur.execute(sql)
+        #     result = cur.fetchall()
   
-            self.ui.transac_table.setRowCount(0)
-            for row_number, row_data in enumerate(result):
-                self.ui.transac_table.insertRow(row_number)
-                for column_number, data in enumerate(row_data):
-                    item = QtWidgets.QTableWidgetItem(str(data))
-                    item.setTextAlignment(Qt.AlignHCenter)
-                    self.ui.transac_table.setItem(row_number, column_number, item)
+        #     self.ui.transac_table.setRowCount(0)
+        #     for row_number, row_data in enumerate(result):
+        #         self.ui.transac_table.insertRow(row_number)
+        #         for column_number, data in enumerate(row_data):
+        #             item = QtWidgets.QTableWidgetItem(str(data))
+        #             item.setTextAlignment(Qt.AlignHCenter)
+        #             self.ui.transac_table.setItem(row_number, column_number, item)
                     
-                    if column_number == 5:
-                        item = QtWidgets.QTableWidgetItem(f"{float(row_data[6]) - float(row_data[5]):.2f}")
-                        item.setTextAlignment(Qt.AlignHCenter)
-                        self.ui.transac_table.setItem(row_number, 7, item)
+        #             if column_number == 5:
+        #                 item = QtWidgets.QTableWidgetItem(f"{float(row_data[6]) - float(row_data[5]):.2f}")
+        #                 item.setTextAlignment(Qt.AlignHCenter)
+        #                 self.ui.transac_table.setItem(row_number, 7, item)
         
-        except (Exception, psycopg2.Error) as error:
-            print("Error retrieving data from the database:", error)
+        # except (Exception, psycopg2.Error) as error:
+        #     print("Error retrieving data from the database:", error)
         
-        finally:
-            if conn is not None:
-                conn.close()
+        # finally:
+        #     if conn is not None:
+        #         conn.close()
     
     # ===========================================================================================================================================================================
     #Employee menu functions
@@ -1875,33 +1853,33 @@ class MainWindow(QtWidgets.QMainWindow):
             self.ui.add_employee_popup.setFixedWidth(1381)
             emp_id = self.ui.emp_table.item(selected_row, 0)
             conn = None
-            try:
-                params = config()
-                conn = psycopg2.connect(**params)
+            # try:
+            #     params = config()
+            #     conn = psycopg2.connect(**params)
 
-                cursor = conn.cursor()
-                cursor.execute("SELECT EMP_FNAME, EMP_LNAME, EMP_ADDRESS, EMP_BIRTHDATE, EMP_CONTACT_NUM FROM EMPLOYEE WHERE EMP_ID = '" + emp_id.text() +"';")
-                employee_data = cursor.fetchone()
+            #     cursor = conn.cursor()
+            #     cursor.execute("SELECT EMP_FNAME, EMP_LNAME, EMP_ADDRESS, EMP_BIRTHDATE, EMP_CONTACT_NUM FROM EMPLOYEE WHERE EMP_ID = '" + emp_id.text() +"';")
+            #     employee_data = cursor.fetchone()
 
-                if employee_data:
-                    emp_fname, emp_lname, emp_address, emp_birthdate, emp_contact_num = employee_data
-                    self.ui.AddEmp_fname.setText(str(emp_fname))
-                    self.ui.AddEmp_lname.setText(str(emp_lname))
-                    self.ui.AddEmp_address.setText(str(emp_address))
-                    self.ui.AddEmp_DOB.setDate(QDate(emp_birthdate))
-                    self.ui.AddEmp_contact.setText(str(emp_contact_num))
+            #     if employee_data:
+            #         emp_fname, emp_lname, emp_address, emp_birthdate, emp_contact_num = employee_data
+            #         self.ui.AddEmp_fname.setText(str(emp_fname))
+            #         self.ui.AddEmp_lname.setText(str(emp_lname))
+            #         self.ui.AddEmp_address.setText(str(emp_address))
+            #         self.ui.AddEmp_DOB.setDate(QDate(emp_birthdate))
+            #         self.ui.AddEmp_contact.setText(str(emp_contact_num))
 
-                else:
-                    print("No service found for SERV_ID:", emp_id.text())
+            #     else:
+            #         print("No service found for SERV_ID:", emp_id.text())
 
 
-            except (Exception, psycopg2.Error) as error:
-                print("Error retrieving data from the database:", error)
+            # except (Exception, psycopg2.Error) as error:
+            #     print("Error retrieving data from the database:", error)
 
-            finally:
-                # Close the cursor and database connection
-                if conn is not None:
-                    conn.close()
+            # finally:
+            #     # Close the cursor and database connection
+            #     if conn is not None:
+            #         conn.close()
         else:
              self.ui.rowSelection_notice.setFixedWidth(301)
              QtCore.QTimer.singleShot(1300, lambda: self.ui.rowSelection_notice.setFixedWidth(0))  
@@ -1913,30 +1891,30 @@ class MainWindow(QtWidgets.QMainWindow):
     #Displaying all employees in the employees list table
     def populate_employee_table(self):
         conn = None
-        try:
-            params = config()
-            conn = psycopg2.connect(**params)
+        # try:
+        #     params = config()
+        #     conn = psycopg2.connect(**params)
 
-            sql = "SELECT EMP_ID, EMP_FNAME, EMP_LNAME, EMP_CONTACT_NUM, EMP_ADDRESS, EMP_POSITION FROM EMPLOYEE"
-            cursor = conn.cursor()
-            cursor.execute(sql)
-            result = cursor.fetchall()
+        #     sql = "SELECT EMP_ID, EMP_FNAME, EMP_LNAME, EMP_CONTACT_NUM, EMP_ADDRESS, EMP_POSITION FROM EMPLOYEE"
+        #     cursor = conn.cursor()
+        #     cursor.execute(sql)
+        #     result = cursor.fetchall()
             
-            self.ui.emp_table.setRowCount(0)
+        #     self.ui.emp_table.setRowCount(0)
 
-            for row_number, row_data in enumerate(result):
-                self.ui.emp_table.insertRow(row_number)
-                for column_number, data in enumerate(row_data):
-                    item = QtWidgets.QTableWidgetItem(str(data))
-                    item.setTextAlignment(Qt.AlignHCenter)
-                    self.ui.emp_table.setItem(row_number, column_number, item)
+        #     for row_number, row_data in enumerate(result):
+        #         self.ui.emp_table.insertRow(row_number)
+        #         for column_number, data in enumerate(row_data):
+        #             item = QtWidgets.QTableWidgetItem(str(data))
+        #             item.setTextAlignment(Qt.AlignHCenter)
+        #             self.ui.emp_table.setItem(row_number, column_number, item)
             
-        except (Exception, psycopg2.Error) as error:
-            print("Error retrieving data from the database:", error)
+        # except (Exception, psycopg2.Error) as error:
+        #     print("Error retrieving data from the database:", error)
         
-        finally:
-            if conn is not None:
-                conn.close()
+        # finally:
+        #     if conn is not None:
+        #         conn.close()
 
     def cancel_assigned_emp_delete(self):
         self.ui.assigned_emp_delete.setFixedWidth(0)
@@ -1945,20 +1923,20 @@ class MainWindow(QtWidgets.QMainWindow):
         selected_row = self.ui.emp_table.currentRow()
         emp_id = self.ui.emp_table.item(selected_row, 0)
         conn = None
-        try:
-            params = config()
-            conn = psycopg2.connect(**params)
-            sql = "SELECT * FROM MONTHLY_SERVICE_LOG WHERE EMP_ID = '" + emp_id.text() + "';"
-            cursor = conn.cursor()
-            cursor.execute(sql)
-            empIsPresent = cursor.fetchall()
+        # try:
+        #     params = config()
+        #     conn = psycopg2.connect(**params)
+        #     sql = "SELECT * FROM MONTHLY_SERVICE_LOG WHERE EMP_ID = '" + emp_id.text() + "';"
+        #     cursor = conn.cursor()
+        #     cursor.execute(sql)
+        #     empIsPresent = cursor.fetchall()
 
-            if empIsPresent:
-                self.ui.assigned_emp_delete.setFixedWidth(1381)
-            else:
-                self.ui.employee_delete_popup.setFixedWidth(1381)
-        except (Exception, psycopg2.Error) as error:
-            print(error)
+        #     if empIsPresent:
+        #         self.ui.assigned_emp_delete.setFixedWidth(1381)
+        #     else:
+        #         self.ui.employee_delete_popup.setFixedWidth(1381)
+        # except (Exception, psycopg2.Error) as error:
+        #     print(error)
 
     
     #Confirm deletion
@@ -1967,34 +1945,34 @@ class MainWindow(QtWidgets.QMainWindow):
         emp_id = self.ui.emp_table.item(selected_row, 0)
         conn = None
         exception_flag = False
-        try:
-            params = config()
-            conn = psycopg2.connect(**params)
-            cursor = conn.cursor()
-            cursor.execute("DELETE FROM EMPLOYEE WHERE EMP_ID = '" + emp_id.text() + "';")
-            conn.commit()
-            self.ui.emp_table.removeRow(selected_row)
-            self.ui.assigned_emp_delete.setFixedWidth(0)
-            self.ui.employee_delete_popup.setFixedWidth(0)
-            self.retrieve_employee_from_DB()
-            self.retrieve_employee_from_DB_renew()
-            self.populate_employee_table()
+        # try:
+        #     params = config()
+        #     conn = psycopg2.connect(**params)
+        #     cursor = conn.cursor()
+        #     cursor.execute("DELETE FROM EMPLOYEE WHERE EMP_ID = '" + emp_id.text() + "';")
+        #     conn.commit()
+        #     self.ui.emp_table.removeRow(selected_row)
+        #     self.ui.assigned_emp_delete.setFixedWidth(0)
+        #     self.ui.employee_delete_popup.setFixedWidth(0)
+        #     self.retrieve_employee_from_DB()
+        #     self.retrieve_employee_from_DB_renew()
+        #     self.populate_employee_table()
             
-        except (Exception, psycopg2.Error) as error:
-            exception_flag = True
-            self.ui.assigned_emp_delete.setFixedWidth(0)
-            self.ui.employee_delete_popup.setFixedWidth(0)
-            self.ui.fieldNotice.setText('Unable to delete admin')
-            self.ui.invalid_notice.setFixedWidth(391)
-            QtCore.QTimer.singleShot(1300, lambda: self.ui.invalid_notice.setFixedWidth(0))
-            return
-        finally:
-            if conn is not None:
-                conn.close() 
+        # except (Exception, psycopg2.Error) as error:
+        #     exception_flag = True
+        #     self.ui.assigned_emp_delete.setFixedWidth(0)
+        #     self.ui.employee_delete_popup.setFixedWidth(0)
+        #     self.ui.fieldNotice.setText('Unable to delete admin')
+        #     self.ui.invalid_notice.setFixedWidth(391)
+        #     QtCore.QTimer.singleShot(1300, lambda: self.ui.invalid_notice.setFixedWidth(0))
+        #     return
+        # finally:
+        #     if conn is not None:
+        #         conn.close() 
 
-                if not exception_flag:
-                    self.ui.delete_notif.setFixedWidth(81)
-                    QtCore.QTimer.singleShot(1300, lambda: self.ui.delete_notif.setFixedWidth(0))         
+        #         if not exception_flag:
+        #             self.ui.delete_notif.setFixedWidth(81)
+        #             QtCore.QTimer.singleShot(1300, lambda: self.ui.delete_notif.setFixedWidth(0))         
 
     #Add employee to DB
     def add_employee_into_DB(self,emp_id=None):
@@ -2021,45 +1999,45 @@ class MainWindow(QtWidgets.QMainWindow):
             values = (emp_fname, emp_lname, emp_address, emp_DOB, emp_contact, emp_position)   
 
         conn = None
-        try:
-            params = config()
-            conn = psycopg2.connect(**params)
+        # try:
+        #     params = config()
+        #     conn = psycopg2.connect(**params)
 
-            cur= conn.cursor()
-            cur.execute(sql, values)
-            conn.commit()
+        #     cur= conn.cursor()
+        #     cur.execute(sql, values)
+        #     conn.commit()
             
-            #clear text fields
-            if self.editEmployee == False:
-                self.ui.AddEmp_contact.setText('')
-                self.ui.AddEmp_fname.setText('')
-                self.ui.AddEmp_lname.setText('')
-                self.ui.AddEmp_address.setText('')
-                self.ui.AddEmp_DOB.setDate(QDate(2000, 1, 1))
-                self.ui.success_widget.setFixedWidth(341)
-                QtCore.QTimer.singleShot(1300, lambda: self.ui.success_widget.setFixedWidth(0))  
-                self.retrieve_employee_from_DB_renew()
-                self.retrieve_employee_from_DB()
-                self.populate_employee_table()
-                self.adminIsExist()
-                self.ui.add_employee_popup.setFixedWidth(0)
-            else:
-                self.ui.AddEmp_contact.setText('')
-                self.ui.AddEmp_fname.setText('')
-                self.ui.AddEmp_lname.setText('')
-                self.ui.AddEmp_address.setText('')
-                self.ui.savechanges_widget.setFixedWidth(341 )
-                QtCore.QTimer.singleShot(1300, lambda: self.ui.savechanges_widget.setFixedWidth(0))  
-                self.populate_employee_table()
-                self.ui.add_employee_popup.setFixedWidth(0)
+        #     #clear text fields
+        #     if self.editEmployee == False:
+        #         self.ui.AddEmp_contact.setText('')
+        #         self.ui.AddEmp_fname.setText('')
+        #         self.ui.AddEmp_lname.setText('')
+        #         self.ui.AddEmp_address.setText('')
+        #         self.ui.AddEmp_DOB.setDate(QDate(2000, 1, 1))
+        #         self.ui.success_widget.setFixedWidth(341)
+        #         QtCore.QTimer.singleShot(1300, lambda: self.ui.success_widget.setFixedWidth(0))  
+        #         self.retrieve_employee_from_DB_renew()
+        #         self.retrieve_employee_from_DB()
+        #         self.populate_employee_table()
+        #         self.adminIsExist()
+        #         self.ui.add_employee_popup.setFixedWidth(0)
+        #     else:
+        #         self.ui.AddEmp_contact.setText('')
+        #         self.ui.AddEmp_fname.setText('')
+        #         self.ui.AddEmp_lname.setText('')
+        #         self.ui.AddEmp_address.setText('')
+        #         self.ui.savechanges_widget.setFixedWidth(341 )
+        #         QtCore.QTimer.singleShot(1300, lambda: self.ui.savechanges_widget.setFixedWidth(0))  
+        #         self.populate_employee_table()
+        #         self.ui.add_employee_popup.setFixedWidth(0)
                 
-        except(Exception, psycopg2.DataError) as error:
-            self.ui.fieldNotice.setText('Phone number is already used.')
-            self.ui.invalid_notice.setFixedWidth(391)
-            QtCore.QTimer.singleShot(1300, lambda: self.ui.invalid_notice.setFixedWidth(0))
-        finally:
-            if conn is not None:
-                conn.close()
+        # except(Exception, psycopg2.DataError) as error:
+        #     self.ui.fieldNotice.setText('Phone number is already used.')
+        #     self.ui.invalid_notice.setFixedWidth(391)
+        #     QtCore.QTimer.singleShot(1300, lambda: self.ui.invalid_notice.setFixedWidth(0))
+        # finally:
+        #     if conn is not None:
+        #         conn.close()
 
     # ===========================================================================================================================================================================
     # Expired membership deletion
@@ -2068,20 +2046,21 @@ class MainWindow(QtWidgets.QMainWindow):
     #Automatically deletes a member if membership has expired
     def delete_expiredMship(self):
         while True:
-            try:
-                params = config()
-                conn = psycopg2.connect(**params)
+            # try:
+            #     params = config()
+            #     conn = psycopg2.connect(**params)
 
-                sql = "DELETE FROM MEMBER WHERE MEM_MEMBERSHIP_END_DATE <= CURRENT_TIMESTAMP"
-                cursor = conn.cursor()
-                cursor.execute(sql)
-                conn.commit()
-            except (Exception, psycopg2.Error) as error:
-                print("Error retrieving data from the database:", error)
+            #     sql = "DELETE FROM MEMBER WHERE MEM_MEMBERSHIP_END_DATE <= CURRENT_TIMESTAMP"
+            #     cursor = conn.cursor()
+            #     cursor.execute(sql)
+            #     conn.commit()
+            # except (Exception, psycopg2.Error) as error:
+            #     print("Error retrieving data from the database:", error)
             
-            finally:
-                if conn is not None:
-                    conn.close()
+            # finally:
+            #     if conn is not None:
+            #         conn.close()
+            break
             
     # ===========================================================================================================================================================================
     # Notification
@@ -2107,145 +2086,148 @@ class MainWindow(QtWidgets.QMainWindow):
     #Constantly checking the status of monthly service access
     def monitor_monServiceAccess(self):
         while True:
-            try:
-                params = config()
-                conn = psycopg2.connect(**params)
-                cursor = conn.cursor()
+            # try:
+            #     params = config()
+            #     conn = psycopg2.connect(**params)
+            #     cursor = conn.cursor()
 
-                interval = [
-                    (7, "monthly service access has 7 remaining days."),
-                    (1, "monthly service access will expire after 24 hours."),
-                    (0, "monthly service access has expired.")
-                ] 
+            #     interval = [
+            #         (7, "monthly service access has 7 remaining days."),
+            #         (1, "monthly service access will expire after 24 hours."),
+            #         (0, "monthly service access has expired.")
+            #     ] 
                 
-                for days, notification in interval:
-                    cursor.execute("""
-                                   SELECT MEM_ID FROM MONTHLY_SERVICE_LOG WHERE 
-                                   (MON_SERVICE_END_DATE - INTERVAL '%s days') <= CURRENT_TIMESTAMP 
-                                   AND MEM_ID NOT IN (SELECT MEM_ID 
-                                   FROM NOTIFICATION WHERE NOTIF_CONTENT LIKE %s);
-                                   """,
-                                   (days, f'%{notification}%'))
-                    monthly_serviceAccess = cursor.fetchall()
+            #     for days, notification in interval:
+            #         cursor.execute("""
+            #                        SELECT MEM_ID FROM MONTHLY_SERVICE_LOG WHERE 
+            #                        (MON_SERVICE_END_DATE - INTERVAL '%s days') <= CURRENT_TIMESTAMP 
+            #                        AND MEM_ID NOT IN (SELECT MEM_ID 
+            #                        FROM NOTIFICATION WHERE NOTIF_CONTENT LIKE %s);
+            #                        """,
+            #                        (days, f'%{notification}%'))
+            #         monthly_serviceAccess = cursor.fetchall()
 
-                    if monthly_serviceAccess:
-                        for row_data in monthly_serviceAccess:
-                            mem_id = row_data[0]
+            #         if monthly_serviceAccess:
+            #             for row_data in monthly_serviceAccess:
+            #                 mem_id = row_data[0]
 
-                            sql = """ 
-                            INSERT INTO NOTIFICATION (NOTIF_CONTENT, NOTIF_DATE, MEM_ID, EMP_ID)
-                            VALUES (
-                                CONCAT('(ID: ', %s, ') ', 
-                                    (SELECT MEM_FNAME FROM MEMBER WHERE MEM_ID = %s), ' ',
-                                    (SELECT MEM_LNAME FROM MEMBER WHERE MEM_ID = %s),
-                                    %s),
-                                (SELECT (MON_SERVICE_END_DATE - INTERVAL '%s days') FROM MONTHLY_SERVICE_LOG WHERE MEM_ID = %s), 
-                                %s, 
-                                (SELECT EMP_ID FROM EMPLOYEE WHERE EMP_POSITION = 'ADMINISTRATOR')
-                            )
-                            """
-                            cursor.execute(sql, (mem_id, mem_id, mem_id, f"'s {notification}", days, mem_id, mem_id))
-                            conn.commit()
-                            self.display_notifs()
-                            self.ui.new_notifbtn.setFixedWidth(271)
-                            QtCore.QTimer.singleShot(1300, lambda: self.ui.new_notifbtn.setFixedWidth(0))    
+            #                 sql = """ 
+            #                 INSERT INTO NOTIFICATION (NOTIF_CONTENT, NOTIF_DATE, MEM_ID, EMP_ID)
+            #                 VALUES (
+            #                     CONCAT('(ID: ', %s, ') ', 
+            #                         (SELECT MEM_FNAME FROM MEMBER WHERE MEM_ID = %s), ' ',
+            #                         (SELECT MEM_LNAME FROM MEMBER WHERE MEM_ID = %s),
+            #                         %s),
+            #                     (SELECT (MON_SERVICE_END_DATE - INTERVAL '%s days') FROM MONTHLY_SERVICE_LOG WHERE MEM_ID = %s), 
+            #                     %s, 
+            #                     (SELECT EMP_ID FROM EMPLOYEE WHERE EMP_POSITION = 'ADMINISTRATOR')
+            #                 )
+            #                 """
+            #                 cursor.execute(sql, (mem_id, mem_id, mem_id, f"'s {notification}", days, mem_id, mem_id))
+            #                 conn.commit()
+            #                 self.display_notifs()
+            #                 self.ui.new_notifbtn.setFixedWidth(271)
+            #                 QtCore.QTimer.singleShot(1300, lambda: self.ui.new_notifbtn.setFixedWidth(0))    
 
-                            if days == 0: self.populate_monServiceLog()
+            #                 if days == 0: self.populate_monServiceLog()
        
 
-            except (Exception, psycopg2.Error) as error:
-                print("Error retrieving data from the database:", error)
-            finally:
-                if conn is not None:
-                    conn.close()   
+            # except (Exception, psycopg2.Error) as error:
+            #     print("Error retrieving data from the database:", error)
+            # finally:
+            #     if conn is not None:
+            #         conn.close()   
                           
-            time.sleep(1)
+            # time.sleep(1)
+
+                break
 
     def monitor_membership(self):
         while True:
-            try:
-                params = config()
-                conn = psycopg2.connect(**params)     
-                cursor = conn.cursor()
+            # try:
+            #     params = config()
+            #     conn = psycopg2.connect(**params)     
+            #     cursor = conn.cursor()
 
                 
-                interval = [
-                    (30, "membership has 30 remaining days."),
-                    (15, "membership has 15 remaining days."),
-                    (3, "membership has 3 remaining days."),
-                    (1, "membership will expire after 24 hours."),
-                    (0, "membership has expired.")
-                ] 
+            #     interval = [
+            #         (30, "membership has 30 remaining days."),
+            #         (15, "membership has 15 remaining days."),
+            #         (3, "membership has 3 remaining days."),
+            #         (1, "membership will expire after 24 hours."),
+            #         (0, "membership has expired.")
+            #     ] 
 
-                for days, notification in interval:
-                    cursor.execute("""
-                                   SELECT MEM_ID FROM MEMBER 
-                                   WHERE (MEM_MEMBERSHIP_END_DATE - INTERVAL '%s days') <= CURRENT_TIMESTAMP 
-                                   AND MEM_ID NOT IN (SELECT MEM_ID 
-                                   FROM NOTIFICATION WHERE NOTIF_CONTENT LIKE %s);
-                                   """,
-                                   (days, f'%{notification}%'))
+            #     for days, notification in interval:
+            #         cursor.execute("""
+            #                        SELECT MEM_ID FROM MEMBER 
+            #                        WHERE (MEM_MEMBERSHIP_END_DATE - INTERVAL '%s days') <= CURRENT_TIMESTAMP 
+            #                        AND MEM_ID NOT IN (SELECT MEM_ID 
+            #                        FROM NOTIFICATION WHERE NOTIF_CONTENT LIKE %s);
+            #                        """,
+            #                        (days, f'%{notification}%'))
 
-                    memberships = cursor.fetchall()
-                    if memberships:
-                        for row_data in memberships:
-                            mem_id = row_data[0]
+            #         memberships = cursor.fetchall()
+            #         if memberships:
+            #             for row_data in memberships:
+            #                 mem_id = row_data[0]
 
-                            # Insert the notificatioN
-                            sql = """ 
-                            INSERT INTO NOTIFICATION (NOTIF_CONTENT, NOTIF_DATE, MEM_ID, EMP_ID)
-                            VALUES (
-                                CONCAT('(ID: ', %s, ') ', 
-                                    (SELECT MEM_FNAME FROM MEMBER WHERE MEM_ID = %s), ' ',
-                                    (SELECT MEM_LNAME FROM MEMBER WHERE MEM_ID = %s),
-                                    %s),
-                                (SELECT (MEM_MEMBERSHIP_END_DATE - INTERVAL '%s days') FROM MEMBER WHERE MEM_ID = %s), 
-                                %s, 
-                                (SELECT EMP_ID FROM EMPLOYEE WHERE EMP_POSITION = 'ADMINISTRATOR')
-                            )
-                            """
+            #                 # Insert the notificatioN
+            #                 sql = """ 
+            #                 INSERT INTO NOTIFICATION (NOTIF_CONTENT, NOTIF_DATE, MEM_ID, EMP_ID)
+            #                 VALUES (
+            #                     CONCAT('(ID: ', %s, ') ', 
+            #                         (SELECT MEM_FNAME FROM MEMBER WHERE MEM_ID = %s), ' ',
+            #                         (SELECT MEM_LNAME FROM MEMBER WHERE MEM_ID = %s),
+            #                         %s),
+            #                     (SELECT (MEM_MEMBERSHIP_END_DATE - INTERVAL '%s days') FROM MEMBER WHERE MEM_ID = %s), 
+            #                     %s, 
+            #                     (SELECT EMP_ID FROM EMPLOYEE WHERE EMP_POSITION = 'ADMINISTRATOR')
+            #                 )
+            #                 """
 
-                            cursor.execute(sql, (mem_id, mem_id, mem_id, f"'s {notification}", days, mem_id, mem_id))
-                            conn.commit()
-                            self.display_notifs()
-                            self.ui.new_notifbtn.setFixedWidth(271)
-                            QtCore.QTimer.singleShot(1300, lambda: self.ui.new_notifbtn.setFixedWidth(0))   
+            #                 cursor.execute(sql, (mem_id, mem_id, mem_id, f"'s {notification}", days, mem_id, mem_id))
+            #                 conn.commit()
+            #                 self.display_notifs()
+            #                 self.ui.new_notifbtn.setFixedWidth(271)
+            #                 QtCore.QTimer.singleShot(1300, lambda: self.ui.new_notifbtn.setFixedWidth(0))   
 
-                            if days == 0: self.populate_mem_table() 
+            #                 if days == 0: self.populate_mem_table() 
 
-            except (Exception, psycopg2.Error) as error:
-                print("Error retrieving data from the database:", error)
-            finally:
-                if conn is not None:
-                    conn.close()   
+            # except (Exception, psycopg2.Error) as error:
+            #     print("Error retrieving data from the database:", error)
+            # finally:
+            #     if conn is not None:
+            #         conn.close()   
                           
-            time.sleep(1)
+            # time.sleep(1)
+                break
 
     #Displaying notifications in the home page
     def display_notifs(self):
         conn = None
-        try:
-            params = config()
-            conn = psycopg2.connect(**params)
+        # try:
+        #     params = config()
+        #     conn = psycopg2.connect(**params)
 
-            sql = "SELECT NOTIF_CONTENT, CONCAT(TO_CHAR(NOTIF_DATE, 'HH12:MI AM'), '  |  ', DATE(NOTIF_DATE)) FROM NOTIFICATION WHERE NOTIF_DATE BETWEEN CURRENT_TIMESTAMP - INTERVAL '30 Days' AND CURRENT_TIMESTAMP"
-            cursor = conn.cursor()
-            cursor.execute(sql)
-            result = cursor.fetchall()
+        #     sql = "SELECT NOTIF_CONTENT, CONCAT(TO_CHAR(NOTIF_DATE, 'HH12:MI AM'), '  |  ', DATE(NOTIF_DATE)) FROM NOTIFICATION WHERE NOTIF_DATE BETWEEN CURRENT_TIMESTAMP - INTERVAL '30 Days' AND CURRENT_TIMESTAMP"
+        #     cursor = conn.cursor()
+        #     cursor.execute(sql)
+        #     result = cursor.fetchall()
             
-            self.ui.notif_table.setRowCount(0)
+        #     self.ui.notif_table.setRowCount(0)
 
-            for row_number, row_data in enumerate(result):
-                self.ui.notif_table.insertRow(0)
-                for column_number, data in enumerate(row_data):
-                    self.ui.notif_table.setItem(0, column_number, QtWidgets.QTableWidgetItem(str(data)))
+        #     for row_number, row_data in enumerate(result):
+        #         self.ui.notif_table.insertRow(0)
+        #         for column_number, data in enumerate(row_data):
+        #             self.ui.notif_table.setItem(0, column_number, QtWidgets.QTableWidgetItem(str(data)))
             
-        except (Exception, psycopg2.Error) as error:
-            print("Error retrieving data from the database:", error)
+        # except (Exception, psycopg2.Error) as error:
+        #     print("Error retrieving data from the database:", error)
         
-        finally:
-            if conn is not None:
-                conn.close()
+        # finally:
+        #     if conn is not None:
+        #         conn.close()
 
     # ===========================================================================================================================================================================
     # Monthly Service Log
@@ -2256,17 +2238,17 @@ class MainWindow(QtWidgets.QMainWindow):
         values = (mem_contact, serv_id, self.emp_id)
 
         conn = None
-        try:
-            params = config()
-            conn = psycopg2.connect(**params)
+        # try:
+        #     params = config()
+        #     conn = psycopg2.connect(**params)
 
-            cur= conn.cursor()
-            cur.execute(sql, values)
-            conn.commit()
-            cur.close
-            self.populate_monServiceLog()
-        except (Exception, psycopg2.Error) as error:
-            print(error)
+        #     cur= conn.cursor()
+        #     cur.execute(sql, values)
+        #     conn.commit()
+        #     cur.close
+        #     self.populate_monServiceLog()
+        # except (Exception, psycopg2.Error) as error:
+        #     print(error)
 
 
     # ===========================================================================================================================================================================
@@ -2288,7 +2270,6 @@ class MainWindow(QtWidgets.QMainWindow):
 
 if __name__ == '__main__':
     app = QtWidgets.QApplication([])
-    connect()
     login = LoginWindow()
     app.exec()
     
