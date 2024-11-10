@@ -65,36 +65,6 @@ QPushButton:hover{
 background-color: rgba(255,255,255,50);
 }</string>
    </property>
-   <widget class="QWidget" name="cl1" native="true">
-    <property name="geometry">
-     <rect>
-      <x>1320</x>
-      <y>20</y>
-      <width>15</width>
-      <height>15</height>
-     </rect>
-    </property>
-   </widget>
-   <widget class="QWidget" name="cl2" native="true">
-    <property name="geometry">
-     <rect>
-      <x>1295</x>
-      <y>20</y>
-      <width>15</width>
-      <height>15</height>
-     </rect>
-    </property>
-   </widget>
-   <widget class="QWidget" name="cl3" native="true">
-    <property name="geometry">
-     <rect>
-      <x>1270</x>
-      <y>20</y>
-      <width>15</width>
-      <height>15</height>
-     </rect>
-    </property>
-   </widget>
    <widget class="QWidget" name="menubar" native="true">
     <property name="geometry">
      <rect>
@@ -19332,9 +19302,6 @@ color: #222020;</string>
      </widget>
     </widget>
    </widget>
-   <zorder>cl1</zorder>
-   <zorder>cl2</zorder>
-   <zorder>cl3</zorder>
    <zorder>menubar</zorder>
    <zorder>menu_container</zorder>
    <zorder>view_details_popup</zorder>
