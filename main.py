@@ -1,12 +1,14 @@
 from pymongo import MongoClient
+from pymongo.errors import DuplicateKeyError
 from PySide6 import QtWidgets, QtCore
 from ui_loginUI import *
 from ui_mainUI import *
 from PySide6.QtGui import *
-import psycopg2
 import datetime
 import threading
 import time
+
+
 
 class LoginWindow(QtWidgets.QMainWindow):
     def __init__(self):
@@ -66,16 +68,25 @@ class MainWindow(QtWidgets.QMainWindow):
         QtWidgets.QMainWindow.__init__(self)
         self.ui = Ui_MainWindow()
         self.ui.setupUi(self)
+        self.show()
+        self.database = None
         self.prev_page = 1
         self.editEmployee = False
-        self.AllowOperations = False
+        self.AllowOperations = True
         self.IsRenew = False
         self.IsMembership = False
         self.employeeIDList = []
         self.emp_id = None
         double_validator = QDoubleValidator(0.0, 9999.99, 2)
         double_validator.setNotation(QDoubleValidator.StandardNotation)
+        # ===========================================================================================================================================================================
+        # Initialize database connection and collections
+        # ===========================================================================================================================================================================
+        
+        self.db_connect()
 
+        self.servicesdb = self.database.services
+        
         # ===========================================================================================================================================================================
         # Adding admin and check if admin exists in employees record
         # ===========================================================================================================================================================================
@@ -286,6 +297,14 @@ class MainWindow(QtWidgets.QMainWindow):
         self.ui.confDelete_emp.clicked.connect(self.confirm_delete_employee)
         self.ui.cancelDelete_emp.clicked.connect(self.cancel_delete_employee)
         self.ui.emp_search.textChanged.connect(self.employee_search)
+
+    # ===========================================================================================================================================================================
+    # MongoDB Connection 
+    # ===========================================================================================================================================================================
+
+    def db_connect(self):
+        client = MongoClient("localhost", 27017)
+        self.database = client.PFCsystemDB
 
     # ===========================================================================================================================================================================
     # Table selection 
@@ -645,65 +664,50 @@ class MainWindow(QtWidgets.QMainWindow):
     def add_service_into_DB(self):
         serv_type = self.ui.addService_name.text().upper()
         serv_price = float(self.ui.addService_amount.text())
-        sql = "INSERT INTO SERVICE (SERV_TYPE, SERV_PRICE) VALUES(%s, %s);"
-        values = (serv_type, serv_price)
+        serv_id = None
 
-        conn = None
-        # try:
-        #     params = config()
-        #     conn = psycopg2.connect(**params)
+        is_service_exist = self.servicesdb.count_documents({"type" : serv_type})
 
-        #     cur= conn.cursor()
-        #     cur.execute(sql, values)
-        #     conn.commit()
-        #     cur.close
+        if is_service_exist == 0:
+            last_serviceid = next(self.servicesdb.find().sort("_id", -1).limit(1),{}).get('_id',None)
+            serv_id = int(last_serviceid) + 1 if last_serviceid is not None else 0
+
+            service = {
+                "_id" : serv_id,
+                "type" : serv_type,
+                "price" : serv_price
+            }
             
-        #     self.ui.success_widget.setFixedWidth(371)
-        #     QtCore.QTimer.singleShot(1300, lambda: self.ui.success_widget.setFixedWidth(0))   
+            result = self.servicesdb.insert_one(service)
+            
+            if result:
+                self.ui.success_widget.setFixedWidth(371)
+                QtCore.QTimer.singleShot(1300, lambda: self.ui.success_widget.setFixedWidth(0))   
 
-        #     #clears text fields
-        #     self.ui.services_widget.setFixedWidth(701)  
-        #     self.ui.add_service_widget.setFixedWidth(0)
-        #     self.ui.addService_name.setText('')
-        #     self.ui.addService_amount.setText('')
-        #     self.retrieve_services_from_DB()
-        #     self.populate_services_table()
-        # except(Exception, psycopg2.DataError) as error:
-        #     self.ui.fieldNotice.setText('Service already exists.')
-        #     self.ui.invalid_notice.setFixedWidth(391)
-        #     QtCore.QTimer.singleShot(1300, lambda: self.ui.invalid_notice.setFixedWidth(0)) 
+                #clears text fields
+                self.ui.services_widget.setFixedWidth(701)  
+                self.ui.add_service_widget.setFixedWidth(0)
+                self.ui.addService_name.setText('')
+                self.ui.addService_amount.setText('')
+                self.retrieve_services_from_DB()
+                self.populate_services_table()
+        else: 
 
-        # finally:
-        #     if conn is not None:
-        #         conn.close()
+            self.ui.fieldNotice.setText('Service already exists.')
+            self.ui.invalid_notice.setFixedWidth(391)
+            QtCore.QTimer.singleShot(1300, lambda: self.ui.invalid_notice.setFixedWidth(0)) 
                 
     #Display all services in the table
-    def populate_services_table(self):
-        conn = None
-        # try:
-        #     params = config()
-        #     conn = psycopg2.connect(**params)
+    def populate_services_table(self):    
+        self.ui.services_table.setRowCount(0)
+        result = self.servicesdb.find()
 
-        #     sql = "SELECT * FROM SERVICE"
-        #     cursor = conn.cursor()
-        #     cursor.execute(sql)
-        #     result = cursor.fetchall()
-            
-        #     self.ui.services_table.setRowCount(0)
-
-        #     for row_number, row_data in enumerate(result):
-        #         self.ui.services_table.insertRow(row_number)
-        #         for column_number, data in enumerate(row_data):
-        #             item = QtWidgets.QTableWidgetItem(str(data))
-        #             item.setTextAlignment(Qt.AlignHCenter)
-        #             self.ui.services_table.setItem(row_number, column_number, item)
-            
-        # except (Exception, psycopg2.Error) as error:
-        #     print("Error retrieving data from the database:", error)
-        
-        # finally:
-        #     if conn is not None:
-        #         conn.close()
+        for row_number, service in enumerate(result):
+            self.ui.services_table.insertRow(row_number)
+            for column_number, data in enumerate(service):
+                item = QtWidgets.QTableWidgetItem(str(service[data]))
+                item.setTextAlignment(Qt.AlignHCenter)
+                self.ui.services_table.setItem(row_number, column_number, item)
     
     #Displaying services in the combo box, for registration and renewal of monthly service access
     def retrieve_services_from_DB(self):
@@ -2270,7 +2274,7 @@ class MainWindow(QtWidgets.QMainWindow):
 
 if __name__ == '__main__':
     app = QtWidgets.QApplication([])
-    login = LoginWindow()
+    login = MainWindow()
     app.exec()
     
 
