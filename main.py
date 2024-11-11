@@ -428,34 +428,12 @@ class MainWindow(QtWidgets.QMainWindow):
     
     def adminIsExist(self):
         check_admin = {"position": "ADMINISTRATOR"}
-        admin_data = self.employeedb.find(check_admin)
-
-        if admin_data:
+        admin_data = self.employeedb.count_documents(check_admin)
+    
+        if admin_data != 0:
             self.AllowOperations = True
         else:
             self.ui.addAdmin_notice.setFixedWidth(1361)
-
-        # try:
-        #     params = config()
-        #     conn = psycopg2.connect(**params)
-
-        #     cursor = conn.cursor()
-        #     cursor.execute("SELECT EMP_ID FROM EMPLOYEE WHERE EMP_POSITION = 'ADMINISTRATOR'")
-        #     admin = cursor.fetchone()
-
-        #     if admin:
-        #         self.AllowOperations = True
-        #     else:
-        #         self.ui.addAdmin_notice.setFixedWidth(1361)
-
-
-        # except (Exception, psycopg2.Error) as error:
-        #     print("Error retrieving data from the database:", error)
-
-        # finally:
-        #     # Close the cursor and database connection
-        #     if conn is not None:
-        #         conn.close()
 
     # ===========================================================================================================================================================================
     # Previous Page
