@@ -1518,31 +1518,18 @@ class MainWindow(QtWidgets.QMainWindow):
 
     #Displaying all members in the members list table
     def populate_mem_table(self):
-        conn = None
-        # try:
-        #     params = config()
-        #     conn = psycopg2.connect(**params)
-
-        #     sql = "SELECT MEM_ID, MEM_FNAME, MEM_LNAME, MEM_BIRTHDATE, MEM_GENDER, MEM_ADDRESS FROM MEMBER"
-        #     cursor = conn.cursor()
-        #     cursor.execute(sql)
-        #     result = cursor.fetchall()
-            
-        #     self.ui.mem_table.setRowCount(0)
-
-        #     for row_number, row_data in enumerate(result):
-        #         self.ui.mem_table.insertRow(row_number)
-        #         for column_number, data in enumerate(row_data):
-        #             item = QtWidgets.QTableWidgetItem(str(data))
-        #             item.setTextAlignment(Qt.AlignHCenter)
-        #             self.ui.mem_table.setItem(row_number, column_number, item)
-            
-        # except (Exception, psycopg2.Error) as error:
-        #     print("Error retrieving data from the database:", error)
         
-        # finally:
-        #     if conn is not None:
-        #         conn.close()
+        members = self.membersdb.find()
+
+        if members:
+            self.ui.mem_table.setRowCount(0)
+
+            for row_number, member in enumerate(members):
+                self.ui.mem_table.insertRow(row_number)
+                for column_number, data in enumerate(member):
+                    item = QtWidgets.QTableWidgetItem(str(member[data]))
+                    item.setTextAlignment(Qt.AlignHCenter)
+                    self.ui.mem_table.setItem(row_number, column_number, item)
 
     def check_duplicate_phone_number(self):
         phonenum = self.ui.regismem_contact.text()
@@ -1610,8 +1597,9 @@ class MainWindow(QtWidgets.QMainWindow):
             '_id' : mem_id,
             'first name' : mem_fname,
             'last name' : mem_lname,
-            'address' : mem_address,
             'dob' : mem_DOB,
+            'gender' : mem_gender,
+            'address' : mem_address,
             'contact' : mem_contact,
             'medical' : mem_medical,
             'previous gym': mem_prevGym,
@@ -1620,7 +1608,6 @@ class MainWindow(QtWidgets.QMainWindow):
             'activity' : mem_act,
             'weight' : mem_weight,
             'height' : mem_height,
-            'gender' : mem_gender,
             'type' : mem_type
         }
 
