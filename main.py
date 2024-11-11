@@ -1,5 +1,6 @@
 from pymongo import MongoClient
 from pymongo.errors import DuplicateKeyError
+from bson.objectid import ObjectId
 from PySide6 import QtWidgets, QtCore
 from ui_loginUI import *
 from ui_mainUI import *
@@ -72,7 +73,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.database = None
         self.prev_page = 1
         self.editEmployee = False
-        self.AllowOperations = True
+        self.AllowOperations = False
         self.IsRenew = False
         self.IsMembership = False
         self.employeeIDList = []
@@ -86,6 +87,8 @@ class MainWindow(QtWidgets.QMainWindow):
         self.db_connect()
 
         self.servicesdb = self.database.services
+        self.employeedb = self.database.employee
+        self.servicelogdb = self.database.monthly_service_log
         
         # ===========================================================================================================================================================================
         # Adding admin and check if admin exists in employees record
@@ -423,8 +426,14 @@ class MainWindow(QtWidgets.QMainWindow):
     # ===========================================================================================================================================================================
     
     def adminIsExist(self):
+        check_admin = {"position": "ADMINISTRATOR"}
+        admin_data = self.employeedb.find(check_admin)
 
-        pass
+        if admin_data:
+            self.AllowOperations = True
+        else:
+            self.ui.addAdmin_notice.setFixedWidth(1361)
+
         # try:
         #     params = config()
         #     conn = psycopg2.connect(**params)
@@ -573,9 +582,9 @@ class MainWindow(QtWidgets.QMainWindow):
         serv_type = self.ui.service_Update.text().upper()
         serv_price = float(self.ui.service_Amount.text())
 
-        sql = "UPDATE SERVICE SET SERV_TYPE = %s, SERV_PRICE = %s WHERE SERV_ID = %s;"
-        values = (serv_type, serv_price, serv_id.text())
-        conn = None
+        # sql = "UPDATE SERVICE SET SERV_TYPE = %s, SERV_PRICE = %s WHERE SERV_ID = %s;"
+        # values = (serv_type, serv_price, serv_id.text())
+        # conn = None
         # try:
         #     params = config()
         #     conn = psycopg2.connect(**params)
@@ -1849,41 +1858,26 @@ class MainWindow(QtWidgets.QMainWindow):
     #Display edit employee page with employee details
     def edit_employee(self):
         selected_row = -1
-
         if len(self.ui.emp_table.selectedItems()) > 0:
             selected_row = self.ui.emp_table.currentRow()
         if selected_row != -1:
             self.editEmployee = True
             self.ui.add_employee_popup.setFixedWidth(1381)
-            emp_id = self.ui.emp_table.item(selected_row, 0)
-            conn = None
-            # try:
-            #     params = config()
-            #     conn = psycopg2.connect(**params)
+            emp_id = int(self.ui.emp_table.item(selected_row, 0).text())
+            selected_emp = {"_id": emp_id}
 
-            #     cursor = conn.cursor()
-            #     cursor.execute("SELECT EMP_FNAME, EMP_LNAME, EMP_ADDRESS, EMP_BIRTHDATE, EMP_CONTACT_NUM FROM EMPLOYEE WHERE EMP_ID = '" + emp_id.text() +"';")
-            #     employee_data = cursor.fetchone()
+            employee_data = self.employeedb.find_one(selected_emp)
+            if employee_data:
+                    self.ui.AddEmp_fname.setText(employee_data.get('fname'))
+                    self.ui.AddEmp_lname.setText(employee_data.get('lname'))
+                    self.ui.AddEmp_address.setText(employee_data.get('address'))
+                    self.ui.AddEmp_contact.setText(str(employee_data.get('contact')))
+                    year, month, day = (employee_data.get('DOB').split('-'))
+                    self.ui.AddEmp_DOB.setDate(QDate(int(year), int(month), int(day)))
+                    
+            else:
+                    print("No service found for EMP_ID:", emp_id.text())
 
-            #     if employee_data:
-            #         emp_fname, emp_lname, emp_address, emp_birthdate, emp_contact_num = employee_data
-            #         self.ui.AddEmp_fname.setText(str(emp_fname))
-            #         self.ui.AddEmp_lname.setText(str(emp_lname))
-            #         self.ui.AddEmp_address.setText(str(emp_address))
-            #         self.ui.AddEmp_DOB.setDate(QDate(emp_birthdate))
-            #         self.ui.AddEmp_contact.setText(str(emp_contact_num))
-
-            #     else:
-            #         print("No service found for SERV_ID:", emp_id.text())
-
-
-            # except (Exception, psycopg2.Error) as error:
-            #     print("Error retrieving data from the database:", error)
-
-            # finally:
-            #     # Close the cursor and database connection
-            #     if conn is not None:
-            #         conn.close()
         else:
              self.ui.rowSelection_notice.setFixedWidth(301)
              QtCore.QTimer.singleShot(1300, lambda: self.ui.rowSelection_notice.setFixedWidth(0))  
@@ -1894,31 +1888,17 @@ class MainWindow(QtWidgets.QMainWindow):
 
     #Displaying all employees in the employees list table
     def populate_employee_table(self):
-        conn = None
-        # try:
-        #     params = config()
-        #     conn = psycopg2.connect(**params)
+        self.ui.emp_table.setRowCount(0)
+        result = self.employeedb.find()
 
-        #     sql = "SELECT EMP_ID, EMP_FNAME, EMP_LNAME, EMP_CONTACT_NUM, EMP_ADDRESS, EMP_POSITION FROM EMPLOYEE"
-        #     cursor = conn.cursor()
-        #     cursor.execute(sql)
-        #     result = cursor.fetchall()
-            
-        #     self.ui.emp_table.setRowCount(0)
 
-        #     for row_number, row_data in enumerate(result):
-        #         self.ui.emp_table.insertRow(row_number)
-        #         for column_number, data in enumerate(row_data):
-        #             item = QtWidgets.QTableWidgetItem(str(data))
-        #             item.setTextAlignment(Qt.AlignHCenter)
-        #             self.ui.emp_table.setItem(row_number, column_number, item)
-            
-        # except (Exception, psycopg2.Error) as error:
-        #     print("Error retrieving data from the database:", error)
-        
-        # finally:
-        #     if conn is not None:
-        #         conn.close()
+        for row_number, employee in enumerate(result):
+                self.ui.emp_table.insertRow(row_number)
+                for column_number, data in enumerate(employee):
+                    item = QtWidgets.QTableWidgetItem(str(employee[data]))
+                    item.setTextAlignment(Qt.AlignHCenter)
+                    self.ui.emp_table.setItem(row_number, column_number, item)
+
 
     def cancel_assigned_emp_delete(self):
         self.ui.assigned_emp_delete.setFixedWidth(0)
@@ -1926,7 +1906,13 @@ class MainWindow(QtWidgets.QMainWindow):
     def check_emp_exist_in_service_log(self):
         selected_row = self.ui.emp_table.currentRow()
         emp_id = self.ui.emp_table.item(selected_row, 0)
-        conn = None
+
+        empIsPresent = self.servicelogdb.find({"emp_id": emp_id})
+        if empIsPresent:
+            self.ui.assigned_emp_delete.setFixedWidth(1381)
+        else:
+            self.ui.employee_delete_popup.setFixedWidth(1381)
+
         # try:
         #     params = config()
         #     conn = psycopg2.connect(**params)
@@ -1942,25 +1928,34 @@ class MainWindow(QtWidgets.QMainWindow):
         # except (Exception, psycopg2.Error) as error:
         #     print(error)
 
-    
+     
     #Confirm deletion
     def confirm_delete_employee(self):
         selected_row = self.ui.emp_table.currentRow()
-        emp_id = self.ui.emp_table.item(selected_row, 0)
-        conn = None
+        emp_id = self.ui.emp_table.item(selected_row, 0).text()
+
         exception_flag = False
-        # try:
-        #     params = config()
-        #     conn = psycopg2.connect(**params)
-        #     cursor = conn.cursor()
-        #     cursor.execute("DELETE FROM EMPLOYEE WHERE EMP_ID = '" + emp_id.text() + "';")
-        #     conn.commit()
-        #     self.ui.emp_table.removeRow(selected_row)
-        #     self.ui.assigned_emp_delete.setFixedWidth(0)
-        #     self.ui.employee_delete_popup.setFixedWidth(0)
-        #     self.retrieve_employee_from_DB()
-        #     self.retrieve_employee_from_DB_renew()
-        #     self.populate_employee_table()
+        
+        if exception_flag == True:
+            self.ui.assigned_emp_delete.setFixedWidth(0)
+            self.ui.employee_delete_popup.setFixedWidth(0)
+            self.ui.fieldNotice.setText('Unable to delete admin')
+            self.ui.invalid_notice.setFixedWidth(391)
+            QtCore.QTimer.singleShot(1300, lambda: self.ui.invalid_notice.setFixedWidth(0))
+            return
+        
+        else:
+            result = self.employeedb.delete_one({"_id": int(emp_id)})
+            if result:
+                self.ui.delete_notif.setFixedWidth(81)
+                QtCore.QTimer.singleShot(1300, lambda: self.ui.delete_notif.setFixedWidth(0))   
+                self.ui.emp_table.removeRow(selected_row)
+                self.ui.assigned_emp_delete.setFixedWidth(0)
+                self.ui.employee_delete_popup.setFixedWidth(0)
+                self.retrieve_employee_from_DB()
+                self.retrieve_employee_from_DB_renew()
+                self.populate_employee_table()
+
             
         # except (Exception, psycopg2.Error) as error:
         #     exception_flag = True
@@ -1989,60 +1984,80 @@ class MainWindow(QtWidgets.QMainWindow):
         else:
             emp_position = 'INSTRUCTOR'
 
+        
         emp_fname = self.ui.AddEmp_fname.text().upper()
         emp_lname = self.ui.AddEmp_lname.text().upper()
         emp_address = self.ui.AddEmp_address.text().upper()
         emp_contact = self.ui.AddEmp_contact.text()
         emp_DOB = self.ui.AddEmp_DOB.date().toString('yyyy-MM-dd')
         
+        is_phonenum_exist = self.employeedb.count_documents({"contact" : emp_contact})
+        same_user = self.employeedb.find_one({"contact": emp_contact})
+       
         if self.editEmployee == True:
-            sql = "UPDATE EMPLOYEE SET EMP_FNAME = %s, EMP_LNAME = %s, EMP_ADDRESS = %s, EMP_BIRTHDATE = %s, EMP_CONTACT_NUM = %s WHERE EMP_ID = %s;"
-            values = (emp_fname.upper(), emp_lname.upper(), emp_address.upper(), emp_DOB, emp_contact, emp_id)
+            if is_phonenum_exist == 0 or (is_phonenum_exist > 0 and int(same_user.get("_id")) == int(emp_id)):
+
+                update_emp = {
+                    "$set":{
+                        "fname": emp_fname,
+                        "lname": emp_lname,
+                        "contact": emp_contact,
+                        "address": emp_address,
+                        "DOB": emp_DOB,
+                    }
+                }
+
+                result = self.employeedb.update_one({"_id": int(emp_id)}, update_emp)
+                if result:
+                    self.ui.AddEmp_contact.setText('')
+                    self.ui.AddEmp_fname.setText('')
+                    self.ui.AddEmp_lname.setText('')
+                    self.ui.AddEmp_address.setText('')
+                    self.ui.savechanges_widget.setFixedWidth(341 )
+                    QtCore.QTimer.singleShot(1300, lambda: self.ui.savechanges_widget.setFixedWidth(0))  
+                    self.populate_employee_table()
+                    self.ui.add_employee_popup.setFixedWidth(0)
+
+            else:
+                self.ui.fieldNotice.setText('Phone number is already used.')
+                self.ui.invalid_notice.setFixedWidth(391)
+                QtCore.QTimer.singleShot(1300, lambda: self.ui.invalid_notice.setFixedWidth(0))
+
         else:
-            sql = "INSERT INTO EMPLOYEE(EMP_FNAME, EMP_LNAME, EMP_ADDRESS, EMP_BIRTHDATE, EMP_CONTACT_NUM, EMP_POSITION) VALUES(%s, %s, %s, %s, %s, %s)"
-            values = (emp_fname, emp_lname, emp_address, emp_DOB, emp_contact, emp_position)   
+            if is_phonenum_exist == 0:
+                last_empid = next(self.employeedb.find(). sort("_id", -1).limit(1), {}).get('_id', None)
+                emp_id = int(last_empid) + 1 if last_empid is not None else 0
 
-        conn = None
-        # try:
-        #     params = config()
-        #     conn = psycopg2.connect(**params)
+                employee = {
+                    "_id": emp_id,
+                    "fname": emp_fname,
+                    "lname": emp_lname,
+                    "contact": emp_contact,
+                    "address": emp_address,
+                    "position": emp_position,
+                    "DOB": emp_DOB,
+                }
 
-        #     cur= conn.cursor()
-        #     cur.execute(sql, values)
-        #     conn.commit()
-            
-        #     #clear text fields
-        #     if self.editEmployee == False:
-        #         self.ui.AddEmp_contact.setText('')
-        #         self.ui.AddEmp_fname.setText('')
-        #         self.ui.AddEmp_lname.setText('')
-        #         self.ui.AddEmp_address.setText('')
-        #         self.ui.AddEmp_DOB.setDate(QDate(2000, 1, 1))
-        #         self.ui.success_widget.setFixedWidth(341)
-        #         QtCore.QTimer.singleShot(1300, lambda: self.ui.success_widget.setFixedWidth(0))  
-        #         self.retrieve_employee_from_DB_renew()
-        #         self.retrieve_employee_from_DB()
-        #         self.populate_employee_table()
-        #         self.adminIsExist()
-        #         self.ui.add_employee_popup.setFixedWidth(0)
-        #     else:
-        #         self.ui.AddEmp_contact.setText('')
-        #         self.ui.AddEmp_fname.setText('')
-        #         self.ui.AddEmp_lname.setText('')
-        #         self.ui.AddEmp_address.setText('')
-        #         self.ui.savechanges_widget.setFixedWidth(341 )
-        #         QtCore.QTimer.singleShot(1300, lambda: self.ui.savechanges_widget.setFixedWidth(0))  
-        #         self.populate_employee_table()
-        #         self.ui.add_employee_popup.setFixedWidth(0)
-                
-        # except(Exception, psycopg2.DataError) as error:
-        #     self.ui.fieldNotice.setText('Phone number is already used.')
-        #     self.ui.invalid_notice.setFixedWidth(391)
-        #     QtCore.QTimer.singleShot(1300, lambda: self.ui.invalid_notice.setFixedWidth(0))
-        # finally:
-        #     if conn is not None:
-        #         conn.close()
+                result = self.employeedb.insert_one(employee)
+                if result:
+                    self.ui.AddEmp_contact.setText('')
+                    self.ui.AddEmp_fname.setText('')
+                    self.ui.AddEmp_lname.setText('')
+                    self.ui.AddEmp_address.setText('')
+                    self.ui.AddEmp_DOB.setDate(QDate(2000, 1, 1))
+                    self.ui.success_widget.setFixedWidth(341)
+                    QtCore.QTimer.singleShot(1300, lambda: self.ui.success_widget.setFixedWidth(0))  
+                    self.retrieve_employee_from_DB_renew()
+                    self.retrieve_employee_from_DB()
+                    self.populate_employee_table()
+                    self.adminIsExist()
+                    self.ui.add_employee_popup.setFixedWidth(0)
 
+            else:
+                self.ui.fieldNotice.setText('Phone number is already used.')
+                self.ui.invalid_notice.setFixedWidth(391)
+                QtCore.QTimer.singleShot(1300, lambda: self.ui.invalid_notice.setFixedWidth(0))
+       
     # ===========================================================================================================================================================================
     # Expired membership deletion
     # ===========================================================================================================================================================================
