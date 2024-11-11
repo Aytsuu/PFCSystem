@@ -286,7 +286,7 @@ class MainWindow(QtWidgets.QMainWindow):
         # ===========================================================================================================================================================================
         # EMPLOYEE method calling
         # ===========================================================================================================================================================================
-
+  
         self.ui.add_employee.clicked.connect(self.add_employee)
         self.ui.AddEmp_cancelbtn.clicked.connect(self.cancel_add_employee)
         self.ui.edit_employee.clicked.connect(self.edit_employee)
