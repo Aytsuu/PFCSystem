@@ -1920,14 +1920,14 @@ class MainWindow(QtWidgets.QMainWindow):
         #     cursor = conn.cursor()
         #     cursor.execute(sql)
         #     empIsPresent = cursor.fetchall()
-
+ 
         #     if empIsPresent:
         #         self.ui.assigned_emp_delete.setFixedWidth(1381)
         #     else:
         #         self.ui.employee_delete_popup.setFixedWidth(1381)
         # except (Exception, psycopg2.Error) as error:
         #     print(error)
-
+ 
      
     #Confirm deletion
     def confirm_delete_employee(self):
@@ -1956,7 +1956,7 @@ class MainWindow(QtWidgets.QMainWindow):
                 self.retrieve_employee_from_DB_renew()
                 self.populate_employee_table()
 
-            
+              
         # except (Exception, psycopg2.Error) as error:
         #     exception_flag = True
         #     self.ui.assigned_emp_delete.setFixedWidth(0)
