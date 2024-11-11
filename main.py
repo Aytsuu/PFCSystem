@@ -235,7 +235,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.ui.renewCancel_btn.clicked.connect(self.cancel_renew)
         self.ui.renewPay_btn.clicked.connect(self.check_renew_fields)
         self.ui.renewService_comboBox.currentTextChanged.connect(self.update_renewPay_amount)
-        self.ui.renew_instructor.activated.connect(self.getEmployeeIndex)
+        self.ui.renew_instructor.activated.connect(self.get_EmployeeIndex)
         self.ui.renew_monservBtn.clicked.connect(lambda: (self.ui.renew_popup.setFixedWidth(1381),self.ui.renewal_reminder_popup.setFixedWidth(0)))
         self.ui.renew_mshipBtn.clicked.connect(lambda: (self.ui.membership_renewal_popup.setFixedWidth(1381), self.ui.renewal_reminder_popup.setFixedWidth(0), self.ui.mem_fee.setEnabled(True), self.ui.memRenew_tendered.setEnabled(True)))
         self.ui.memRenew_cancelBtn.clicked.connect(lambda: (self.ui.membership_renewal_popup.setFixedWidth(0), self.ui.mem_fee.setText(''), self.ui.memRenew_tendered.setText('')))
@@ -255,7 +255,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.ui.cancelPay_mem.clicked.connect(self.cancel_payment_conf)
         self.retrieve_services_from_DB()
         self.ui.paymentServices_cmbBox.currentTextChanged.connect(self.update_payment_amount)
-        self.ui.payment_instructor.activated.connect(self.getEmployeeIndex)
+        self.ui.payment_instructor.activated.connect(self.get_EmployeeIndex)
         self.ui.change_okBtn.clicked.connect(lambda: self.ui.change_popup.setFixedWidth(0))
 
         # ===========================================================================================================================================================================
@@ -795,34 +795,20 @@ class MainWindow(QtWidgets.QMainWindow):
     #Displaying instructors in the combo box
     def retrieve_employee_from_DB_renew(self):
         self.employeeIDList = []
-        conn = None
-        # try:
-        #     params = config()
-        #     conn = psycopg2.connect(**params)
+       
+        employees = self.employeedb.find({"position" : "INSTRUCTOR"})
 
-        #     cursor = conn.cursor()
-        #     cursor.execute("SELECT EMP_ID, CONCAT(EMP_FNAME,' ', EMP_LNAME) FROM EMPLOYEE WHERE EMP_POSITION = 'INSTRUCTOR';")
-        #     employees = cursor.fetchall()
-        #     self.ui.renew_instructor.clear()
-
-        #     self.ui.renew_instructor.addItem('Instructor')
-        #     self.employeeIDList.append(None)
-            
-        #     for employee in employees:
-        #         emp_id = employee[0]
-        #         emp_name = employee[1]
-        #         self.employeeIDList.append(emp_id)
-        #         self.ui.renew_instructor.addItem(emp_name)
-
-        #     self.ui.renew_instructor.addItem('None')
-        #     self.employeeIDList.append(None)
-        # except (Exception, psycopg2.Error) as error:
-        #     print("Error retrieving data from the database:", error)
-
-        # finally:
-        #     # Close the cursor and database connection
-        #     if conn is not None:
-        #         conn.close()
+        if employees:
+            self.ui.renew_instructor.clear()
+            self.ui.renew_instructor.addItem('Instructor')
+            self.employeeIDList.append(None)
+            for employee in employees:
+                emp_id = employee['_id']
+                emp_name = employee['fname'] + " " + employee['lname']
+                self.ui.renew_instructor.addItem(emp_name)
+                self.employeeIDList.append(emp_id)
+            self.ui.renew_instructor.addItem('None')
+            self.employeeIDList.append(None)
 
     #Shows renew page
     def renew_popup(self):
@@ -1074,7 +1060,8 @@ class MainWindow(QtWidgets.QMainWindow):
     # ===========================================================================================================================================================================
     
     #Getting the ID of the selected instructor during payment and renew
-    def getEmployeeIndex(self, index):
+    def get_EmployeeIndex(self, index):
+
         self.emp_id = self.employeeIDList[index]
     
     #Confirmation whether to proceed with the register and/or renew payment
@@ -1250,30 +1237,17 @@ class MainWindow(QtWidgets.QMainWindow):
 
     #Displaying instructors in the combo box
     def retrieve_employee_from_DB(self):
-        conn = None
-        # try:
-        #     params = config()
-        #     conn = psycopg2.connect(**params)
 
-        #     cursor = conn.cursor()
-        #     cursor.execute("SELECT CONCAT(EMP_FNAME, ' ', EMP_LNAME) FROM EMPLOYEE WHERE EMP_POSITION = 'INSTRUCTOR';")
-        #     employees = cursor.fetchall()
-        #     self.ui.payment_instructor.clear()
+        employees = self.employeedb.find({"position" : "INSTRUCTOR"})
 
-        #     self.ui.payment_instructor.addItem('Instructor')
-        #     for employee in employees:
-        #         emp_name = employee[0]
-        #         self.ui.payment_instructor.addItem(emp_name)
-
-        #     self.ui.payment_instructor.addItem('None')
-
-        # except (Exception, psycopg2.Error) as error:
-        #     print("Error retrieving data from the database:", error)
-
-        # finally:
-        #     # Close the cursor and database connection
-        #     if conn is not None:
-        #         conn.close()
+        if employees:
+            self.ui.payment_instructor.clear()
+            self.ui.payment_instructor.addItem('Instructor')
+            for employee in employees:
+                emp_name = employee['fname'] + " " + employee['lname']
+                self.ui.payment_instructor.addItem(emp_name)
+            self.ui.payment_instructor.addItem('None')
+        self.employeeIDList.append(None)
 
     #Shows the add member page
     def add_member(self):
@@ -1514,6 +1488,7 @@ class MainWindow(QtWidgets.QMainWindow):
 
         if serv_price is not None:
             self.ui.payment_amt.setText(str(serv_price))
+            self.ui.payment_memFee.setText('100.0')
         else:
             self.ui.payment_amt.setText('')  
 
@@ -1530,28 +1505,16 @@ class MainWindow(QtWidgets.QMainWindow):
         return selected_radio_button
 
     #Getting the id of the selected service type
-    def get_service_id(self, servicename):
-        pass
-        # try:
-        #     params = config()
-        #     conn = psycopg2.connect(**params)
-        #     cursor = conn.cursor()
+    def get_service_id(self, servicetype):
+        
+        service = self.servicesdb.find_one({"type" : servicetype})
 
-        #     cursor.execute("SELECT SERV_ID, SERV_PRICE FROM SERVICE WHERE SERV_TYPE = %s;", (servicename,))
-        #     service = cursor.fetchone() 
-        #     if service:
-        #         serv_id, serv_price = service  
-        #         return serv_id, serv_price
-        #     else:
-        #         return None, None
-
-        # except (Exception, psycopg2.Error) as error:
-        #     print("Error retrieving data from the database:", error)
-        #     return None, None
-        # finally:
-        #     if conn is not None:
-        #         conn.close()
-
+        if service:
+            serv_id = service['_id']
+            serv_price = service['price']
+            return serv_id, serv_price
+        else:
+            return None, None
 
     #Displaying all members in the members list table
     def populate_mem_table(self):
@@ -1676,8 +1639,8 @@ class MainWindow(QtWidgets.QMainWindow):
             self.ui.success_widget.setFixedWidth(371)
             QtCore.QTimer.singleShot(1300, lambda: self.ui.success_widget.setFixedWidth(0))  
 
-            self.add_service_log_into_DB(service_id, mem_contact)
-            self.add_transaction_DB(service_id, float(serv_price) + float(mship_fee), tendered_amount, mem_contact)  
+            # self.add_service_log_into_DB(service_id, mem_contact)
+            # self.add_transaction_DB(service_id, float(serv_price) + float(mship_fee), tendered_amount, mem_contact)  
 
         # try:
         #     params = config()
