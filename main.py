@@ -87,6 +87,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.db_connect()
 
         self.servicesdb = self.database.services
+        self.membersdb = self.database.members
         
         # ===========================================================================================================================================================================
         # Adding admin and check if admin exists in employees record
@@ -693,7 +694,6 @@ class MainWindow(QtWidgets.QMainWindow):
     def add_service_into_DB(self):
         serv_type = self.ui.addService_name.text().upper()
         serv_price = float(self.ui.addService_amount.text())
-        serv_id = None
 
         is_service_exist = self.servicesdb.count_documents({"type" : serv_type})
 
@@ -740,29 +740,14 @@ class MainWindow(QtWidgets.QMainWindow):
     
     #Displaying services in the combo box, for registration and renewal of monthly service access
     def retrieve_services_from_DB(self):
-        conn = None
-        # try:
-        #     params = config()
-        #     conn = psycopg2.connect(**params)
-
-        #     cursor = conn.cursor()
-        #     cursor.execute("SELECT SERV_TYPE FROM SERVICE")
-        #     services = cursor.fetchall()
-        #     self.ui.paymentServices_cmbBox.clear()
-
-        #     self.ui.paymentServices_cmbBox.addItem('Service')
-        #     for service in services:
-        #         service_type = service[0]
-        #         self.ui.paymentServices_cmbBox.addItem(service_type)
-        #         self.ui.renewService_comboBox.addItem(service_type)
-
-        # except (Exception, psycopg2.Error) as error:
-        #     print("Error retrieving data from the database:", error)
-
-        # finally:
-        #     # Close the cursor and database connection
-        #     if conn is not None:
-        #         conn.close()
+        
+        services = self.servicesdb.find()
+        self.ui.paymentServices_cmbBox.clear()
+        self.ui.paymentServices_cmbBox.addItem('Service')
+        for service in services:
+            service_type = service['type']
+            self.ui.paymentServices_cmbBox.addItem(service_type)
+            self.ui.renewService_comboBox.addItem(service_type)
 
     # =========================================================================================================================================================================== 
     # Monthly Service Log menu functions 
@@ -1612,7 +1597,16 @@ class MainWindow(QtWidgets.QMainWindow):
 
     def check_duplicate_phone_number(self):
         phonenum = self.ui.regismem_contact.text()
-        conn = None
+        
+        is_phone_exist = self.membersdb.count_documents({"contact" : phonenum})
+
+        if is_phone_exist == 0:
+            self.regis_save()
+        else:
+            self.ui.fieldNotice.setText('Phone number is already used.')
+            self.ui.invalid_notice.setFixedWidth(391)
+            QtCore.QTimer.singleShot(1300, lambda: self.ui.invalid_notice.setFixedWidth(0)) 
+
         # try:
         #     params = config()
         #     conn = psycopg2.connect(**params)
@@ -1659,10 +1653,45 @@ class MainWindow(QtWidgets.QMainWindow):
         tendered_amount = self.ui.payment_tenderedAmt.text()
         mship_fee = self.ui.payment_memFee.text()
 
-        sql = "INSERT INTO MEMBER(MEM_FNAME, MEM_LNAME, MEM_BIRTHDATE, MEM_ADDRESS, MEM_TELEPHONE, MEM_PHYSICAL_ACT, MEM_MED_AILMENT, MEM_WEIGHT, MEM_HEIGHT, MEM_BP, MEM_GENDER, MEM_STATUS, MEM_TYPE, MEM_PREV_GYM, MEM_MEMBERSHIP_START_DATE, MEM_MEMBERSHIP_END_DATE, EMP_ID) VALUES(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, DEFAULT, DEFAULT, (SELECT EMP_ID FROM EMPLOYEE WHERE EMP_POSITION = %s))"
-        values = (mem_fname, mem_lname, mem_DOB, mem_address , mem_contact, mem_act, mem_medical, mem_weight, mem_height, mem_BP, mem_gender, mem_stat, mem_type, mem_prevGym, 'ADMINISTRATOR')
 
-        conn = None
+        last_memberid = next(self.membersdb.find().sort("_id", -1).limit(1),{}).get('_id',None)
+        mem_id = int(last_memberid) + 1 if last_memberid is not None else 0
+
+        member = {
+            '_id' : mem_id,
+            'first name' : mem_fname,
+            'last name' : mem_lname,
+            'address' : mem_address,
+            'dob' : mem_DOB,
+            'contact' : mem_contact,
+            'medical' : mem_medical,
+            'previous gym': mem_prevGym,
+            'bp' : mem_BP,
+            'status' : mem_stat,
+            'activity' : mem_act,
+            'weight' : mem_weight,
+            'height' : mem_height,
+            'gender' : mem_gender,
+            'type' : mem_type
+        }
+
+        result = self.membersdb.insert_one(member)
+
+        if result:
+            if float(tendered_amount) > (float(serv_price) + float(mship_fee)):
+                self.ui.change_popup.setFixedWidth(1381)
+                change = float(tendered_amount) - (float(serv_price) + float(mship_fee))
+                self.ui.change_field.setText(f"{change:.2f}")
+                self.populate_mem_table()
+
+            self.ui.register_popup.setFixedWidth(0)
+            self.ui.payment_popup.setFixedWidth(0) 
+
+            self.ui.success_widget.setFixedWidth(371)
+            QtCore.QTimer.singleShot(1300, lambda: self.ui.success_widget.setFixedWidth(0))  
+
+            self.add_service_log_into_DB(service_id, mem_contact)
+            self.add_transaction_DB(service_id, float(serv_price) + float(mship_fee), tendered_amount, mem_contact)  
 
         # try:
         #     params = config()
@@ -2030,6 +2059,8 @@ class MainWindow(QtWidgets.QMainWindow):
         else:
             sql = "INSERT INTO EMPLOYEE(EMP_FNAME, EMP_LNAME, EMP_ADDRESS, EMP_BIRTHDATE, EMP_CONTACT_NUM, EMP_POSITION) VALUES(%s, %s, %s, %s, %s, %s)"
             values = (emp_fname, emp_lname, emp_address, emp_DOB, emp_contact, emp_position)   
+
+            
 
         conn = None
         # try:
