@@ -1335,7 +1335,6 @@ class MainWindow(QtWidgets.QMainWindow):
         selected_row = self.ui.mem_table.currentRow()
         if selected_row != -1:
             mem_id = self.ui.mem_table.item(selected_row, 0)
-            conn = None
             # try:
             #     params = config()
             #     conn = psycopg2.connect(**params)
