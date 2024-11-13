@@ -1335,9 +1335,6 @@ class MainWindow(QtWidgets.QMainWindow):
         selected_row = self.ui.mem_table.currentRow()
         if selected_row != -1:
             mem_id = self.ui.mem_table.item(selected_row, 0)
-            # try:
-            #     params = config()
-            #     conn = psycopg2.connect(**params)
 
             #     cursor = conn.cursor()
             #     cursor.execute("DELETE FROM MEMBER WHERE MEM_ID = '" + mem_id.text() + "';")
@@ -1346,8 +1343,6 @@ class MainWindow(QtWidgets.QMainWindow):
             #     self.ui.member_delete_popup.setFixedWidth(0)
             #     self.populate_mem_table()
                 
-            # except (Exception, psycopg2.Error) as error:
-            #     print("Error retrieving data from the database:", error)
             # finally:
             #     if conn is not None:
             #         conn.close()    
