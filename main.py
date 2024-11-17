@@ -7,7 +7,6 @@ from ui_mainUI import *
 from PySide6.QtGui import *
 import datetime
 import threading
-import time
 
 
 
@@ -89,7 +88,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.servicesdb = self.database.services
         self.membersdb = self.database.members
         self.employeedb = self.database.employee
-        self.servicelogdb = self.database.monthly_service_log
+        self.mon_servicelogdb = self.database.monthly_service_log
         
         # ===========================================================================================================================================================================
         # Adding admin and check if admin exists in employees record
@@ -916,8 +915,35 @@ class MainWindow(QtWidgets.QMainWindow):
 
     #Displaying all members with monthly service access
     def populate_monServiceLog(self):
-        conn = None
+
         now = datetime.datetime.today()
+
+        result = self.mon_servicelogdb.find()
+
+        if result:
+            for row_number, log in enumerate(result):
+                    self.ui.mon_serviceLog_table.insertRow(row_number)
+                    for column_number, data in enumerate(log):
+                
+                        if column_number == 6:
+                            
+                            end_date = data
+                            new_data = str(data).split(" ")
+                            data = new_data[0]
+
+                            if now < end_date:
+                                item = QtWidgets.QTableWidgetItem('ACTIVE')
+                                item.setTextAlignment(Qt.AlignHCenter)
+                                self.ui.mon_serviceLog_table.setItem(row_number, 7, item)
+                            else:
+                                item = QtWidgets.QTableWidgetItem('EXPIRED')
+                                item.setTextAlignment(Qt.AlignHCenter)
+                                self.ui.mon_serviceLog_table.setItem(row_number, 7, item)
+                        
+                        item = QtWidgets.QTableWidgetItem(str(log[data]))
+                        item.setTextAlignment(Qt.AlignHCenter)
+                        self.ui.mon_serviceLog_table.setItem(row_number, column_number, item)
+
         # try:
         #     params = config()
         #     conn = psycopg2.connect(**params)
@@ -1620,7 +1646,7 @@ class MainWindow(QtWidgets.QMainWindow):
             self.ui.success_widget.setFixedWidth(371)
             QtCore.QTimer.singleShot(1300, lambda: self.ui.success_widget.setFixedWidth(0))  
 
-            # self.add_service_log_into_DB(service_id, mem_contact)
+            self.add_service_log_into_DB(service_id, mem_contact)
             # self.add_transaction_DB(service_id, float(serv_price) + float(mship_fee), tendered_amount, mem_contact)  
 
         # try:
@@ -2232,22 +2258,22 @@ class MainWindow(QtWidgets.QMainWindow):
     # ===========================================================================================================================================================================
     def add_service_log_into_DB(self, serv_id,mem_contact):
 
-        sql = "INSERT INTO MONTHLY_SERVICE_LOG (MEM_ID, SERV_ID, EMP_ID) VALUES((SELECT MEM_ID FROM MEMBER WHERE MEM_TELEPHONE = %s), %s, %s);"
-        values = (mem_contact, serv_id, self.emp_id)
+        member = self.membersdb.find_one({'contact' : mem_contact})
+        last_log = next(self.mon_servicelogdb.find().sort("_id", -1).limit(1), {}).get('_id', None)
+        log_id = int(last_log) + 1 if last_log is not None else 0
+        log = {
+            "_id" : log_id,
+            "member id" : member['_id'],
+            "service id" : serv_id,
+            "employee id" : self.emp_id,
+            "start date": str(datetime.datetime.today()),
+            "end date": str(datetime.datetime.today() + datetime.timedelta(days=30)) 
+        }
 
-        conn = None
-        # try:
-        #     params = config()
-        #     conn = psycopg2.connect(**params)
+        result = self.mon_servicelogdb.insert_one(log)
 
-        #     cur= conn.cursor()
-        #     cur.execute(sql, values)
-        #     conn.commit()
-        #     cur.close
-        #     self.populate_monServiceLog()
-        # except (Exception, psycopg2.Error) as error:
-        #     print(error)
-
+        if result:
+            self.populate_monServiceLog()
 
     # ===========================================================================================================================================================================
     # Logout confirmation
