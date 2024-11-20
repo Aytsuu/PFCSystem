@@ -917,21 +917,17 @@ class MainWindow(QtWidgets.QMainWindow):
     def populate_monServiceLog(self):
 
         now = datetime.datetime.today()
-
         result = self.mon_servicelogdb.find()
+        self.ui.mon_serviceLog_table.setRowCount(0)
+
 
         if result:
             for row_number, log in enumerate(result):
                     self.ui.mon_serviceLog_table.insertRow(row_number)
                     for column_number, data in enumerate(log):
-                
-                        if column_number == 6:
-                            
-                            end_date = data
-                            new_data = str(data).split(" ")
-                            data = new_data[0]
+                        if data == 'end date':
 
-                            if now < end_date:
+                            if str(now) < data: 
                                 item = QtWidgets.QTableWidgetItem('ACTIVE')
                                 item.setTextAlignment(Qt.AlignHCenter)
                                 self.ui.mon_serviceLog_table.setItem(row_number, 7, item)
@@ -940,51 +936,12 @@ class MainWindow(QtWidgets.QMainWindow):
                                 item.setTextAlignment(Qt.AlignHCenter)
                                 self.ui.mon_serviceLog_table.setItem(row_number, 7, item)
                         
-                        item = QtWidgets.QTableWidgetItem(str(log[data]))
+                        if column_number in [5, 6]:
+                            data = str(log[data]).split(" ")[0]
+
+                        item = QtWidgets.QTableWidgetItem(data if column_number in [5, 6] else str(log[data]))
                         item.setTextAlignment(Qt.AlignHCenter)
                         self.ui.mon_serviceLog_table.setItem(row_number, column_number, item)
-
-        # try:
-        #     params = config()
-        #     conn = psycopg2.connect(**params)
-
-        #     sql = "SELECT MON_SERVICE_LOG_ID, MEM_FNAME, MEM_LNAME, SERV_TYPE, CONCAT(EMP_FNAME ,' ', EMP_LNAME), DATE(MON_SERVICE_START_DATE), MON_SERVICE_END_DATE FROM MONTHLY_SERVICE_LOG JOIN MEMBER ON MEMBER.MEM_ID = MONTHLY_SERVICE_LOG.MEM_ID JOIN SERVICE ON SERVICE.SERV_ID = MONTHLY_SERVICE_LOG.SERV_ID LEFT JOIN EMPLOYEE ON EMPLOYEE.EMP_ID = MONTHLY_SERVICE_LOG.EMP_ID"
-        #     cursor = conn.cursor()
-        #     cursor.execute(sql)
-        #     result = cursor.fetchall()
-            
-        #     self.ui.mon_serviceLog_table.setRowCount(0)
-            
-        #     if result:
-        #         for row_number, row_data in enumerate(result):
-        #             self.ui.mon_serviceLog_table.insertRow(row_number)
-        #             for column_number, data in enumerate(row_data):
-                
-        #                 if column_number == 6:
-                            
-        #                     end_date = data
-        #                     new_data = str(data).split(" ")
-        #                     data = new_data[0]
-
-        #                     if now < end_date:
-        #                         item = QtWidgets.QTableWidgetItem('ACTIVE')
-        #                         item.setTextAlignment(Qt.AlignHCenter)
-        #                         self.ui.mon_serviceLog_table.setItem(row_number, 7, item)
-        #                     else:
-        #                         item = QtWidgets.QTableWidgetItem('EXPIRED')
-        #                         item.setTextAlignment(Qt.AlignHCenter)
-        #                         self.ui.mon_serviceLog_table.setItem(row_number, 7, item)
-                        
-        #                 item = QtWidgets.QTableWidgetItem(str(data))
-        #                 item.setTextAlignment(Qt.AlignHCenter)
-        #                 self.ui.mon_serviceLog_table.setItem(row_number, column_number, item)
-
-        # except (Exception, psycopg2.Error) as error:
-        #     print("Error retrieving data from the database:", error)
-        
-        # finally:
-        #     if conn is not None:
-        #         conn.close()
     
     def check_memRenew_fields(self):
         if( not self.ui.mem_fee.text() or
@@ -2259,12 +2216,14 @@ class MainWindow(QtWidgets.QMainWindow):
     def add_service_log_into_DB(self, serv_id,mem_contact):
 
         member = self.membersdb.find_one({'contact' : mem_contact})
+        service = self.servicesdb.find_one({'_id' : serv_id})
         last_log = next(self.mon_servicelogdb.find().sort("_id", -1).limit(1), {}).get('_id', None)
         log_id = int(last_log) + 1 if last_log is not None else 0
         log = {
             "_id" : log_id,
-            "member id" : member['_id'],
-            "service id" : serv_id,
+            "member_fname" : member['first name'],
+            "member_lname" : member['last name'],
+            "service type": service['type'],
             "employee id" : self.emp_id,
             "start date": str(datetime.datetime.today()),
             "end date": str(datetime.datetime.today() + datetime.timedelta(days=30)) 
