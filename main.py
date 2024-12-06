@@ -1,6 +1,4 @@
 from pymongo import MongoClient
-from pymongo.errors import DuplicateKeyError
-from bson.objectid import ObjectId
 from PySide6 import QtWidgets, QtCore
 from ui_loginUI import *
 from ui_mainUI import *
