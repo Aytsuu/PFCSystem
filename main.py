@@ -937,7 +937,13 @@ class MainWindow(QtWidgets.QMainWindow):
                         if column_number in [5, 6]:
                             data = str(log[data]).split(" ")[0]
 
-                        item = QtWidgets.QTableWidgetItem(data if column_number in [5, 6] else str(log[data]))
+                        if column_number == 4:
+                            if log[data] is not None:
+                                result = self.employeedb.find_one({"_id" : log[data]})
+                                data = result['fname'] + ' ' + result['lname']
+                            else: data = 'No Instructor'
+
+                        item = QtWidgets.QTableWidgetItem(data if column_number in [4, 5, 6] else str(log[data]))
                         item.setTextAlignment(Qt.AlignHCenter)
                         self.ui.mon_serviceLog_table.setItem(row_number, column_number, item)
     
@@ -1007,34 +1013,28 @@ class MainWindow(QtWidgets.QMainWindow):
 
     #Display details of all membership
     def populate_mshipStat(self):
-        conn = None
-        now = datetime.date.today()
-        # try:
-        #     params = config()
-        #     conn = psycopg2.connect(**params)
 
-        #     sql = "SELECT MEM_ID, MEM_FNAME, MEM_LNAME, DATE(MEM_MEMBERSHIP_START_DATE), DATE(MEM_MEMBERSHIP_END_DATE) FROM MEMBER"
-        #     cursor = conn.cursor()
-        #     cursor.execute(sql)
-        #     result = cursor.fetchall()
-            
-        #     self.ui.mshipStat_table.setRowCount(0)
+        selected_collection = {
+            '_id': 1,
+            'first name': 1,
+            'last name': 1,
+            'start date': 1,
+            'end date': 1
+        }
+        
+        memshipstat = self.membersdb.find({},selected_collection)
+        self.ui.mshipStat_table.setRowCount(0)
 
-        #     for row_number, row_data in enumerate(result):
-        #         self.ui.mshipStat_table.insertRow(row_number)
-        #         for column_number, data in enumerate(row_data):
-                    
-        #             item = QtWidgets.QTableWidgetItem(str(data))
-        #             item.setTextAlignment(Qt.AlignHCenter)
-        #             self.ui.mshipStat_table.setItem(row_number, column_number, item)
-        
-            
-        # except (Exception, psycopg2.Error) as error:
-        #     print("Error retrieving data from the database:", error)
-        
-        # finally:
-        #     if conn is not None:
-        #         conn.close()
+        for row_number, member in enumerate(memshipstat):
+            self.ui.mshipStat_table.insertRow(row_number)
+            for col_number, data in enumerate(member):
+
+                if col_number in [3, 4]:
+                    data = str(member[data]).split(" ")[0]
+
+                item = QtWidgets.QTableWidgetItem(data if col_number in [3,4] else str(member[data]))
+                item.setTextAlignment(Qt.AlignHCenter)
+                self.ui.mshipStat_table.setItem(row_number,col_number,item)
 
     # ===========================================================================================================================================================================
     # List of member functions 
@@ -1543,6 +1543,7 @@ class MainWindow(QtWidgets.QMainWindow):
 
     #Add a member to DB
     def add_member_into_DB(self):
+        
         self.ui.confirm_pay_widget.setFixedWidth(0)
 
         mem_fname = self.ui.regismem_fname.text().upper()
@@ -1583,7 +1584,10 @@ class MainWindow(QtWidgets.QMainWindow):
             'activity' : mem_act,
             'weight' : mem_weight,
             'height' : mem_height,
-            'type' : mem_type
+            'type' : mem_type,
+            "start date" : str(datetime.datetime.today()),
+            "end date" : str(datetime.datetime.today() + datetime.timedelta(days=365)),
+            'emp_id' : self.emp_id
         }
 
         result = self.membersdb.insert_one(member)
@@ -1593,14 +1597,14 @@ class MainWindow(QtWidgets.QMainWindow):
                 self.ui.change_popup.setFixedWidth(1381)
                 change = float(tendered_amount) - (float(serv_price) + float(mship_fee))
                 self.ui.change_field.setText(f"{change:.2f}")
-                self.populate_mem_table()
-
+            
             self.ui.register_popup.setFixedWidth(0)
             self.ui.payment_popup.setFixedWidth(0) 
 
             self.ui.success_widget.setFixedWidth(371)
             QtCore.QTimer.singleShot(1300, lambda: self.ui.success_widget.setFixedWidth(0))  
 
+            self.populate_mem_table()
             self.add_service_log_into_DB(service_id, mem_contact)
             # self.add_transaction_DB(service_id, float(serv_price) + float(mship_fee), tendered_amount, mem_contact)  
 
