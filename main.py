@@ -521,32 +521,11 @@ class MainWindow(QtWidgets.QMainWindow):
         if selected_row != -1:
             self.ui.services_widget.setFixedWidth(0)  
             self.ui.update_service_widget.setFixedWidth(701)  
-            service_id = self.ui.services_table.item(selected_row, 0)
-            conn = None
-            # try:
-            #     params = config()
-            #     conn = psycopg2.connect(**params)
+            service_type = self.ui.services_table.item(selected_row, 1).text()
+            service_price = self.ui.services_table.item(selected_row,2).text()
 
-            #     cursor = conn.cursor()
-            #     cursor.execute("SELECT SERV_TYPE, SERV_PRICE FROM SERVICE WHERE SERV_ID = '" + service_id.text() +"';")
-            #     service = cursor.fetchone()
-
-            #     if service:
-            #         serv_type, serv_price = service
-            #         self.ui.service_Update.setText(str(serv_type))
-            #         self.ui.service_Amount.setText(str(serv_price))
-
-            #     else:
-            #         print("No service found for SERV_ID:", service_id.text())
-
-
-            # except (Exception, psycopg2.Error) as error:
-            #     print("Error retrieving data from the database:", error)
-
-            # finally:
-            #     # Close the cursor and database connection
-            #     if conn is not None:
-            #         conn.close()
+            self.ui.service_Update.setText(str(service_type))
+            self.ui.service_Amount.setText(str(service_price))
         else:
             self.ui.rowSelection_notice.setFixedWidth(301)
             QtCore.QTimer.singleShot(1300, lambda: self.ui.rowSelection_notice.setFixedWidth(0))  
@@ -554,7 +533,6 @@ class MainWindow(QtWidgets.QMainWindow):
     #Update service in DB
     def update_service(self):
         serv_id = self.ui.services_table.item(self.ui.services_table.currentRow(), 0)
-
         serv_type = self.ui.service_Update.text().upper()
         serv_price = float(self.ui.service_Amount.text())
 
@@ -582,31 +560,6 @@ class MainWindow(QtWidgets.QMainWindow):
             self.ui.invalid_notice.setFixedWidth(391)
             QtCore.QTimer.singleShot(1300, lambda: self.ui.invalid_notice.setFixedWidth(0)) 
 
-        # try:
-        #     params = config()
-        #     conn = psycopg2.connect(**params)
-        #     cursor = conn.cursor()
-        #     cursor.execute(sql, values)
-        #     conn.commit()
-        #     print("Service details updated successfully.")
-        #     self.ui.services_widget.setFixedWidth(701)
-        #     self.ui.update_service_widget.setFixedWidth(0) 
-        #     self.ui.service_Update.setText('')
-        #     self.ui.service_Amount.setText('')
-        #     self.retrieve_services_from_DB()
-        #     self.populate_services_table()
-        #     self.retrieve_employee_from_DB()
-        #     self.retrieve_employee_from_DB_renew()
-
-        # except (Exception, psycopg2.Error) as error:
-        #     self.ui.fieldNotice.setText('Service already exists.')
-        #     self.ui.invalid_notice.setFixedWidth(391)
-        #     QtCore.QTimer.singleShot(1300, lambda: self.ui.invalid_notice.setFixedWidth(0)) 
-
-        # finally:
-        #     if conn is not None:
-        #         conn.close()
-
     #Cancel deleting a service
     def cancel_delete_service(self):
         self.ui.service_delete_popup.setFixedWidth(0)
@@ -625,45 +578,29 @@ class MainWindow(QtWidgets.QMainWindow):
     #Confirm deletion of a service
     def confirm_delete_service(self):
         selected_row = -1
-        exception_flag = False
 
         if len(self.ui.services_table.selectedItems()) > 0:
             selected_row = self.ui.services_table.currentRow()
 
         if selected_row != -1:
             serv_id = self.ui.services_table.item(selected_row, 0)
+            serv_type = self.ui.services_table.item(selected_row, 1).text()
+            is_service_used = self.mon_servicelogdb.count_documents({'service type': serv_type})
+            
+            if is_service_used == 0:
+                result = self.servicesdb.delete_one({"_id" : int(serv_id.text())})
 
-            result = self.servicesdb.delete_one({"_id" : int(serv_id.text())})
-
-            if result:
-                self.ui.services_table.removeRow(selected_row)
-                self.retrieve_services_from_DB()
-                self.populate_services_table()
-
-            # try:
-            #     params = config()
-            #     conn = psycopg2.connect(**params)
-            #     cursor = conn.cursor()
-            #     cursor.execute("DELETE FROM SERVICE WHERE SERV_ID = '" + serv_id.text() + "';")
-            #     conn.commit()
-            #     self.ui.services_table.removeRow(selected_row)
-            #     self.retrieve_services_from_DB()
-            #     self.populate_services_table()
-            #     self.retrieve_employee_from_DB()
-            #     self.retrieve_employee_from_DB_renew()
+                if result:
+                    self.ui.services_table.removeRow(selected_row)
+                    self.retrieve_services_from_DB()
+                    self.populate_services_table()
+                    self.ui.delete_notif.setFixedWidth(81)
+                    QtCore.QTimer.singleShot(1300, lambda: self.ui.delete_notif.setFixedWidth(0)) 
                 
-            # except (Exception, psycopg2.Error) as error:
-            #     exception_flag = True
-            #     self.ui.fieldNotice.setText('Unable to delete: Service in use.')
-            #     self.ui.invalid_notice.setFixedWidth(391)
-            #     QtCore.QTimer.singleShot(1300, lambda: self.ui.invalid_notice.setFixedWidth(0)) 
-            # finally:
-            #     if conn is not None:
-            #         conn.close()     
-                    
-            #         if not exception_flag:
-            #             self.ui.delete_notif.setFixedWidth(81)
-            #             QtCore.QTimer.singleShot(1300, lambda: self.ui.delete_notif.setFixedWidth(0)) 
+            else:
+                self.ui.fieldNotice.setText('Unable to delete: Service in use.')
+                self.ui.invalid_notice.setFixedWidth(391)
+                QtCore.QTimer.singleShot(1300, lambda: self.ui.invalid_notice.setFixedWidth(0)) 
 
         self.ui.service_delete_popup.setFixedWidth(0)
         self.ui.services_popup.setFixedWidth(1381)
@@ -941,7 +878,7 @@ class MainWindow(QtWidgets.QMainWindow):
                             if log[data] is not None:
                                 result = self.employeedb.find_one({"_id" : log[data]})
                                 data = result['fname'] + ' ' + result['lname']
-                            else: data = 'No Instructor'
+                            else: data = 'NONE'
 
                         item = QtWidgets.QTableWidgetItem(data if column_number in [4, 5, 6] else str(log[data]))
                         item.setTextAlignment(Qt.AlignHCenter)
@@ -1876,22 +1813,6 @@ class MainWindow(QtWidgets.QMainWindow):
             self.ui.assigned_emp_delete.setFixedWidth(1381)
         else:
             self.ui.employee_delete_popup.setFixedWidth(1381)
-
-        # try:
-        #     params = config()
-        #     conn = psycopg2.connect(**params)
-        #     sql = "SELECT * FROM MONTHLY_SERVICE_LOG WHERE EMP_ID = '" + emp_id.text() + "';"
-        #     cursor = conn.cursor()
-        #     cursor.execute(sql)
-        #     empIsPresent = cursor.fetchall()
- 
-        #     if empIsPresent:
-        #         self.ui.assigned_emp_delete.setFixedWidth(1381)
-        #     else:
-        #         self.ui.employee_delete_popup.setFixedWidth(1381)
-        # except (Exception, psycopg2.Error) as error:
-        #     print(error)
- 
      
     #Confirm deletion
     def confirm_delete_employee(self):
@@ -1919,23 +1840,7 @@ class MainWindow(QtWidgets.QMainWindow):
                 self.retrieve_employee_from_DB()
                 self.retrieve_employee_from_DB_renew()
                 self.populate_employee_table()
-
-              
-        # except (Exception, psycopg2.Error) as error:
-        #     exception_flag = True
-        #     self.ui.assigned_emp_delete.setFixedWidth(0)
-        #     self.ui.employee_delete_popup.setFixedWidth(0)
-        #     self.ui.fieldNotice.setText('Unable to delete admin')
-        #     self.ui.invalid_notice.setFixedWidth(391)
-        #     QtCore.QTimer.singleShot(1300, lambda: self.ui.invalid_notice.setFixedWidth(0))
-        #     return
-        # finally:
-        #     if conn is not None:
-        #         conn.close() 
-
-        #         if not exception_flag:
-        #             self.ui.delete_notif.setFixedWidth(81)
-        #             QtCore.QTimer.singleShot(1300, lambda: self.ui.delete_notif.setFixedWidth(0))         
+      
 
     #Add employee to DB
     def add_employee_into_DB(self,emp_id=None):
