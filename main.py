@@ -1236,21 +1236,20 @@ class MainWindow(QtWidgets.QMainWindow):
         selected_row = self.ui.mem_table.currentRow()
         if selected_row != -1:
             mem_id = self.ui.mem_table.item(selected_row, 0)
+            temp_mem_id = int(mem_id.text())
 
-            #     cursor = conn.cursor()
-            #     cursor.execute("DELETE FROM MEMBER WHERE MEM_ID = '" + mem_id.text() + "';")
-            #     conn.commit()
-            #     self.ui.mem_table.removeRow(selected_row)
-            #     self.ui.member_delete_popup.setFixedWidth(0)
-            #     self.populate_mem_table()
-                
-            # finally:
-            #     if conn is not None:
-            #         conn.close()    
+            result = self.membersdb.delete_one({"_id": temp_mem_id})
 
-            #         self.ui.delete_notif.setFixedWidth(81)
-            #         QtCore.QTimer.singleShot(1300, lambda: self.ui.delete_notif.setFixedWidth(0)) 
-     
+            if result:
+                # self.ui.mem_table.removeRow(selected_row)
+                self.ui.member_delete_popup.setFixedWidth(0)
+                self.ui.delete_notif.setFixedWidth(81)
+                QtCore.QTimer.singleShot(1300, lambda: self.ui.delete_notif.setFixedWidth(0)) 
+
+                #Delete service log of the deleted member
+                self.mon_servicelogdb.delete_one({"_id": temp_mem_id})
+
+                self.populate_mem_table() 
             
     #Displaying the member details in the edit page
     def edit_member(self):
