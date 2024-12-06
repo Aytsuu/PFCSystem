@@ -1017,42 +1017,25 @@ class MainWindow(QtWidgets.QMainWindow):
         selected_row = self.ui.mem_table.currentRow()
         if selected_row != -1:
             mem_id = self.ui.mem_table.item(selected_row, 0)
-            conn = None
-            # try:
-            #     params = config()
-            #     conn = psycopg2.connect(**params)
 
-            #     sql = "SELECT * FROM MEMBER WHERE MEM_ID = '" + mem_id.text() + "';"
-            #     cursor = conn.cursor()
-            #     cursor.execute(sql)
-            #     member = cursor.fetchone()
+            member = self.membersdb.find_one({"_id": int(mem_id.text())})
 
-            #     if member:
-            #         mmbr_id, mmbr_fname, mmbr_lname, mmbr_birthdate, mmbr_address, mmbr_telephone, mmbr_physical, mmbr_ailment, mmbr_weight, mmbr_height, mmbr_bp, mmbr_gender, mmbr_status, mmbr_type, mmbr_prevGym, mmbr_start_date, mmbr_end_date, admin = member  
-            #         full_name = mmbr_fname + " " + mmbr_lname
-            #         self.ui.viewmem_Id.setText(str(mmbr_id))
-            #         self.ui.viewmem_name.setText(str(full_name))
-            #         self.ui.viewmem_Gender.setText(str(mmbr_gender))
-            #         self.ui.viewmem_BP.setText(str(mmbr_bp))
-            #         self.ui.viewmem_address.setText(str(mmbr_address))
-            #         self.ui.viewmem_DOB.setText(str(mmbr_birthdate))
-            #         self.ui.viewmem_height.setText(str(mmbr_height))
-            #         self.ui.viewmem_medicalAilments.setText(str(mmbr_ailment))
-            #         self.ui.viewmem_physicalAct.setText(str(mmbr_physical))
-            #         self.ui.viewmem_telnum.setText(str(mmbr_telephone))
-            #         self.ui.viewmem_weight.setText(str(mmbr_weight))
-            #         self.ui.viewmem_status.setText(str(mmbr_status))
-            #         self.ui.viewmem_type.setText(str(mmbr_type))
-            #         self.ui.viewmem_prevGym.setText(str(mmbr_prevGym))
-            #     else:
-            #         return None, None
-            
-            # except (Exception, psycopg2.Error) as error:
-            #     print("Error retrieving data from the database:", error)
-            
-            # finally:
-            #     if conn is not None:
-            #         conn.close()
+            if member:
+                full_name = member['first name'] + " " + member['last name']
+                self.ui.viewmem_Id.setText(mem_id.text())
+                self.ui.viewmem_name.setText(full_name)
+                self.ui.viewmem_Gender.setText(member['gender'])
+                self.ui.viewmem_BP.setText(str(member['bp']))
+                self.ui.viewmem_address.setText(member['address'])
+                self.ui.viewmem_DOB.setText(str(member['dob']))
+                self.ui.viewmem_height.setText(str(member['height']))
+                self.ui.viewmem_medicalAilments.setText(member['medical'])
+                self.ui.viewmem_physicalAct.setText(member['activity'])
+                self.ui.viewmem_telnum.setText(str(member['contact']))
+                self.ui.viewmem_weight.setText(str(member['weight']))
+                self.ui.viewmem_status.setText(member['status'])
+                self.ui.viewmem_type.setText(member['type'])
+                self.ui.viewmem_prevGym.setText(member['previous gym'])
 
     #Validating payment fields
     def check_payment_fields(self):
