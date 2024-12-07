@@ -4,6 +4,7 @@ from ui_loginUI import *
 from ui_mainUI import *
 from PySide6.QtGui import *
 import datetime
+import smtplib
 import threading
 
 
@@ -1517,10 +1518,13 @@ class MainWindow(QtWidgets.QMainWindow):
             'emp_id' : self.emp_id
         }
 
+
         result = self.membersdb.insert_one(member)
 
         if result:
             if float(tendered_amount) > (float(serv_price) + float(mship_fee)):
+                #self.send_text(mem_contact)
+                self.send_email('hannahsheenobejero@gmail.com')
                 self.ui.change_popup.setFixedWidth(1381)
                 change = float(tendered_amount) - (float(serv_price) + float(mship_fee))
                 self.ui.change_field.setText(f"{change:.2f}")
@@ -2025,7 +2029,7 @@ class MainWindow(QtWidgets.QMainWindow):
 
             #         if monthly_serviceAccess:
             #             for row_data in monthly_serviceAccess:
-            #                 mem_id = row_data[0]
+            #                 mem_id = row_data[0] 
 
             #                 sql = """ 
             #                 INSERT INTO NOTIFICATION (NOTIF_CONTENT, NOTIF_DATE, MEM_ID, EMP_ID)
@@ -2042,6 +2046,7 @@ class MainWindow(QtWidgets.QMainWindow):
             #                 cursor.execute(sql, (mem_id, mem_id, mem_id, f"'s {notification}", days, mem_id, mem_id))
             #                 conn.commit()
             #                 self.display_notifs()
+            #                 self.send_email
             #                 self.ui.new_notifbtn.setFixedWidth(271)
             #                 QtCore.QTimer.singleShot(1300, lambda: self.ui.new_notifbtn.setFixedWidth(0))    
 
@@ -2149,7 +2154,7 @@ class MainWindow(QtWidgets.QMainWindow):
     # Monthly Service Log
     # ===========================================================================================================================================================================
     def add_service_log_into_DB(self, serv_id,mem_contact):
-
+ 
         member = self.membersdb.find_one({'contact' : mem_contact})
         service = self.servicesdb.find_one({'_id' : serv_id})
         last_log = next(self.mon_servicelogdb.find().sort("_id", -1).limit(1), {}).get('_id', None)
@@ -2168,6 +2173,51 @@ class MainWindow(QtWidgets.QMainWindow):
 
         if result:
             self.populate_monServiceLog()
+
+    
+    # ===========================================================================================================================================================================
+    # Send Email and text
+    # ===========================================================================================================================================================================
+    def send_email(self, mem_email):
+        sender_email = 'hannahsheen12@gmail.com'
+        text = 'you have been registered'
+        server = smtplib.SMTP('smtp.gmail.com', 587)
+        server.starttls()
+        server.login(sender_email, 'ydnxsvmtbxyprfkg')
+        server.sendmail(sender_email, mem_email,text)
+        print('Email sent to', mem_email)
+
+    def send_text(self, mem_phonenum):
+        phonenum = '+63' + mem_phonenum[1:]    
+
+        # client = vonage.Client(key="3fb5b0cb", secret="X9VKdQpCNOtGus8f")
+        # sms = vonage.Sms(client)
+
+        # response = sms.send_message({
+        # 'from': '639615731397',  # Use a Nexmo number or a verified number
+        # 'to': phonenum,
+        # 'text': 'Henlo, check ko lang if ma send',
+        # })
+        # 
+        # if response["messages"][0]["status"] == "0":
+            # print("Message sent successfully.")
+        # else:
+            # print(f"Message failed with error: {response['messages'][0]['error-text']}")
+
+        account_sid = 'AC723d0f0cc5b938cc9860706316b944e3'
+        auth_token = '854490238dff143d11e22af6d328495b'
+
+
+        client = Client(account_sid, auth_token)
+
+        message = client.messages.create(
+        to=phonenum,
+        from_="+17856457802",  
+        body='henlo, check ko lang if ma send'
+        )
+
+        print(message.sid)
+
 
     # ===========================================================================================================================================================================
     # Logout confirmation
