@@ -7,7 +7,6 @@ import datetime
 import threading
 
 
-
 class LoginWindow(QtWidgets.QMainWindow):
     def __init__(self):
         QtWidgets.QMainWindow.__init__(self)
@@ -87,6 +86,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.membersdb = self.database.members
         self.employeedb = self.database.employee
         self.mon_servicelogdb = self.database.monthly_service_log
+        self.transactiondb = self.database.transaction_history
         
         # ===========================================================================================================================================================================
         # Adding admin and check if admin exists in employees record
@@ -117,9 +117,12 @@ class MainWindow(QtWidgets.QMainWindow):
 
         decimal_validator = QRegularExpressionValidator(QRegularExpression("\\d*\\.?\\d*"))
         int_validator = QRegularExpressionValidator(QRegularExpression("\\d*"))
-        customerBPValidator = QRegularExpression("[0-9/.]*")
-        validBP = QRegularExpressionValidator(customerBPValidator, self.ui.regismem_BP)
-        validBPUpdate = QRegularExpressionValidator(customerBPValidator, self.ui.mem_BP)
+
+        self.customerBPValidator = QRegularExpression("^\s*(\d{1,3})\s*[-/]\s*(\d{1,3})\s*$")
+        self.emailValidator = QRegularExpression("^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$")
+
+        validBP = QRegularExpressionValidator(self.customerBPValidator, self.ui.regismem_BP)
+        validBPUpdate = QRegularExpressionValidator(self.customerBPValidator, self.ui.mem_BP)
         
         self.ui.regismem_contact.setValidator(int_validator)
         self.ui.regismem_height.setValidator(decimal_validator)
@@ -1036,6 +1039,7 @@ class MainWindow(QtWidgets.QMainWindow):
                 self.ui.viewmem_status.setText(member['status'])
                 self.ui.viewmem_type.setText(member['type'])
                 self.ui.viewmem_prevGym.setText(member['previous gym'])
+                self.ui.viewmem_email.setText(member['email'] if member['email'] is not None else 'NONE')
 
     #Validating payment fields
     def check_payment_fields(self):
@@ -1078,26 +1082,28 @@ class MainWindow(QtWidgets.QMainWindow):
             self.ui.registermem_Gender.currentText() == 'Gender' or
             memtype == 'None'):
             
-            self.ui.fieldNotice.setText('All required fields must be filled.')
-            self.ui.invalid_notice.setFixedWidth(391)
-            QtCore.QTimer.singleShot(1300, lambda: self.ui.invalid_notice.setFixedWidth(0))  
+            self.fields_error_message('All required fields must be filled.')
         else:
             if len(self.ui.regismem_contact.text()) != 11 or not self.ui.regismem_contact.text().startswith('09'):
-                self.ui.fieldNotice.setText('Please enter a valid phone number.')
-                self.ui.invalid_notice.setFixedWidth(391)
-                QtCore.QTimer.singleShot(1300, lambda: self.ui.invalid_notice.setFixedWidth(0)) 
+                self.fields_error_message('Please enter a valid phone number.')
             else:
                 if self.ui.regismem_DOB.date() > age_limit:
-                    self.ui.fieldNotice.setText('Age must be above 9 years old.')
-                    self.ui.invalid_notice.setFixedWidth(391)
-                    QtCore.QTimer.singleShot(1300, lambda: self.ui.invalid_notice.setFixedWidth(0)) 
+                    self.fields_error_message('Age must be above 9 years old.')
                 else:
-                    if '/' not in self.ui.regismem_BP.text():
-                        self.ui.fieldNotice.setText('Invalid BP.')
-                        self.ui.invalid_notice.setFixedWidth(391)
-                        QtCore.QTimer.singleShot(1300, lambda: self.ui.invalid_notice.setFixedWidth(0)) 
+                    if not self.customerBPValidator.match(self.ui.regismem_BP.text()).hasMatch():
+                        self.fields_error_message('Invalid BP.')
                     else:
-                        self.check_duplicate_phone_number()
+                        if not self.emailValidator.match(self.ui.regismem_email.text()).hasMatch():
+                            self.fields_error_message('Invalid Email.')
+
+                        else:
+                            self.check_duplicate_phone_number()
+    
+    def fields_error_message(self,text):
+        self.ui.fieldNotice.setText(text)
+        self.ui.invalid_notice.setFixedWidth(391)
+        QtCore.QTimer.singleShot(1300, lambda: self.ui.invalid_notice.setFixedWidth(0)) 
+
 
     #Validating edit member fields
     def check_edit_member_fields(self):
@@ -1470,6 +1476,7 @@ class MainWindow(QtWidgets.QMainWindow):
         mem_address = self.ui.regismem_address.text().upper()
         mem_DOB = self.ui.regismem_DOB.date().toString('yyyy-MM-dd')
         mem_contact = self.ui.regismem_contact.text()
+        mem_email = self.ui.regismem_email.text().upper()
         mem_medical = self.ui.regismem_medicAilment.text().upper()
         mem_prevGym = self.ui.regismem_prevGym.text().upper()
         mem_BP = self.ui.regismem_BP.text()
@@ -1496,6 +1503,7 @@ class MainWindow(QtWidgets.QMainWindow):
             'gender' : mem_gender,
             'address' : mem_address,
             'contact' : mem_contact,
+            'email': mem_email,
             'medical' : mem_medical,
             'previous gym': mem_prevGym,
             'bp' : mem_BP,
@@ -1525,7 +1533,7 @@ class MainWindow(QtWidgets.QMainWindow):
 
             self.populate_mem_table()
             self.add_service_log_into_DB(service_id, mem_contact)
-            # self.add_transaction_DB(service_id, float(serv_price) + float(mship_fee), tendered_amount, mem_contact)  
+            self.add_transaction_DB(service_id, float(serv_price) + float(mship_fee), tendered_amount, mem_contact)  
 
         # try:
         #     params = config()
@@ -1609,9 +1617,27 @@ class MainWindow(QtWidgets.QMainWindow):
 
     #Add transaction details to DB
     def add_transaction_DB(self, serv_id, pay_totalAmount, pay_tenderedAmount, mem_contact):
-        conn = None
-        sql = "INSERT INTO TRANSACTION_HISTORY(TRAN_DATE, SERV_ID, TRAN_PRICE, TRAN_TENDERED, MEM_ID) VALUES(CURRENT_DATE, %s, %s, %s, (SELECT MEM_ID FROM MEMBER WHERE MEM_TELEPHONE = %s))"
-        values = (serv_id, pay_totalAmount, pay_tenderedAmount, mem_contact)
+
+        last_transact = next(self.transactiondb.find().limit(1),{}).get("_id", None)
+        transact_id = int(last_transact) + 1 if last_transact is not None else 0
+
+        mem_id = self.membersdb.find_one({"contact" : mem_contact})['_id']
+        member = self.membersdb.find_one({"_id" : mem_id})
+        
+        data = {
+            "_id" : transact_id,
+            "mem id" : mem_id,
+            "mem name" : member["first name"] + " " + member['last name'],
+            "transact date" : str(datetime.datetime.today()),
+            "serv type": self.servicesdb.find_one({"_id" : serv_id})['type'],
+            "transact price": pay_totalAmount,
+            "transact tendered" : pay_tenderedAmount
+        }
+
+        self.transactiondb.insert_one(data)
+        
+        # sql = "INSERT INTO TRANSACTION_HISTORY(TRAN_DATE, SERV_ID, TRAN_PRICE, TRAN_TENDERED, MEM_ID) VALUES(CURRENT_DATE, %s, %s, %s, (SELECT MEM_ID FROM MEMBER WHERE MEM_TELEPHONE = %s))"
+        # values = (serv_id, pay_totalAmount, pay_tenderedAmount, mem_contact)
 
         # try:
         #     params = config()
@@ -1628,12 +1654,32 @@ class MainWindow(QtWidgets.QMainWindow):
         #     if conn is not None:
         #         conn.close()
 
-        self.populate_transact_table()
+        # self.populate_transact_table()
 
     #Displaying all transactions done in the table
     def populate_transact_table(self):
-        conn = None
-        sql = "SELECT TRAN_ID, MEM_ID, CONCAT(MEM_FNAME, ' ', MEM_LNAME), DATE(TRAN_DATE), SERV_TYPE, TRAN_PRICE, TRAN_TENDERED FROM TRANSACTION_HISTORY LEFT JOIN SERVICE ON TRANSACTION_HISTORY.SERV_ID = SERVICE.SERV_ID NATURAL JOIN MEMBER"
+
+        transactions = self.transactiondb.find()
+        
+        self.ui.transac_table.setRowCount(0)
+        for row_number, transaction in enumerate(transactions):
+            self.ui.transac_table.insertRow(row_number)
+            for column_number, data in enumerate(transaction):      
+
+                if column_number == 3:
+                    data = str(transaction[data].split(" ")[0])
+
+                item = QtWidgets.QTableWidgetItem(data if column_number == 3 else str(transaction[data]))
+                item.setTextAlignment(Qt.AlignHCenter)
+                self.ui.transac_table.setItem(row_number,column_number,item)
+
+            #Display the change in the last column
+            item = QtWidgets.QTableWidgetItem(str(float(transaction['transact tendered']) - float(transaction['transact price'])))
+            item.setTextAlignment(Qt.AlignHCenter)
+            self.ui.transac_table.setItem(row_number,7,item)
+
+
+        # sql = "SELECT TRAN_ID, MEM_ID, CONCAT(MEM_FNAME, ' ', MEM_LNAME), DATE(TRAN_DATE), SERV_TYPE, TRAN_PRICE, TRAN_TENDERED FROM TRANSACTION_HISTORY LEFT JOIN SERVICE ON TRANSACTION_HISTORY.SERV_ID = SERVICE.SERV_ID NATURAL JOIN MEMBER"
 
         # try:
         #     params = config()
@@ -1790,7 +1836,7 @@ class MainWindow(QtWidgets.QMainWindow):
         selected_row = self.ui.emp_table.currentRow()
         emp_id = self.ui.emp_table.item(selected_row, 0)
 
-        empIsPresent = self.servicelogdb.find({"emp_id": emp_id})
+        empIsPresent = self.mon_servicelogdb.find({"employee id": emp_id})
         if empIsPresent:
             self.ui.assigned_emp_delete.setFixedWidth(1381)
         else:
