@@ -773,7 +773,18 @@ class MainWindow(QtWidgets.QMainWindow):
         selected_row = self.ui.mon_serviceLog_table.currentRow()
         if selected_row != -1:
             mon_id = self.ui.mon_serviceLog_table.item(selected_row, 0)
-            conn = None
+            
+            membership_exp = str(self.membersdb.find_one({"_id" : int(mon_id)})['end date']).split(" ")[0]
+            
+            if membership_exp:
+                today = datetime.datetime.today().date()
+                remaining_days = (membership_exp - today).days
+                if remaining_days < 30:
+                    self.ui.reminder_text.setText(f"This member's membership will expire within {remaining_days} day/s. Would you like to proceed with the monthly service access renewal or renew membership first?")
+                    self.ui.renewal_reminder_popup.setFixedWidth(1381)   
+                else:
+                    self.ui.renew_popup.setFixedWidth(1381)  
+
             # try:
             #     params = config()
             #     conn = psycopg2.connect(**params)
@@ -811,46 +822,37 @@ class MainWindow(QtWidgets.QMainWindow):
         selected_row = self.ui.mon_serviceLog_table.currentRow()
         monserv_id = self.ui.mon_serviceLog_table.item(selected_row, 0).text()
         mon_id = monserv_id
-        # try:
-        #     params = config()
-        #     conn = psycopg2.connect(**params)
-
-        #     sql = "UPDATE MONTHLY_SERVICE_LOG SET SERV_ID = %s, EMP_ID = %s, MON_SERVICE_START_DATE = CURRENT_TIMESTAMP, MON_SERVICE_END_DATE = CURRENT_TIMESTAMP +  INTERVAL '30 days' WHERE MON_SERVICE_LOG_ID = %s;"
-        #     cursor = conn.cursor()
-        #     cursor.execute(sql, (service_id, self.emp_id, monserv_id))    
-        #     conn.commit()
-        #     rows_changed = cursor.rowcount
-        #     if rows_changed > 0:
-        #         self.ui.savechanges_widget.setFixedWidth(341)
-        #         QtCore.QTimer.singleShot(1300, lambda: self.ui.savechanges_widget.setFixedWidth(0)) 
-        #         self.ui.renew_popup.setFixedWidth(0)
-
-        #         self.populate_mem_table()
-        #         self.populate_monServiceLog()
-                
-        #         sql = "SELECT MEM_TELEPHONE FROM MONTHLY_SERVICE_LOG JOIN MEMBER ON MEMBER.MEM_ID = MONTHLY_SERVICE_LOG.MEM_ID WHERE MON_SERVICE_LOG_ID = '" + mon_id + "';"
-        #         cursor = conn.cursor()
-        #         cursor.execute(sql)    
-        #         result = cursor.fetchone()
-
-        #         if result:
-        #             mem_contact = result
-        #             self.add_transaction_DB(service_id, renew_amt, renew_tendered, mem_contact)
-            
-        # except (Exception, psycopg2.Error) as error:
-        #     print("Error retrieving data from the database:", error)
         
-        # finally: 
-        #     if conn is not None:  
-        #         conn.close()
+        service_type = self.servicesdb.find_one({"_id" : service_id})['type']
 
-        #         if float(renew_tendered) > float(renew_amt):
-        #             self.ui.change_popup.setFixedWidth(1381)
-        #             change = float(renew_tendered) - float(renew_amt)
-        #             self.ui.change_field.setText(f"{change:.2f}")
-        #             self.populate_monServiceLog()
-        #         self.ui.renew_popup.setFixedWidth(0) 
+        renew_monthly = {
+            "$set" : {
+                "service type": service_type,
+                "employee id": self.emp_id,
+                "start date": str(datetime.datetime.today()),
+                "end date": str(datetime.datetime.today() + datetime.timedelta(days=30))
+            }
+        }
 
+        result = self.mon_servicelogdb.update_one({'_id' : int(mon_id)}, renew_monthly)
+
+        if result.modified_count > 0:
+            self.ui.savechanges_widget.setFixedWidth(341)
+            QtCore.QTimer.singleShot(1300, lambda: self.ui.savechanges_widget.setFixedWidth(0)) 
+            self.ui.renew_popup.setFixedWidth(0)
+            self.populate_monServiceLog()
+
+            mem_contact = self.membersdb.find_one({"_id" : int(mon_id)})['contact']
+
+            self.add_transaction_DB(service_id, renew_amt, renew_tendered, mem_contact)
+
+            if float(renew_tendered) > float(renew_amt):
+                self.ui.change_popup.setFixedWidth(1381)
+                change = float(renew_tendered) - float(renew_amt)
+                self.ui.change_field.setText(f"{change:.2f}")
+                self.populate_monServiceLog()
+
+            self.ui.renew_popup.setFixedWidth(0) 
 
     #Displaying all members with monthly service access
     def populate_monServiceLog(self):
@@ -911,6 +913,8 @@ class MainWindow(QtWidgets.QMainWindow):
         selected_row = self.ui.mon_serviceLog_table.currentRow()
         monservId = self.ui.mon_serviceLog_table.item(selected_row, 0)
         mon_id = monservId.text()
+
+        
         # try:
         #     params = config()
         #     conn = psycopg2.connect(**params)
@@ -1268,42 +1272,30 @@ class MainWindow(QtWidgets.QMainWindow):
         if selected_row != -1:
             self.ui.edit_details_popup.setFixedWidth(1381)
             mem_id = self.ui.mem_table.item(selected_row, 0)
-            conn = None
-            # try:
-            #     params = config()
-            #     conn = psycopg2.connect(**params)
+            
+            member = self.membersdb.find_one({"_id" : int(mem_id.text())})
 
-            #     cursor = conn.cursor()
-            #     cursor.execute("SELECT MEM_FNAME, MEM_LNAME, MEM_BIRTHDATE, MEM_ADDRESS, MEM_TELEPHONE, MEM_PHYSICAL_ACT, MEM_MED_AILMENT, MEM_WEIGHT, MEM_HEIGHT," +
-            #                     "MEM_BP, MEM_GENDER, MEM_STATUS, MEM_TYPE, MEM_PREV_GYM FROM MEMBER WHERE MEM_ID = '" + mem_id.text() + "';")
-            #     member = cursor.fetchone()
+            dateOfBirth = datetime.datetime.strptime(member['dob'], "%Y-%m-%d")
 
-            #     if member:
-            #         mem_fname, mem_lname, mem_bod, mem_add, mem_tel, mem_phys_act, mem_med_ailment, mem_weight, mem_height, mem_bp, mem_gender, mem_stat, mem_type, mem_prev_gym = member
-            #         self.ui.mem_fname.setText(str(mem_fname))
-            #         self.ui.mem_lname.setText(str(mem_lname))
-            #         self.ui.mem_DOB.setDate(mem_bod)
-            #         self.ui.mem_address.setText(str(mem_add))
-            #         self.ui.mem_contact.setText(str(mem_tel))
-            #         self.ui.mem_physicalAct.setText(str(mem_phys_act))
-            #         self.ui.mem_medic_ailments.setText(str(mem_med_ailment))
-            #         self.ui.mem_weight.setText(str(mem_weight))
-            #         self.ui.mem_height.setText(str(mem_height))
-            #         self.ui.mem_BP.setText(str(mem_bp))
-            #         self.ui.memGender_comboBox.setCurrentText(str(mem_gender))
-            #         self.ui.memStat_comboBox.setCurrentText(str(mem_stat))
-            #         if mem_type == 'STUDENT':
-            #             self.ui.memStud_radiobtn.setChecked(True)
-            #         else:
-            #             self.ui.memProf_radiobtn.setChecked(True)
-            #         self.ui.mem_prevGym.setText(str(mem_prev_gym))
-            #     else:
-            #         print("No member found for MEM_ID:", mem_id.text())
-            # except (Exception, psycopg2.Error) as error:
-            #     print("Error retrieving data from the database:", error)
-            # finally:
-            #     if conn is not None:
-            #         conn.close()                       
+            if member:
+                self.ui.mem_fname.setText(member['first name'])
+                self.ui.mem_lname.setText(member['last name'])
+                self.ui.mem_DOB.setDate(dateOfBirth)
+                self.ui.mem_address.setText(member['address'])
+                self.ui.mem_contact.setText(member['contact'])
+                self.ui.mem_physicalAct.setText(member['activity'])
+                self.ui.mem_medic_ailments.setText(member['medical'])
+                self.ui.mem_weight.setText(str(member['weight']))
+                self.ui.mem_height.setText(str(member['height']))
+                self.ui.mem_BP.setText(str(member['bp']))
+                self.ui.memGender_comboBox.setCurrentText(member['gender'])
+                self.ui.memStat_comboBox.setCurrentText(member['status'])
+                if member['type'] == 'STUDENT':
+                    self.ui.memStud_radiobtn.setChecked(True)
+                else:
+                    self.ui.memProf_radiobtn.setChecked(True)
+                self.ui.mem_prevGym.setText(member['previous gym'])
+                self.ui.mem_email.setText(member['email'])               
 
         else:
             self.ui.rowSelection_notice.setFixedWidth(301)
@@ -1323,60 +1315,58 @@ class MainWindow(QtWidgets.QMainWindow):
 
     #Updating member details in the DB
     def update_member_details(self):
+
         mem_id = self.ui.mem_table.item(self.ui.mem_table.currentRow(), 0)
 
-        update_fname = self.ui.mem_fname.text()
-        update_lname = self.ui.mem_lname.text()
-        update_address = self.ui.mem_address.text()
+        update_fname = self.ui.mem_fname.text().upper()
+        update_lname = self.ui.mem_lname.text().upper()
+        update_address = self.ui.mem_address.text().upper()
         update_DOB = self.ui.mem_DOB.date().toString('yyyy-MM-dd')
         update_contact = self.ui.mem_contact.text()
-        update_medical = self.ui.mem_medic_ailments.text()
+        update_email = self.ui.mem_email.text().upper()
+        update_medical = self.ui.mem_medic_ailments.text().upper()
         update_type = self.get_selected_radio_button_update()
-        update_prevgym = self.ui.mem_prevGym.text()
+        update_prevgym = self.ui.mem_prevGym.text().upper()
         update_BP = self.ui.mem_BP.text()
         update_stat = self.ui.memStat_comboBox.currentText()
-        update_physAct = self.ui.mem_physicalAct.text()
+        update_physAct = self.ui.mem_physicalAct.text().upper()
         update_weight = self.ui.mem_weight.text()
         update_height = self.ui.mem_height.text()
         update_gender = self.ui.memGender_comboBox.currentText()
 
-        sql = "UPDATE MEMBER SET MEM_FNAME = %s, MEM_LNAME = %s, MEM_BIRTHDATE = %s, MEM_ADDRESS = %s, MEM_TELEPHONE = %s, MEM_PHYSICAL_ACT = %s, MEM_MED_AILMENT = %s, MEM_WEIGHT = %s, MEM_HEIGHT = %s, MEM_BP = %s, MEM_GENDER = %s, MEM_STATUS = %s, MEM_TYPE = %s, MEM_PREV_GYM = %s WHERE MEM_ID = %s;"
-        values = (update_fname.upper(), update_lname.upper(), update_DOB, update_address.upper(), update_contact, update_physAct.upper(), update_medical.upper(), update_weight, update_height, update_BP, update_gender.upper(), update_stat.upper(), update_type.upper(), update_prevgym.upper(), mem_id.text())
-        conn = None
-        # try:
-        #     params = config()
-        #     conn = psycopg2.connect(**params)
-        #     cursor = conn.cursor()
-        #     cursor.execute(sql, values)
-        #     conn.commit()
-        #     self.ui.mem_fname.setText('')
-        #     self.ui.mem_lname.setText('')
-        #     self.ui.mem_DOB.setDate(QDate(2000, 1, 1))
-        #     self.ui.mem_address.setText('')
-        #     self.ui.mem_contact.setText('')
-        #     self.ui.mem_physicalAct.setText('')
-        #     self.ui.mem_medic_ailments.setText('')
-        #     self.ui.mem_weight.setText('')
-        #     self.ui.mem_height.setText('')
-        #     self.ui.mem_BP.setText('')
-        #     self.ui.memGender_comboBox.setCurrentText('Gender')
-        #     self.ui.memStat_comboBox.setCurrentText('Status')
-        #     self.ui.memProf_radiobtn.setChecked(False)
-        #     self.ui.memStud_radiobtn.setChecked(False)
-        #     self.ui.mem_prevGym.setText('')
-        #     self.populate_mem_table()
-        #     self.ui.edit_details_popup.setFixedWidth(0)
-        #     self.ui.savechanges_widget.setFixedWidth(341)
-        #     QtCore.QTimer.singleShot(1300, lambda: self.ui.savechanges_widget.setFixedWidth(0))  
-    
-        # except (Exception, psycopg2.Error) as error:
-        #     self.ui.fieldNotice.setText('Phone number is already used.')
-        #     self.ui.invalid_notice.setFixedWidth(391)
-        #     QtCore.QTimer.singleShot(1300, lambda: self.ui.invalid_notice.setFixedWidth(0))
+        update_member = {
+            "$set" : {
+                'first name' : update_fname,
+                'last name' : update_lname,
+                'dob' : update_DOB,
+                'gender' : update_gender,
+                'address' : update_address,
+                'contact' : update_contact,
+                'email': update_email,
+                'medical' : update_medical,
+                'previous gym': update_prevgym,
+                'bp' : update_BP,
+                'status' : update_stat,
+                'activity' : update_physAct,
+                'weight' : update_weight,
+                'height' : update_height,
+                'type' : update_type
+            }
+        }
 
-        # finally:
-        #     if conn is not None:
-        #         conn.close()
+        used_contact = self.membersdb.find_one({"contact" : update_contact})['_id']
+   
+        if used_contact is None or used_contact == int(mem_id.text()):
+            result = self.membersdb.update_one({"_id" : int(mem_id.text())}, update_member)
+
+            if result.modified_count > 0:
+                self.ui.edit_details_popup.setFixedWidth(0)
+                self.ui.savechanges_widget.setFixedWidth(341)
+                QtCore.QTimer.singleShot(1300, lambda: self.ui.savechanges_widget.setFixedWidth(0))  
+        else:
+            self.ui.fieldNotice.setText('Phone number is already used.')
+            self.ui.invalid_notice.setFixedWidth(391)
+            QtCore.QTimer.singleShot(1300, lambda: self.ui.invalid_notice.setFixedWidth(0))
 
     #Cancel edit member
     def cancel_edit_mem(self):
@@ -1442,30 +1432,7 @@ class MainWindow(QtWidgets.QMainWindow):
         else:
             self.ui.fieldNotice.setText('Phone number is already used.')
             self.ui.invalid_notice.setFixedWidth(391)
-            QtCore.QTimer.singleShot(1300, lambda: self.ui.invalid_notice.setFixedWidth(0)) 
-
-        # try:
-        #     params = config()
-        #     conn = psycopg2.connect(**params)
-
-        #     sql = "SELECT * FROM MEMBER WHERE MEM_TELEPHONE = '" + phonenum + "';"
-        #     cursor = conn.cursor()
-        #     cursor.execute(sql)
-        #     check = cursor.fetchall()
-            
-        #     if check:
-        #         self.ui.fieldNotice.setText('Phone number is already used.')
-        #         self.ui.invalid_notice.setFixedWidth(391)
-        #         QtCore.QTimer.singleShot(1300, lambda: self.ui.invalid_notice.setFixedWidth(0)) 
-        #     else:
-        #         self.regis_save()
-
-        # except (Exception, psycopg2.Error) as error:
-        #     print("Error retrieving data from the database:", error)
-        
-        # finally:
-        #     if conn is not None:
-        #         conn.close()
+            QtCore.QTimer.singleShot(1300, lambda: self.ui.invalid_notice.setFixedWidth(0))  
 
     #Add a member to DB
     def add_member_into_DB(self):
@@ -1523,12 +1490,13 @@ class MainWindow(QtWidgets.QMainWindow):
 
         if result:
             if float(tendered_amount) > (float(serv_price) + float(mship_fee)):
-                #self.send_text(mem_contact)
-                self.send_email('hannahsheenobejero@gmail.com')
                 self.ui.change_popup.setFixedWidth(1381)
                 change = float(tendered_amount) - (float(serv_price) + float(mship_fee))
                 self.ui.change_field.setText(f"{change:.2f}")
             
+            #self.send_text(mem_contact)
+            self.send_email('hannahsheenobejero@gmail.com')
+
             self.ui.register_popup.setFixedWidth(0)
             self.ui.payment_popup.setFixedWidth(0) 
 
@@ -1538,35 +1506,6 @@ class MainWindow(QtWidgets.QMainWindow):
             self.populate_mem_table()
             self.add_service_log_into_DB(service_id, mem_contact)
             self.add_transaction_DB(service_id, float(serv_price) + float(mship_fee), tendered_amount, mem_contact)  
-
-        # try:
-        #     params = config()
-        #     conn = psycopg2.connect(**params)
-
-        #     cur= conn.cursor()
-        #     cur.execute(sql, values)
-        #     conn.commit()
-        #     cur.close
-
-        #     if float(tendered_amount) > (float(serv_price) + float(mship_fee)):
-        #             self.ui.change_popup.setFixedWidth(1381)
-        #             change = float(tendered_amount) - (float(serv_price) + float(mship_fee))
-        #             self.ui.change_field.setText(f"{change:.2f}")
-        #             self.populate_mem_table()
-        #     self.ui.register_popup.setFixedWidth(0)
-        #     self.ui.payment_popup.setFixedWidth(0) 
-
-        #     self.ui.success_widget.setFixedWidth(371)
-        #     QtCore.QTimer.singleShot(1300, lambda: self.ui.success_widget.setFixedWidth(0))  
-      
-        #     self.add_service_log_into_DB(service_id, mem_contact)
-        #     self.add_transaction_DB(service_id, float(serv_price) + float(mship_fee), tendered_amount, mem_contact)  
-
-        # except (Exception, psycopg2.Error) as error:
-        #     print(error)
-        # finally:
-        #     if conn is not None:
-        #         conn.close()
                             
     #Record for registration and/or renewal is done
     def record_done(self): 
@@ -1622,7 +1561,7 @@ class MainWindow(QtWidgets.QMainWindow):
     #Add transaction details to DB
     def add_transaction_DB(self, serv_id, pay_totalAmount, pay_tenderedAmount, mem_contact):
 
-        last_transact = next(self.transactiondb.find().limit(1),{}).get("_id", None)
+        last_transact = next(self.transactiondb.find().sort("_id", -1).limit(1),{}).get("_id", None)
         transact_id = int(last_transact) + 1 if last_transact is not None else 0
 
         mem_id = self.membersdb.find_one({"contact" : mem_contact})['_id']
@@ -1639,26 +1578,6 @@ class MainWindow(QtWidgets.QMainWindow):
         }
 
         self.transactiondb.insert_one(data)
-        
-        # sql = "INSERT INTO TRANSACTION_HISTORY(TRAN_DATE, SERV_ID, TRAN_PRICE, TRAN_TENDERED, MEM_ID) VALUES(CURRENT_DATE, %s, %s, %s, (SELECT MEM_ID FROM MEMBER WHERE MEM_TELEPHONE = %s))"
-        # values = (serv_id, pay_totalAmount, pay_tenderedAmount, mem_contact)
-
-        # try:
-        #     params = config()
-        #     conn = psycopg2.connect(**params)
-
-        #     cur= conn.cursor()
-        #     cur.execute(sql, values)
-        #     conn.commit()
-        #     cur.close
-
-        # except(Exception, psycopg2.DataError) as error:
-        #     print(error)
-        # finally:
-        #     if conn is not None:
-        #         conn.close()
-
-        # self.populate_transact_table()
 
     #Displaying all transactions done in the table
     def populate_transact_table(self):
@@ -1682,37 +1601,6 @@ class MainWindow(QtWidgets.QMainWindow):
             item.setTextAlignment(Qt.AlignHCenter)
             self.ui.transac_table.setItem(row_number,7,item)
 
-
-        # sql = "SELECT TRAN_ID, MEM_ID, CONCAT(MEM_FNAME, ' ', MEM_LNAME), DATE(TRAN_DATE), SERV_TYPE, TRAN_PRICE, TRAN_TENDERED FROM TRANSACTION_HISTORY LEFT JOIN SERVICE ON TRANSACTION_HISTORY.SERV_ID = SERVICE.SERV_ID NATURAL JOIN MEMBER"
-
-        # try:
-        #     params = config()
-        #     conn = psycopg2.connect(**params)
-
-        #     cur= conn.cursor()
-        #     cur.execute(sql)
-        #     result = cur.fetchall()
-  
-        #     self.ui.transac_table.setRowCount(0)
-        #     for row_number, row_data in enumerate(result):
-        #         self.ui.transac_table.insertRow(row_number)
-        #         for column_number, data in enumerate(row_data):
-        #             item = QtWidgets.QTableWidgetItem(str(data))
-        #             item.setTextAlignment(Qt.AlignHCenter)
-        #             self.ui.transac_table.setItem(row_number, column_number, item)
-                    
-        #             if column_number == 5:
-        #                 item = QtWidgets.QTableWidgetItem(f"{float(row_data[6]) - float(row_data[5]):.2f}")
-        #                 item.setTextAlignment(Qt.AlignHCenter)
-        #                 self.ui.transac_table.setItem(row_number, 7, item)
-        
-        # except (Exception, psycopg2.Error) as error:
-        #     print("Error retrieving data from the database:", error)
-        
-        # finally:
-        #     if conn is not None:
-        #         conn.close()
-    
     # ===========================================================================================================================================================================
     #Employee menu functions
     # ===========================================================================================================================================================================
@@ -2204,19 +2092,19 @@ class MainWindow(QtWidgets.QMainWindow):
         # else:
             # print(f"Message failed with error: {response['messages'][0]['error-text']}")
 
-        account_sid = 'AC723d0f0cc5b938cc9860706316b944e3'
-        auth_token = '854490238dff143d11e22af6d328495b'
+        # account_sid = 'AC723d0f0cc5b938cc9860706316b944e3'
+        # auth_token = '854490238dff143d11e22af6d328495b'
 
 
-        client = Client(account_sid, auth_token)
+        # client = Client(account_sid, auth_token)
 
-        message = client.messages.create(
-        to=phonenum,
-        from_="+17856457802",  
-        body='henlo, check ko lang if ma send'
-        )
+        # message = client.messages.create(
+        # to=phonenum,
+        # from_="+17856457802",  
+        # body='henlo, check ko lang if ma send'
+        # )
 
-        print(message.sid)
+        # print(message.sid)
 
 
     # ===========================================================================================================================================================================
