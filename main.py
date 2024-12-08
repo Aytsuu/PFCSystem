@@ -5,6 +5,8 @@ from ui_mainUI import *
 from PySide6.QtGui import *
 import datetime
 import smtplib
+from email.mime.text import MIMEText
+from email.mime.multipart import MIMEMultipart
 import threading
 
 
@@ -1521,10 +1523,28 @@ class MainWindow(QtWidgets.QMainWindow):
 
         result = self.membersdb.insert_one(member)
 
+        
+        email_text = f"""
+            <html>
+            <body style="font-family: Arial, sans-serif; color: #333;">
+                <h2 style="color: #1E90FF;">Hi {mem_fname},</h2>
+                <p>Thank you for signing up with <strong>People Fitness Center</strong>!</p>
+                <p>We're excited to let you know that your membership has been successfully registered, 
+                and we can't wait to see you in the gym.</p>
+                <p>If you have any questions or need help getting started, feel free to reach out. 
+                We're here to help and support you along the way.</p>
+                <p>Thanks again for joining us, and we look forward to seeing you soon!</p>
+                <br>
+
+                <img src="https://drive.google.com/uc?export=view&id=1Am6E_LO5laC9XbiEQOoDtmZD_F4aOlU5" alt="Welcome Image" width="150" height="150"/>
+                <h3>People Fitness Center</h3>
+            </body>
+            </html>
+            """
+        email_subject = 'Welcome to People Fitness Center!'
         if result:
             if float(tendered_amount) > (float(serv_price) + float(mship_fee)):
-                #self.send_text(mem_contact)
-                self.send_email('hannahsheenobejero@gmail.com')
+                self.send_email(mem_email.lower(), email_text, email_subject)
                 self.ui.change_popup.setFixedWidth(1381)
                 change = float(tendered_amount) - (float(serv_price) + float(mship_fee))
                 self.ui.change_field.setText(f"{change:.2f}")
@@ -1534,6 +1554,7 @@ class MainWindow(QtWidgets.QMainWindow):
 
             self.ui.success_widget.setFixedWidth(371)
             QtCore.QTimer.singleShot(1300, lambda: self.ui.success_widget.setFixedWidth(0))  
+
 
             self.populate_mem_table()
             self.add_service_log_into_DB(service_id, mem_contact)
@@ -1579,6 +1600,7 @@ class MainWindow(QtWidgets.QMainWindow):
             self.ui.regismem_address.setText('')
             self.ui.regismem_contact.setText('')
             self.ui.regismem_physicalAct.setText('')
+            self.ui.regismem_email.setText('')
             self.ui.regismem_medicAilment.setText('')
             self.ui.regismem_weight.setText('')
             self.ui.regismem_height.setText('')
@@ -1622,7 +1644,7 @@ class MainWindow(QtWidgets.QMainWindow):
     #Add transaction details to DB
     def add_transaction_DB(self, serv_id, pay_totalAmount, pay_tenderedAmount, mem_contact):
 
-        last_transact = next(self.transactiondb.find().limit(1),{}).get("_id", None)
+        last_transact = next(self.transactiondb.find().sort("_id", -1).limit(1),{}).get("_id", None)
         transact_id = int(last_transact) + 1 if last_transact is not None else 0
 
         mem_id = self.membersdb.find_one({"contact" : mem_contact})['_id']
@@ -2178,14 +2200,30 @@ class MainWindow(QtWidgets.QMainWindow):
     # ===========================================================================================================================================================================
     # Send Email and text
     # ===========================================================================================================================================================================
-    def send_email(self, mem_email):
-        sender_email = 'hannahsheen12@gmail.com'
-        text = 'you have been registered'
-        server = smtplib.SMTP('smtp.gmail.com', 587)
-        server.starttls()
-        server.login(sender_email, 'ydnxsvmtbxyprfkg')
-        server.sendmail(sender_email, mem_email,text)
-        print('Email sent to', mem_email)
+    def send_email(self, mem_email, email_text, subject):
+        sender_email = 'peoplefitnesscenter2008@gmail.com'
+
+        try:
+            msg = MIMEMultipart()
+            msg['From'] = sender_email
+            msg['To'] = mem_email
+            msg['Subject'] = subject
+
+            msg.attach(MIMEText(email_text, 'html'))
+
+            server = smtplib.SMTP('smtp.gmail.com', 587)
+            server.starttls()  # Start TLS encryption
+            server.login(sender_email, 'xmpdacmlmodnppns')  # Login with your Gmail credentials
+            server.sendmail(sender_email, mem_email, msg.as_string())  # Send email
+
+            print(f'Email sent to {mem_email}')
+
+        except smtplib.SMTPException as e:
+            print(f'Error occurred while sending email to {mem_email}: {e}')
+
+        finally:
+            server.quit()  # Close the SMTP connection
+
 
     def send_text(self, mem_phonenum):
         phonenum = '+63' + mem_phonenum[1:]    
@@ -2204,19 +2242,19 @@ class MainWindow(QtWidgets.QMainWindow):
         # else:
             # print(f"Message failed with error: {response['messages'][0]['error-text']}")
 
-        account_sid = 'AC723d0f0cc5b938cc9860706316b944e3'
-        auth_token = '854490238dff143d11e22af6d328495b'
+        # account_sid = 'AC723d0f0cc5b938cc9860706316b944e3'
+        # auth_token = '854490238dff143d11e22af6d328495b'
 
 
-        client = Client(account_sid, auth_token)
+        # client = Client(account_sid, auth_token)
 
-        message = client.messages.create(
-        to=phonenum,
-        from_="+17856457802",  
-        body='henlo, check ko lang if ma send'
-        )
+        # message = client.messages.create(
+        # to=phonenum,
+        # from_="+17856457802",  
+        # body='henlo, check ko lang if ma send'
+        # )
 
-        print(message.sid)
+        #print(message.sid)
 
 
     # ===========================================================================================================================================================================
