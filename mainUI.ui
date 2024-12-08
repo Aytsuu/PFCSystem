@@ -336,7 +336,7 @@ border-radius:40px;</string>
      <string notr="true">background-color: #5F8B6D;</string>
     </property>
     <property name="currentIndex">
-     <number>1</number>
+     <number>5</number>
     </property>
     <widget class="QWidget" name="home_page">
      <widget class="QTableWidget" name="notif_table">
@@ -1804,6 +1804,16 @@ background-color: #075E20;
       <column>
        <property name="text">
         <string>ADDRESS</string>
+       </property>
+       <property name="font">
+        <font>
+         <pointsize>12</pointsize>
+        </font>
+       </property>
+      </column>
+      <column>
+       <property name="text">
+        <string>EMAIL</string>
        </property>
        <property name="font">
         <font>

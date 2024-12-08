@@ -2048,10 +2048,8 @@ class MainWindow(QtWidgets.QMainWindow):
  
         member = self.membersdb.find_one({'contact' : mem_contact})
         service = self.servicesdb.find_one({'_id' : serv_id})
-        last_log = next(self.mon_servicelogdb.find().sort("_id", -1).limit(1), {}).get('_id', None)
-        log_id = int(last_log) + 1 if last_log is not None else 0
         log = {
-            "_id" : log_id,
+            "_id" : member['_id'],
             "member_fname" : member['first name'],
             "member_lname" : member['last name'],
             "service type": service['type'],
