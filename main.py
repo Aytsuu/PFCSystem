@@ -6,6 +6,7 @@ from PySide6.QtGui import *
 import datetime
 import smtplib
 import threading
+import time
 
 
 class LoginWindow(QtWidgets.QMainWindow):
@@ -88,7 +89,8 @@ class MainWindow(QtWidgets.QMainWindow):
         self.employeedb = self.database.employee
         self.mon_servicelogdb = self.database.monthly_service_log
         self.transactiondb = self.database.transaction_history
-        
+        self.notificationdb = self.database.notification
+
         # ===========================================================================================================================================================================
         # Adding admin and check if admin exists in employees record
         # ===========================================================================================================================================================================
@@ -785,30 +787,6 @@ class MainWindow(QtWidgets.QMainWindow):
                 else:
                     self.ui.renew_popup.setFixedWidth(1381)  
 
-            # try:
-            #     params = config()
-            #     conn = psycopg2.connect(**params)
-
-            #     sql = "SELECT MEM_MEMBERSHIP_END_DATE FROM MONTHLY_SERVICE_LOG INNER JOIN MEMBER ON MEMBER.MEM_ID = MONTHLY_SERVICE_LOG.MEM_ID WHERE MON_SERVICE_LOG_ID = '" + mon_id.text() + "';"
-            #     cursor = conn.cursor()
-            #     cursor.execute(sql)
-            #     membership_exp = cursor.fetchone()
-
-            #     if membership_exp:
-            #         expiry_date = membership_exp[0].date()
-            #         today = datetime.datetime.today().date()
-            #         remaining_days = (expiry_date - today).days
-            #         if remaining_days < 30:
-            #             self.ui.reminder_text.setText(f"This member's membership will expire within {remaining_days} day/s. Would you like to proceed with the monthly service access renewal or renew membership first?")
-            #             self.ui.renewal_reminder_popup.setFixedWidth(1381)   
-            #         else:
-            #             self.ui.renew_popup.setFixedWidth(1381)   
-            # except(Exception, psycopg2.Error) as error:
-            #     print(error)
-            # finally:
-            #     if conn is not None:  
-            #         conn.close()
-
     #Cancel renew
     def cancel_renew(self):
         self.ui.renew_popup.setFixedWidth(0)
@@ -914,47 +892,32 @@ class MainWindow(QtWidgets.QMainWindow):
         monservId = self.ui.mon_serviceLog_table.item(selected_row, 0)
         mon_id = monservId.text()
 
-        
-        # try:
-        #     params = config()
-        #     conn = psycopg2.connect(**params)
+        renew_membership = {
+            "$set" : {
+                "start date" : str(datetime.datetime.today()),
+                "end date" : str(datetime.datetime.today() + datetime.timedelta(days=365))
+            }
+        }
 
-        #     sql = "UPDATE MEMBER SET MEM_MEMBERSHIP_START_DATE = CURRENT_TIMESTAMP, MEM_MEMBERSHIP_END_DATE = CURRENT_TIMESTAMP +  INTERVAL '365 days' WHERE MEM_ID = (SELECT MEM_ID FROM MONTHLY_SERVICE_LOG WHERE MON_SERVICE_LOG_ID = '" + monservId.text() + "');"
-        #     cursor = conn.cursor()
-        #     cursor.execute(sql)    
-        #     conn.commit()
-        #     rows_changed = cursor.rowcount
+        membership = self.membersdb.update_one({"_id" : int(mon_id)}, renew_membership)
 
-        #     if rows_changed > 0:
-        #         self.ui.savechanges_widget.setFixedWidth(341)
-        #         QtCore.QTimer.singleShot(1300, lambda: self.ui.savechanges_widget.setFixedWidth(0)) 
-        #         self.ui.renew_popup.setFixedWidth(0)
+        if membership.modified_count > 0:
+            self.ui.savechanges_widget.setFixedWidth(341)
+            QtCore.QTimer.singleShot(1300, lambda: self.ui.savechanges_widget.setFixedWidth(0)) 
+            self.ui.renew_popup.setFixedWidth(0)
 
-        #         self.populate_mem_table()
-        #         self.populate_monServiceLog()
+            mem_contact = self.membersdb.find_one({"_id" : int(mon_id)})['contact']
 
-        #         sql = "SELECT MEM_TELEPHONE FROM MONTHLY_SERVICE_LOG JOIN MEMBER ON MEMBER.MEM_ID = MONTHLY_SERVICE_LOG.MEM_ID WHERE MON_SERVICE_LOG_ID = '" + mon_id + "';"
-        #         cursor = conn.cursor()
-        #         cursor.execute(sql)    
-        #         result = cursor.fetchone()
+            if mem_contact:
+                self.add_transaction_DB(None, mship_fee, mshipRenew_tendered, mem_contact)
 
-        #         if result:
-        #             mem_contact = result
-        #             self.add_transaction_DB(None, mship_fee, mshipRenew_tendered, mem_contact)
-            
-        # except (Exception, psycopg2.Error) as error:
-        #     print("Error retrieving data from the database:", error)
-        
-        # finally: 
-        #     if conn is not None:  
-        #         conn.close()
+                if float(mshipRenew_tendered) > float(mship_fee):
+                    self.ui.change_popup.setFixedWidth(1381)
+                    change = float(mshipRenew_tendered) - float(mship_fee)
+                    self.ui.change_field.setText(f"{change:.2f}")
+                    self.populate_monServiceLog()
+                self.ui.membership_renewal_popup.setFixedWidth(0) 
 
-        #         if float(mshipRenew_tendered) > float(mship_fee):
-        #             self.ui.change_popup.setFixedWidth(1381)
-        #             change = float(mshipRenew_tendered) - float(mship_fee)
-        #             self.ui.change_field.setText(f"{change:.2f}")
-        #             self.populate_monServiceLog()
-        #         self.ui.membership_renewal_popup.setFixedWidth(0) 
 
     #Display details of all membership
     def populate_mshipStat(self):
@@ -1854,21 +1817,7 @@ class MainWindow(QtWidgets.QMainWindow):
     #Automatically deletes a member if membership has expired
     def delete_expiredMship(self):
         while True:
-            # try:
-            #     params = config()
-            #     conn = psycopg2.connect(**params)
-
-            #     sql = "DELETE FROM MEMBER WHERE MEM_MEMBERSHIP_END_DATE <= CURRENT_TIMESTAMP"
-            #     cursor = conn.cursor()
-            #     cursor.execute(sql)
-            #     conn.commit()
-            # except (Exception, psycopg2.Error) as error:
-            #     print("Error retrieving data from the database:", error)
-            
-            # finally:
-            #     if conn is not None:
-            #         conn.close()
-            break
+            self.membersdb.delete_many({"end date" : {"$lte" : datetime.datetime.today()}})
             
     # ===========================================================================================================================================================================
     # Notification
@@ -1893,7 +1842,74 @@ class MainWindow(QtWidgets.QMainWindow):
 
     #Constantly checking the status of monthly service access
     def monitor_monServiceAccess(self):
+
+        interval = [
+                    (7, "monthly service access has 7 remaining days."),
+                    (1, "monthly service access will expire after 24 hours."),
+                    (0, "monthly service access has expired.")
+                ] 
+                
         while True:
+    
+            for days, notification in interval:
+
+                pipeline = [
+                    {
+                        "$project": {
+                            "_id": 1,
+                            "end date": {
+                                "$subtract": [
+                                    {
+                                        # Converting string to date
+                                        "$toDate": {
+                                            "$substr": [ "$end date", 0, 19 ] # Extracting the first 19 characters (yyyy-MM-dd HH:mm:ss)
+                                        }
+                                    },
+                                    days * 24 * 60 * 60 * 1000  # Subtract the interval in milliseconds
+                                ]
+                            }
+                        }
+                    },
+                    {
+                        "$match": {
+                            "end date": {"$lte": datetime.datetime.today()}  # Compare with current local time
+                        }
+                    }
+                ]
+
+                monthly_serviceAccess = self.mon_servicelogdb.aggregate(pipeline)
+                
+                for member_access in monthly_serviceAccess:
+                    
+                    notif_exist = self.notificationdb.find({"content" : notification}, {"member id" : 1})
+
+                    if not (notif_exist is None and member_access['_id'] in [mem_id for mem_id in notif_exist['member id']]):
+
+                        last_notifID = next(self.notificationdb.find().sort("_id", -1).limit(1), {}).get("_id", None)
+                        notif_id = last_notifID + 1 if last_notifID is not None else 0
+
+                        notification = {
+                            "_id" : notif_id,
+                            "content" : notification,
+                            "date" : str(datetime.datetime.today()),
+                            "member id" : member_access['_id'],                    
+                        }
+
+                        result = self.notificationdb.insert_one(notification)
+
+                        if result.acknowledged:
+                            self.send_email
+                            self.ui.new_notifbtn.setFixedWidth(271)
+                            QtCore.QTimer.singleShot(1300, lambda: self.ui.new_notifbtn.setFixedWidth(0))   
+                        
+                        if days == 0: self.populate_monServiceLog()
+                
+                time.sleep(1)
+
+
+                        
+                        
+
             # try:
             #     params = config()
             #     conn = psycopg2.connect(**params)
@@ -1949,10 +1965,72 @@ class MainWindow(QtWidgets.QMainWindow):
                           
             # time.sleep(1)
 
-                break
-
     def monitor_membership(self):
+
+        interval = [
+                (30, "membership has 30 remaining days."),
+                (15, "membership has 15 remaining days."),
+                (3, "membership has 3 remaining days."),
+                (1, "membership will expire after 24 hours."),
+                (0, "membership has expired.")
+            ] 
+
         while True:
+            
+            for days, notification in interval:
+
+                pipeline = [
+                    {
+                        "$project" : {
+                            "_id" : 1,
+                            "end date" : {
+                                "$subtract": [
+                                    {
+                                        # Converting string to date
+                                        "$toDate": {
+                                            "$substr": [ "$end date", 0, 19 ] # Extracting the first 19 characters (yyyy-MM-dd HH:mm:ss)
+                                        }
+                                    },
+                                    days * 24 * 60 * 60 * 1000  # Subtract the interval in milliseconds
+                                ]
+                            }
+                        }
+                    },
+                    {
+                        "$match": {
+                            "end date": {"$lte": datetime.datetime.today()}  # Compare with current local time
+                        }
+                    }
+                    
+                ]
+
+                membership_expiry = self.membersdb.aggregate(pipeline)
+
+                for member in membership_expiry:
+
+                    notif_exist = self.notificationdb.find({"content" : notification}, {"member id" : 1})
+
+                    if not(notif_exist is None and member['_id'] in [mem_id for mem_id in notif_exist['member id']]):
+                        
+                        last_notifID = next(self.notificationdb.find().sort("_id", -1).limit(1), {}).get("_id", None)
+                        notif_id = last_notifID + 1 if last_notifID is not None else 0
+
+                        notification = {
+                            "_id" : notif_id,
+                            "content" : notification,
+                            "date" : str(datetime.datetime.today()),
+                            "member id" : member['_id'],                    
+                        }
+
+                        result = self.notificationdb.insert_one(notification)
+
+                        if result.acknowledged:
+                            self.send_email
+                            self.ui.new_notifbtn.setFixedWidth(271)
+                            QtCore.QTimer.singleShot(1300, lambda: self.ui.new_notifbtn.setFixedWidth(0))   
+
+                            if days == 0: self.populate_mem_table() 
+
             # try:
             #     params = config()
             #     conn = psycopg2.connect(**params)     
