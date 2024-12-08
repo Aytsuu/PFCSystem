@@ -1955,7 +1955,7 @@ class MainWindow(QtWidgets.QMainWindow):
                 (1, "membership will expire after 24 hours."),
                 (0, "membership has expired.")
             ] 
-
+ 
         while True:
             
             for days, notification in interval:
