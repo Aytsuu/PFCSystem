@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 ################################################################################
-## Form generated from reading UI file 'mainUIuHccic.ui'
+## Form generated from reading UI file 'mainUIAQCDLY.ui'
 ##
 ## Created by: Qt User Interface Compiler version 5.15.2
 ##
@@ -737,8 +737,8 @@ class Ui_MainWindow(object):
         self.widget_8.setGeometry(QRect(440, 40, 21, 21))
         self.widget_8.setStyleSheet(u"background-color: #ffffff;")
         self.emp_table = QTableWidget(self.employees_page)
-        if (self.emp_table.columnCount() < 6):
-            self.emp_table.setColumnCount(6)
+        if (self.emp_table.columnCount() < 7):
+            self.emp_table.setColumnCount(7)
         __qtablewidgetitem29 = QTableWidgetItem()
         __qtablewidgetitem29.setFont(font6);
         self.emp_table.setHorizontalHeaderItem(0, __qtablewidgetitem29)
@@ -757,6 +757,9 @@ class Ui_MainWindow(object):
         __qtablewidgetitem34 = QTableWidgetItem()
         __qtablewidgetitem34.setFont(font6);
         self.emp_table.setHorizontalHeaderItem(5, __qtablewidgetitem34)
+        __qtablewidgetitem35 = QTableWidgetItem()
+        __qtablewidgetitem35.setFont(font6);
+        self.emp_table.setHorizontalHeaderItem(6, __qtablewidgetitem35)
         self.emp_table.setObjectName(u"emp_table")
         self.emp_table.setGeometry(QRect(50, 110, 841, 651))
         self.emp_table.setFont(font7)
@@ -3684,15 +3687,15 @@ class Ui_MainWindow(object):
         self.services_table = QTableWidget(self.services_widget)
         if (self.services_table.columnCount() < 3):
             self.services_table.setColumnCount(3)
-        __qtablewidgetitem35 = QTableWidgetItem()
-        __qtablewidgetitem35.setFont(font6);
-        self.services_table.setHorizontalHeaderItem(0, __qtablewidgetitem35)
         __qtablewidgetitem36 = QTableWidgetItem()
         __qtablewidgetitem36.setFont(font6);
-        self.services_table.setHorizontalHeaderItem(1, __qtablewidgetitem36)
+        self.services_table.setHorizontalHeaderItem(0, __qtablewidgetitem36)
         __qtablewidgetitem37 = QTableWidgetItem()
         __qtablewidgetitem37.setFont(font6);
-        self.services_table.setHorizontalHeaderItem(2, __qtablewidgetitem37)
+        self.services_table.setHorizontalHeaderItem(1, __qtablewidgetitem37)
+        __qtablewidgetitem38 = QTableWidgetItem()
+        __qtablewidgetitem38.setFont(font6);
+        self.services_table.setHorizontalHeaderItem(2, __qtablewidgetitem38)
         self.services_table.setObjectName(u"services_table")
         self.services_table.setGeometry(QRect(0, 83, 701, 511))
         palette61 = QPalette()
@@ -4994,7 +4997,7 @@ class Ui_MainWindow(object):
 
         self.retranslateUi(MainWindow)
 
-        self.menu_container.setCurrentIndex(1)
+        self.menu_container.setCurrentIndex(5)
 
 
         QMetaObject.connectSlotsByName(MainWindow)
@@ -5094,7 +5097,9 @@ class Ui_MainWindow(object):
         ___qtablewidgetitem31 = self.emp_table.horizontalHeaderItem(4)
         ___qtablewidgetitem31.setText(QCoreApplication.translate("MainWindow", u"ADDRESS", None));
         ___qtablewidgetitem32 = self.emp_table.horizontalHeaderItem(5)
-        ___qtablewidgetitem32.setText(QCoreApplication.translate("MainWindow", u"POSITION", None));
+        ___qtablewidgetitem32.setText(QCoreApplication.translate("MainWindow", u"EMAIL", None));
+        ___qtablewidgetitem33 = self.emp_table.horizontalHeaderItem(6)
+        ___qtablewidgetitem33.setText(QCoreApplication.translate("MainWindow", u"POSITION", None));
         self.add_employee.setText("")
         self.pushButton_9.setText("")
         self.delete_employee.setText("")
@@ -5254,12 +5259,12 @@ class Ui_MainWindow(object):
         self.label_4.setText(QCoreApplication.translate("MainWindow", u"SERVICES", None))
         self.deleteService_btn.setText("")
         self.editService_btn.setText("")
-        ___qtablewidgetitem33 = self.services_table.horizontalHeaderItem(0)
-        ___qtablewidgetitem33.setText(QCoreApplication.translate("MainWindow", u"ID", None));
-        ___qtablewidgetitem34 = self.services_table.horizontalHeaderItem(1)
-        ___qtablewidgetitem34.setText(QCoreApplication.translate("MainWindow", u"TYPE", None));
-        ___qtablewidgetitem35 = self.services_table.horizontalHeaderItem(2)
-        ___qtablewidgetitem35.setText(QCoreApplication.translate("MainWindow", u"AMOUNT", None));
+        ___qtablewidgetitem34 = self.services_table.horizontalHeaderItem(0)
+        ___qtablewidgetitem34.setText(QCoreApplication.translate("MainWindow", u"ID", None));
+        ___qtablewidgetitem35 = self.services_table.horizontalHeaderItem(1)
+        ___qtablewidgetitem35.setText(QCoreApplication.translate("MainWindow", u"TYPE", None));
+        ___qtablewidgetitem36 = self.services_table.horizontalHeaderItem(2)
+        ___qtablewidgetitem36.setText(QCoreApplication.translate("MainWindow", u"AMOUNT", None));
         self.services_exitbtn.setText("")
         self.label_14.setText(QCoreApplication.translate("MainWindow", u"ADD A SERVICE", None))
         self.addService_name.setText("")

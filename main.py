@@ -1605,7 +1605,11 @@ class MainWindow(QtWidgets.QMainWindow):
                     self.ui.invalid_notice.setFixedWidth(391)
                     QtCore.QTimer.singleShot(1300, lambda: self.ui.invalid_notice.setFixedWidth(0)) 
                 else:
-                    self.add_employee_into_DB()
+                    if not self.emailValidator.match(self.ui.AddEmp_email.text()).hasMatch():
+                        self.fields_error_message('Invalid Email.')
+
+                    else:
+                        self.add_employee_into_DB()
 
     #Displaying page for adding employee for admin
     def add_admin(self):
@@ -1628,6 +1632,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.ui.AddEmp_fname.setText('')
         self.ui.AddEmp_lname.setText('')
         self.ui.AddEmp_address.setText('')
+        self.ui.AddEmp_email.setText('')
         self.ui.AddEmp_DOB.setDate(QDate(2000, 1, 1))
         self.adminIsExist()
 
@@ -1656,6 +1661,7 @@ class MainWindow(QtWidgets.QMainWindow):
                     self.ui.AddEmp_lname.setText(employee_data.get('lname'))
                     self.ui.AddEmp_address.setText(employee_data.get('address'))
                     self.ui.AddEmp_contact.setText(str(employee_data.get('contact')))
+                    self.ui.AddEmp_email.setText(employee_data.get('email'))
                     year, month, day = (employee_data.get('DOB').split('-'))
                     self.ui.AddEmp_DOB.setDate(QDate(int(year), int(month), int(day)))
                     
@@ -1741,6 +1747,7 @@ class MainWindow(QtWidgets.QMainWindow):
         emp_lname = self.ui.AddEmp_lname.text().upper()
         emp_address = self.ui.AddEmp_address.text().upper()
         emp_contact = self.ui.AddEmp_contact.text()
+        emp_email = self.ui.AddEmp_email.text()
         emp_DOB = self.ui.AddEmp_DOB.date().toString('yyyy-MM-dd')
         
         is_phonenum_exist = self.employeedb.count_documents({"contact" : emp_contact})
@@ -1755,6 +1762,7 @@ class MainWindow(QtWidgets.QMainWindow):
                         "lname": emp_lname,
                         "contact": emp_contact,
                         "address": emp_address,
+                        "email" : emp_email,
                         "DOB": emp_DOB,
                     }
                 }
@@ -1765,6 +1773,7 @@ class MainWindow(QtWidgets.QMainWindow):
                     self.ui.AddEmp_fname.setText('')
                     self.ui.AddEmp_lname.setText('')
                     self.ui.AddEmp_address.setText('')
+                    self.ui.AddEmp_email.setText('')
                     self.ui.savechanges_widget.setFixedWidth(341 )
                     QtCore.QTimer.singleShot(1300, lambda: self.ui.savechanges_widget.setFixedWidth(0))  
                     self.populate_employee_table()
@@ -1786,6 +1795,7 @@ class MainWindow(QtWidgets.QMainWindow):
                     "lname": emp_lname,
                     "contact": emp_contact,
                     "address": emp_address,
+                    "email" : emp_email,
                     "position": emp_position,
                     "DOB": emp_DOB,
                 }
@@ -1796,6 +1806,7 @@ class MainWindow(QtWidgets.QMainWindow):
                     self.ui.AddEmp_fname.setText('')
                     self.ui.AddEmp_lname.setText('')
                     self.ui.AddEmp_address.setText('')
+                    self.ui.AddEmp_email.setText('')
                     self.ui.AddEmp_DOB.setDate(QDate(2000, 1, 1))
                     self.ui.success_widget.setFixedWidth(341)
                     QtCore.QTimer.singleShot(1300, lambda: self.ui.success_widget.setFixedWidth(0))  
