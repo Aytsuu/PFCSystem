@@ -1761,6 +1761,7 @@ class MainWindow(QtWidgets.QMainWindow):
         not self.ui.AddEmp_lname.text() or
         not self.ui.AddEmp_DOB.text() or
         not self.ui.AddEmp_address.text() or
+        not self.ui.AddEmp_email.text() or
         not self.ui.AddEmp_contact.text()):            
             self.ui.fieldNotice.setText('All required fields must be filled.')
             self.ui.invalid_notice.setFixedWidth(391)
@@ -1826,6 +1827,7 @@ class MainWindow(QtWidgets.QMainWindow):
                     self.ui.AddEmp_fname.setText(employee_data.get('fname'))
                     self.ui.AddEmp_lname.setText(employee_data.get('lname'))
                     self.ui.AddEmp_address.setText(employee_data.get('address'))
+                    self.ui.AddEmp_email.setText(employee_data.get('email'))
                     self.ui.AddEmp_contact.setText(str(employee_data.get('contact')))
                     year, month, day = (employee_data.get('DOB').split('-'))
                     self.ui.AddEmp_DOB.setDate(QDate(int(year), int(month), int(day)))
@@ -1911,6 +1913,7 @@ class MainWindow(QtWidgets.QMainWindow):
         emp_fname = self.ui.AddEmp_fname.text().upper()
         emp_lname = self.ui.AddEmp_lname.text().upper()
         emp_address = self.ui.AddEmp_address.text().upper()
+        emp_email = self.ui.AddEmp_email.text().upper()
         emp_contact = self.ui.AddEmp_contact.text()
         emp_DOB = self.ui.AddEmp_DOB.date().toString('yyyy-MM-dd')
         
@@ -1924,6 +1927,7 @@ class MainWindow(QtWidgets.QMainWindow):
                     "$set":{
                         "fname": emp_fname,
                         "lname": emp_lname,
+                        "email": emp_email,
                         "contact": emp_contact,
                         "address": emp_address,
                         "DOB": emp_DOB,
@@ -1936,6 +1940,7 @@ class MainWindow(QtWidgets.QMainWindow):
                     self.ui.AddEmp_fname.setText('')
                     self.ui.AddEmp_lname.setText('')
                     self.ui.AddEmp_address.setText('')
+                    self.ui.AddEmp_email.setText('')
                     self.ui.savechanges_widget.setFixedWidth(341 )
                     QtCore.QTimer.singleShot(1300, lambda: self.ui.savechanges_widget.setFixedWidth(0))  
                     self.populate_employee_table()
@@ -1955,6 +1960,7 @@ class MainWindow(QtWidgets.QMainWindow):
                     "_id": emp_id,
                     "fname": emp_fname,
                     "lname": emp_lname,
+                    "email": emp_email,
                     "contact": emp_contact,
                     "address": emp_address,
                     "position": emp_position,
@@ -1967,6 +1973,7 @@ class MainWindow(QtWidgets.QMainWindow):
                     self.ui.AddEmp_fname.setText('')
                     self.ui.AddEmp_lname.setText('')
                     self.ui.AddEmp_address.setText('')
+                    self.ui.AddEmp_email.setText('')
                     self.ui.AddEmp_DOB.setDate(QDate(2000, 1, 1))
                     self.ui.success_widget.setFixedWidth(341)
                     QtCore.QTimer.singleShot(1300, lambda: self.ui.success_widget.setFixedWidth(0))  
