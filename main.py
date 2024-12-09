@@ -1452,25 +1452,26 @@ class MainWindow(QtWidgets.QMainWindow):
 
 
         result = self.membersdb.insert_one(member)
-
-        
+        emp_instructor = self.employeedb.find_one({'_id': self.emp_id})
         email_text = f"""
-            <html>
-            <body style="font-family: Arial, sans-serif; color: #333;">
-                <h2 style="color: #1E90FF;">Hi {mem_fname},</h2>
-                <p>Thank you for signing up with <strong>People Fitness Center</strong>!</p>
-                <p>We're excited to let you know that your membership has been successfully registered, 
-                and we can't wait to see you in the gym.</p>
-                <p>If you have any questions or need help getting started, feel free to reach out. 
-                We're here to help and support you along the way.</p>
-                <p>Thanks again for joining us, and we look forward to seeing you soon!</p>
-                <br>
-
+        <html>
+        <body style="font-family: Arial, sans-serif; color: #333; background-color: #f4f4f4; margin: 0; padding: 0;">
+        <div style="background-color: #ffffff; margin: 20px auto; width: 90%; max-width: 600px; padding: 30px; border-radius: 8px; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);">
+            <h2 style="color: #1E90FF; text-align: left; margin-bottom: 20px;">Hi {mem_fname},</h2>
+            <p style="line-height: 1.6; font-size: 16px; text-align: center;">Thank you for signing up with <strong>People Fitness Center</strong>!</p>
+            <p style="line-height: 1.6; font-size: 16px;">We're excited to let you know that your membership has been successfully registered, and we can't wait to see you in the gym.</p>
+            <p style="line-height: 1.6; font-size: 16px;">If you have any questions or need help getting started, feel free to reach out. We're here to help and support you along the way.</p>
+            <p style="line-height: 1.6; font-size: 16px;">Thanks again for joining us, and we look forward to seeing you soon!</p>
+            <br>
+            <div style="text-align: center;"> 
                 <img src="https://drive.google.com/uc?export=view&id=1Am6E_LO5laC9XbiEQOoDtmZD_F4aOlU5" alt="Welcome Image" width="150" height="150"/>
-                <h3>People Fitness Center</h3>
-            </body>
-            </html>
-            """
+            </div>
+            <h3 style="text-align: center; font-size: 18px; color: #333; margin-top: 20px;">People Fitness Center</h3>
+        </div>
+        </body>
+        </html>
+        """
+
         email_subject = 'Welcome to People Fitness Center!'
         if result:
             if float(tendered_amount) > (float(serv_price) + float(mship_fee)):
@@ -1479,9 +1480,6 @@ class MainWindow(QtWidgets.QMainWindow):
                 change = float(tendered_amount) - (float(serv_price) + float(mship_fee))
                 self.ui.change_field.setText(f"{change:.2f}")
             
-            #self.send_text(mem_contact)
-            self.send_email('hannahsheenobejero@gmail.com')
-
             self.ui.register_popup.setFixedWidth(0)
             self.ui.payment_popup.setFixedWidth(0) 
 
@@ -1568,7 +1566,7 @@ class MainWindow(QtWidgets.QMainWindow):
 
     #Displaying all transactions done in the table
     def populate_transact_table(self):
-
+ 
         transactions = self.transactiondb.find()
         
         self.ui.transac_table.setRowCount(0)
@@ -1937,42 +1935,43 @@ class MainWindow(QtWidgets.QMainWindow):
 
                         result = self.notificationdb.insert_one(notification)
 
+                        
                         member_id = notification['member id']
-                        member_details = self.membersdb.find_one({"_id": member_id}, {'_id': 0, 'mem_fname': 1, 'mem_email': 1})  
-                        monthly_endDate = self.mon_servicelogdb.find_one({"_id": member_id}, {"_id": 0, "end_date": 1})
-                        print('yes')
-                        print(member_details)
-                        print(member_id)      
+                        member_details = self.membersdb.find_one({'_id' : member_id})
                     
                         if result.acknowledged:
                             if member_details:
-                                mem_fname = member_details.get('mem_fname')
-                                mem_email = member_details.get('mem_email')
-                                print(f"Sending email to {mem_fname} ({mem_email})")
+                                print(f"Sending email to {member_details['first name']} ({member_details['email'].lower()})")
 
+                                stripped_content = notification['content'].rstrip('.')
                                 email_subject = 'Reminder: Days Remaining on Your Monthly Service Access'
+
+                                self.send_email(member_details['email'].lower(), email_text, email_subject)
+                                self.ui.new_notifbtn.setFixedWidth(271)
+                                QtCore.QTimer.singleShot(1300, lambda: self.ui.new_notifbtn.setFixedWidth(0))   
                                 email_text = f"""
                                 <html>
-                                <body style="font-family: Arial, sans-serif; color: #333;">
-                                    <h2 style="color: #1E90FF;">Hi {mem_fname},</h2>
-                                    <p>We hope you're doing well!</p>   
-                                    <p>We would like to remind you that your {notification['content']} on <st rong>{monthly_endDate['end_date']}</strong>.</p>
-                                    <p>To ensure uninterrupted service, we recommend renewing your subscription before the expiration date.</p>
-                                    <p>If you have already renewed your access, please disregard this message.</p>
-                                    <p>Should you need assistance or have any questions, our customer support team is here to help.</p>
+                                <body style="font-family: Arial, sans-serif; color: #333; background-color: #f4f4f4; margin: 0; padding: 0;">
+                                    <div style="background-color: #ffffff; margin: 20px auto; width: 90%; max-width: 600px; padding: 30px; border-radius: 8px; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);">
+                                    <h2 style="color: #1E90FF; text-align: left; margin-bottom: 20px;">Hi {member_details['first name']},</h2>
+                                    <p style="line-height: 1.6; font-size: 16px;">We hope you're doing well!</p>   
+                                    <p style="line-height: 1.6; font-size: 16px;">We would like to remind you that your {stripped_content}.</p>
+                                    <p style="line-height: 1.6; font-size: 16px;">To ensure uninterrupted service, we recommend renewing your subscription before the expiration date.</p>
+                                    <p style="line-height: 1.6; font-size: 16px;">If you have already renewed your access, please disregard this message.</p>
+                                    <p style="line-height: 1.6; font-size: 16px;">Should you need assistance or have any questions, our customer support team is here to help.</p>
                                     <br>
-                                    <p>We appreciate your continued membership and look forward to serving you!</p>
+                                    <p style="line-height: 1.6; font-size: 16px;">We appreciate your continued membership and look forward to serving you!</p>
                                     <br>
+                                    <div style="text-align: center;">
                                     <img src="https://drive.google.com/uc?export=view&id=1Am6E_LO5laC9XbiEQOoDtmZD_F4aOlU5" alt="People Fitness Center" width="150" height="150"/>
-                                    <h3>People Fitness Center</h3>
-                                    <p>If you need assistance, please contact us at <strong>peoplefitness2008@gmail.com</strong>.</p>
+                                    </div>
+                                    <h3 style="text-align: center; font-size: 18px; color: #333; margin-top: 20px;">People Fitness Center</h3>
+                                    <p style="text-align: center; font-size: 16px;">If you need assistance, please contact us at <strong>peoplefitness2008@gmail.com</strong>.</p>
+                                    </div>
                                 </body>
                                 </html>
                                 """
-                                self.send_email(mem_email.lower(), email_text, email_subject)
-                                self.ui.new_notifbtn.setFixedWidth(271)
-                                QtCore.QTimer.singleShot(1300, lambda: self.ui.new_notifbtn.setFixedWidth(0))   
-                        
+
                         if days == 0: self.populate_monServiceLog()
                 
                 time.sleep(1)
@@ -2013,7 +2012,7 @@ class MainWindow(QtWidgets.QMainWindow):
                             "end date": {"$lte": datetime.datetime.today()}  # Compare with current local time
                         }
                     }
-                    
+                     
                 ]
 
                 membership_expiry = self.membersdb.aggregate(pipeline)
@@ -2036,13 +2035,41 @@ class MainWindow(QtWidgets.QMainWindow):
                         }
 
                         result = self.notificationdb.insert_one(notification)
+                        member_id = notification['member id']
+                        member_details = self.membersdb.find_one({'_id' : member_id})
 
                         if result.acknowledged:
-                            self.send_email
-                            self.ui.new_notifbtn.setFixedWidth(271)
-                            QtCore.QTimer.singleShot(1300, lambda: self.ui.new_notifbtn.setFixedWidth(0))   
+                             if member_details:
+                                print(f"Sending email to {member_details['first name']} ({member_details['email'].lower()})")
+                                stripped_content = notification['content'].rstrip('.')
+                                email_subject = 'Reminder: Days Remaining on Your Annual Membership'
+                                email_text = f"""
+                                <html>
+                                <body style="font-family: Arial, sans-serif; color: #333; background-color: #f4f4f4; margin: 0; padding: 0;">
+                                    <div style="background-color: #ffffff; margin: 20px auto; width: 90%; max-width: 600px; padding: 30px; border-radius: 8px; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);">
+                                    <h2 style="color: #1E90FF; text-align: left; margin-bottom: 20px;">Hi {member_details['first name']},</h2>
+                                    <p style="line-height: 1.6; font-size: 16px;">We hope you're doing well and continuing to achieve your fitness goals!</p>   
+                                    <p style="line-height: 1.6; font-size: 16px;">Your annual {stripped_content}</p>
+                                    <p style="line-height: 1.6; font-size: 16px;">To ensure you can continue enjoying all the benefits of your membership, we encourage you to renew it as soon as possible. Don't miss out on another year of fitness and wellness!</p>
+                                    <p style="line-height: 1.6; font-size: 16px;">If you have already renewed your membership, please disregard this message. Otherwise, don't hesitate to reach out if you need assistance with your renewal!</p>
+                                    <br>
+                                    <p style="line-height: 1.6; font-size: 16px;">We value your commitment to a healthy lifestyle, and we're here to support you every step of the way!</p>
+                                    <br>
+                                    <div style="text-align: center;">
+                                    <img src="https://drive.google.com/uc?export=view&id=1Am6E_LO5laC9XbiEQOoDtmZD_F4aOlU5" alt="People Fitness Center" width="150" height="150"/>
+                                    </div>
+                                    <h3 style="text-align: center; font-size: 18px; color: #333; margin-top: 20px;">People Fitness Center</h3>
+                                    <p style="text-align: center; font-size: 16px;">If you need assistance, please contact us at <strong>peoplefitness2008@gmail.com</strong>.</p>
+                                    </div>
+                                </body>
+                                </html>
+                                """
 
-                            if days == 0: self.populate_mem_table() 
+                                self.send_email(member_details['email'].lower(), email_text, email_subject)
+                                self.ui.new_notifbtn.setFixedWidth(271)
+                                QtCore.QTimer.singleShot(1300, lambda: self.ui.new_notifbtn.setFixedWidth(0))   
+
+                        if days == 0: self.populate_mem_table() 
                 
                 time.sleep(1)
 
