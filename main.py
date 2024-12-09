@@ -1920,13 +1920,23 @@ class MainWindow(QtWidgets.QMainWindow):
                 monthly_serviceAccess = self.mon_servicelogdb.aggregate(pipeline)
                 
                 for member_access in monthly_serviceAccess:
-                    
+
+                    member_id = member_access['_id']
+                    member_details = self.membersdb.find_one({"_id": member_id}, {'_id': 0, 'mem_fname': 1, 'mem_email': 1})  
+                    print('yes')
+                    print(member_details)
+                    print(member_id)      
                     notif_exist = self.notificationdb.find({"content" : notification}, {"_id": 0, "member id" : 1})
 
                     if notif_exist is not None and member_access['_id'] not in [mem_id['member id'] for mem_id in notif_exist]:
 
                         last_notifID = next(self.notificationdb.find().sort("_id", -1).limit(1), {}).get("_id", None)
                         notif_id = last_notifID + 1 if last_notifID is not None else 0
+
+                        if member_details:
+                            mem_fname = member_details.get('mem_fname')
+                            mem_email = member_details.get('mem_email')
+
 
                         notification = {
                             "_id" : notif_id,
@@ -1938,9 +1948,31 @@ class MainWindow(QtWidgets.QMainWindow):
                         result = self.notificationdb.insert_one(notification)
 
                         if result.acknowledged:
-                            self.send_email
-                            self.ui.new_notifbtn.setFixedWidth(271)
-                            QtCore.QTimer.singleShot(1300, lambda: self.ui.new_notifbtn.setFixedWidth(0))   
+                            if mem_email:
+                                print(f"Sending email to {mem_fname} ({mem_email})")
+
+                                email_subject = 'Reminder: Days Remaining on Your Monthly Service Access'
+                                email_text = f"""
+                                <html>
+                                <body style="font-family: Arial, sans-serif; color: #333;">
+                                    <h2 style="color: #1E90FF;">Hi {mem_fname},</h2>
+                                    <p>We hope you're doing well!</p>   
+                                    <p>We would like to remind you that your {notification} on <strong>{member_access['end date']}</strong>.</p>
+                                    <p>To ensure uninterrupted service, we recommend renewing your subscription before the expiration date.</p>
+                                    <p>If you have already renewed your access, please disregard this message.</p>
+                                    <p>Should you need assistance or have any questions, our customer support team is here to help.</p>
+                                    <br>
+                                    <p>We appreciate your continued membership and look forward to serving you!</p>
+                                    <br>
+                                    <img src="https://drive.google.com/uc?export=view&id=1Am6E_LO5laC9XbiEQOoDtmZD_F4aOlU5" alt="People Fitness Center" width="150" height="150"/>
+                                    <h3>People Fitness Center</h3>
+                                    <p>If you need assistance, please contact us at <strong>peoplefitness2008@gmail.com</strong>.</p>
+                                </body>
+                                </html>
+                                """
+                                self.send_email(mem_email.lower(), email_text, email_subject)
+                                self.ui.new_notifbtn.setFixedWidth(271)
+                                QtCore.QTimer.singleShot(1300, lambda: self.ui.new_notifbtn.setFixedWidth(0))   
                         
                         if days == 0: self.populate_monServiceLog()
                 
@@ -1959,7 +1991,7 @@ class MainWindow(QtWidgets.QMainWindow):
         while True:
             
             for days, notification in interval:
-
+ 
                 pipeline = [
                     {
                         "$project" : {
