@@ -95,7 +95,7 @@ class MainWindow(QtWidgets.QMainWindow):
 
         # ===========================================================================================================================================================================
         # Adding admin and check if admin exists in employees record
-        # ===========================================================================================================================================================================
+        # ====== =====================================================================================================================================================================
 
         self.adminIsExist()
         self.ui.addAdminBtn.clicked.connect(self.add_admin)
@@ -776,14 +776,14 @@ class MainWindow(QtWidgets.QMainWindow):
     def check_before_monthly_renewal(self):
         selected_row = self.ui.mon_serviceLog_table.currentRow()
         if selected_row != -1:
-            mon_id = self.ui.mon_serviceLog_table.item(selected_row, 0)
-            
-            membership_exp = str(self.membersdb.find_one({"_id" : int(mon_id)})['end date']).split(" ")[0]
-            
+            monserv_id = self.ui.mon_serviceLog_table.item(selected_row, 0).text()
+            expiry = self.mon_servicelogdb.find_one({"_id": int(monserv_id)})
+            membership_exp = datetime.datetime.strptime((str(expiry['end date']).split(" ")[0]), "%Y-%m-%d").date()
+
             if membership_exp:
                 today = datetime.datetime.today().date()
                 remaining_days = (membership_exp - today).days
-                if remaining_days < 30:
+                if remaining_days < 30 and remaining_days > 0:
                     self.ui.reminder_text.setText(f"This member's membership will expire within {remaining_days} day/s. Would you like to proceed with the monthly service access renewal or renew membership first?")
                     self.ui.renewal_reminder_popup.setFixedWidth(1381)   
                 else:
@@ -845,9 +845,8 @@ class MainWindow(QtWidgets.QMainWindow):
         if result:
             for row_number, log in enumerate(result):
                     self.ui.mon_serviceLog_table.insertRow(row_number)
-                    for column_number, data in enumerate(log):
-                        if data == 'end date':
-
+                    for column_number, (key, data) in enumerate(log.items()):
+                        if key == 'end date':
                             if str(now) < data: 
                                 item = QtWidgets.QTableWidgetItem('ACTIVE')
                                 item.setTextAlignment(Qt.AlignHCenter)
@@ -858,15 +857,15 @@ class MainWindow(QtWidgets.QMainWindow):
                                 self.ui.mon_serviceLog_table.setItem(row_number, 7, item)
                         
                         if column_number in [5, 6]:
-                            data = str(log[data]).split(" ")[0]
+                            data = str(log[key]).split(" ")[0]
 
                         if column_number == 4:
-                            if log[data] is not None:
-                                result = self.employeedb.find_one({"_id" : log[data]})
+                            if log[key] is not None:
+                                result = self.employeedb.find_one({"_id" : log[key]})
                                 data = result['fname'] + ' ' + result['lname']
                             else: data = 'NONE'
 
-                        item = QtWidgets.QTableWidgetItem(data if column_number in [4, 5, 6] else str(log[data]))
+                        item = QtWidgets.QTableWidgetItem(data if column_number in [4, 5, 6] else str(log[key]))
                         item.setTextAlignment(Qt.AlignHCenter)
                         self.ui.mon_serviceLog_table.setItem(row_number, column_number, item)
     
@@ -1452,30 +1451,63 @@ class MainWindow(QtWidgets.QMainWindow):
 
 
         result = self.membersdb.insert_one(member)
-        emp_instructor = self.employeedb.find_one({'_id': self.emp_id})
-        email_text = f"""
-        <html>
-        <body style="font-family: Arial, sans-serif; color: #333; background-color: #f4f4f4; margin: 0; padding: 0;">
-        <div style="background-color: #ffffff; margin: 20px auto; width: 90%; max-width: 600px; padding: 30px; border-radius: 8px; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);">
-            <h2 style="color: #1E90FF; text-align: left; margin-bottom: 20px;">Hi {mem_fname},</h2>
-            <p style="line-height: 1.6; font-size: 16px; text-align: center;">Thank you for signing up with <strong>People Fitness Center</strong>!</p>
-            <p style="line-height: 1.6; font-size: 16px;">We're excited to let you know that your membership has been successfully registered, and we can't wait to see you in the gym.</p>
-            <p style="line-height: 1.6; font-size: 16px;">If you have any questions or need help getting started, feel free to reach out. We're here to help and support you along the way.</p>
-            <p style="line-height: 1.6; font-size: 16px;">Thanks again for joining us, and we look forward to seeing you soon!</p>
-            <br>
-            <div style="text-align: center;"> 
-                <img src="https://drive.google.com/uc?export=view&id=1Am6E_LO5laC9XbiEQOoDtmZD_F4aOlU5" alt="Welcome Image" width="150" height="150"/>
-            </div>
-            <h3 style="text-align: center; font-size: 18px; color: #333; margin-top: 20px;">People Fitness Center</h3>
-        </div>
-        </body>
-        </html>
-        """
 
-        email_subject = 'Welcome to People Fitness Center!'
+
         if result:
             if float(tendered_amount) > (float(serv_price) + float(mship_fee)):
+
+                #--------------Email for Member------------------
+                email_text = f"""
+                <html>
+                <body style="font-family: Arial, sans-serif; color: #333; background-color: #f4f4f4; margin: 0; padding: 0;">
+                <div style="background-color: #ffffff; margin: 20px auto; width: 90%; max-width: 600px; padding: 30px; border-radius: 8px; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);">
+                    <h2 style="color: #1E90FF; text-align: left; margin-bottom: 20px;">Hi {mem_fname},</h2>
+                    <p style="line-height: 1.6; font-size: 16px; text-align: center;">Thank you for signing up with <strong>People Fitness Center</strong>!</p>
+                    <p style="line-height: 1.6; font-size: 16px;">We're excited to let you know that your membership has been successfully registered, and we can't wait to see you in the gym.</p>
+                    <p style="line-height: 1.6; font-size: 16px;">If you have any questions or need help getting started, feel free to reach out. We're here to help and support you along the way.</p>
+                    <p style="line-height: 1.6; font-size: 16px;">Thanks again for joining us, and we look forward to seeing you soon!</p>
+                    <br>
+                    <div style="text-align: center;"> 
+                <img src="https://drive.google.com/uc?export=view&id=1Am6E_LO5laC9XbiEQOoDtmZD_F4aOlU5" alt="Welcome Image" width="150" height="150"/>
+                </div>
+                <h3 style="text-align: center; font-size: 18px; color: #333; margin-top: 20px;">People Fitness Center</h3>
+                </div>
+                </body>
+                </html>
+                """
+                email_subject = 'Welcome to People Fitness Center!'
                 self.send_email(mem_email.lower(), email_text, email_subject)
+
+                if self.emp_id is not None:
+
+                    instructor_members = self. membersdb.find({'emp_id': self.emp_id})
+                    instructor = self.employeedb.find_one({'_id': self.emp_id})
+                    member_list = ''.join([f'<li>{member["first name"]} {member["last name"] }</li>' for member in instructor_members])
+
+                    #----------Email for Instructor-------------------
+                    instructor_text = f"""
+                    <html>
+                    <body style="font-family: Arial, sans-serif; color: #333; background-color: #f4f4f4; margin: 0; padding: 0;">
+                    <div style="background-color: #ffffff; margin: 20px auto; width: 90%; max-width: 600px; padding: 30px; border-radius: 8px; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);">
+                    <h2 style="color: #1E90FF; text-align: left; margin-bottom: 20px;">Hi {instructor['fname']},</h2>
+                        <p style="line-height: 1.6; font-size: 16px; text-align: center;">We hope you're doing well!</p>
+                        <p style="line-height: 1.6; font-size: 16px;">We are excited to inform you that a new member has been assigned to you. Below is the updated list of members you will be working with:</p>
+                        <ul style="font-size: 16px; line-height: 1.6;">
+                        {member_list} 
+                        </ul>
+                    <p style="line-height: 1.6; font-size: 16px;">Please make sure to provide them with the necessary guidance and support. If you have any questions or need assistance, feel free to reach out.</p>
+                    <p style="line-height: 1.6; font-size: 16px;">We look forward to a productive session together. Thanks for your continued dedication and support!</p>
+                    <br>
+                    <div style="text-align: center;">
+                    <img src="https://drive.google.com/uc?export=view&id=1Am6E_LO5laC9XbiEQOoDtmZD_F4aOlU5" alt="Welcome Image" width="150" height="150"/>
+                    </div>
+                    <h3 style="text-align: center; font-size: 18px; color: #333; margin-top: 20px;">People Fitness Center</h3>
+                    </div>
+                    </body>
+                    </html>
+                    """
+                    instructor_subject = "A New Member Is Assigned To You"  
+                    self.send_email(instructor['email'].lower(), instructor_text, instructor_subject)
                 self.ui.change_popup.setFixedWidth(1381)
                 change = float(tendered_amount) - (float(serv_price) + float(mship_fee))
                 self.ui.change_field.setText(f"{change:.2f}")
@@ -1945,8 +1977,6 @@ class MainWindow(QtWidgets.QMainWindow):
 
                                 stripped_content = notification['content'].rstrip('.')
                                 email_subject = 'Reminder: Days Remaining on Your Monthly Service Access'
-
-                                self.send_email(member_details['email'].lower(), email_text, email_subject)
                                 self.ui.new_notifbtn.setFixedWidth(271)
                                 QtCore.QTimer.singleShot(1300, lambda: self.ui.new_notifbtn.setFixedWidth(0))   
                                 email_text = f"""
@@ -1971,6 +2001,7 @@ class MainWindow(QtWidgets.QMainWindow):
                                 </body>
                                 </html>
                                 """
+                                self.send_email(member_details['email'].lower(), email_text, email_subject)
 
                         if days == 0: self.populate_monServiceLog()
                 
@@ -2125,13 +2156,13 @@ class MainWindow(QtWidgets.QMainWindow):
     # ===========================================================================================================================================================================
     # Send Email and text
     # ===========================================================================================================================================================================
-    def send_email(self, mem_email, email_text, subject):
+    def send_email(self, receiver_email, email_text, subject):
         sender_email = 'peoplefitnesscenter2008@gmail.com'
 
         try:
             msg = MIMEMultipart()
             msg['From'] = sender_email
-            msg['To'] = mem_email
+            msg['To'] = receiver_email
             msg['Subject'] = subject
 
             msg.attach(MIMEText(email_text, 'html'))
@@ -2139,47 +2170,15 @@ class MainWindow(QtWidgets.QMainWindow):
             server = smtplib.SMTP('smtp.gmail.com', 587)
             server.starttls()  # Start TLS encryption
             server.login(sender_email, 'xmpdacmlmodnppns')  # Login with your Gmail credentials
-            server.sendmail(sender_email, mem_email, msg.as_string())  # Send email
+            server.sendmail(sender_email, receiver_email, msg.as_string())  # Send email
 
-            print(f'Email sent to {mem_email}')
+            print(f'Email sent to {receiver_email}')
 
         except smtplib.SMTPException as e:
-            print(f'Error occurred while sending email to {mem_email}: {e}')
+            print(f'Error occurred while sending email to {receiver_email}: {e}')
 
         finally:
-            server.quit()  # Close the SMTP connection
-
-
-    def send_text(self, mem_phonenum):
-        phonenum = '+63' + mem_phonenum[1:]    
-
-        # client = vonage.Client(key="3fb5b0cb", secret="X9VKdQpCNOtGus8f")
-        # sms = vonage.Sms(client)
-
-        # response = sms.send_message({
-        # 'from': '639615731397',  # Use a Nexmo number or a verified number
-        # 'to': phonenum,
-        # 'text': 'Henlo, check ko lang if ma send',
-        # })
-        # 
-        # if response["messages"][0]["status"] == "0":
-            # print("Message sent successfully.")
-        # else:
-            # print(f"Message failed with error: {response['messages'][0]['error-text']}")
-
-        # account_sid = 'AC723d0f0cc5b938cc9860706316b944e3'
-        # auth_token = '854490238dff143d11e22af6d328495b'
-
-
-        # client = Client(account_sid, auth_token)
-
-        # message = client.messages.create(
-        # to=phonenum,
-        # from_="+17856457802",  
-        # body='henlo, check ko lang if ma send'
-        # )
-
-        # print(message.sid)
+            server.quit()  # Close the SMTP connection 
 
 
     # ===========================================================================================================================================================================
