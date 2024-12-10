@@ -1817,7 +1817,6 @@ class MainWindow(QtWidgets.QMainWindow):
                     "$set":{
                         "fname": emp_fname,
                         "lname": emp_lname,
-                        "email": emp_email,
                         "contact": emp_contact,
                         "address": emp_address,
                         "email" : emp_email,
@@ -1851,7 +1850,6 @@ class MainWindow(QtWidgets.QMainWindow):
                     "_id": emp_id,
                     "fname": emp_fname,
                     "lname": emp_lname,
-                    "email": emp_email,
                     "contact": emp_contact,
                     "address": emp_address,
                     "email" : emp_email,
