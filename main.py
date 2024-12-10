@@ -540,13 +540,13 @@ class MainWindow(QtWidgets.QMainWindow):
 
     #Update service in DB
     def update_service(self):
-        serv_id = self.ui.services_table.item(self.ui.services_table.currentRow(), 0)
+        serv_id = self.ui.services_table.item(self.ui.services_table.currentRow(), 0).text()
         serv_type = self.ui.service_Update.text().upper()
         serv_price = float(self.ui.service_Amount.text())
 
-        is_service_exist = self.servicesdb.count_documents({"type" : serv_type})
+        is_service_exist = self.servicesdb.find_one({"type" : serv_type})
 
-        if is_service_exist == 0:
+        if is_service_exist is None or (is_service_exist is not None and is_service_exist['_id'] == int(serv_id)):
             update_service = {
                 "$set" : {
                     "type" : serv_type,
@@ -554,7 +554,7 @@ class MainWindow(QtWidgets.QMainWindow):
                 }
             }
 
-            result = self.servicesdb.update_one({"_id" : int(serv_id.text())}, update_service)
+            result = self.servicesdb.update_one({"_id" : int(serv_id)}, update_service)
 
             if result:
                 self.ui.services_widget.setFixedWidth(701)
