@@ -1763,10 +1763,9 @@ class MainWindow(QtWidgets.QMainWindow):
     def confirm_delete_employee(self):
         selected_row = self.ui.emp_table.currentRow()
         emp_id = self.ui.emp_table.item(selected_row, 0).text()
-
-        exception_flag = False
+        is_Admin = self.employeedb.find_one({"_id": int(emp_id)})
         
-        if exception_flag == True:
+        if is_Admin['position'] == "ADMINISTRATOR":
             self.ui.assigned_emp_delete.setFixedWidth(0)
             self.ui.employee_delete_popup.setFixedWidth(0)
             self.ui.fieldNotice.setText('Unable to delete admin')
@@ -1776,7 +1775,24 @@ class MainWindow(QtWidgets.QMainWindow):
         
         else:
             result = self.employeedb.delete_one({"_id": int(emp_id)})
-            if result:
+
+            members = {
+                "$set" : {
+                    "emp_id": None
+                }
+            }
+
+            servicelog = {
+            "$set" : {
+                "employee id": None
+            }
+            }
+            
+            update_membersdb = self.membersdb.update_many({"emp_id" : int(emp_id)}, members)
+            update_service_logdb = self.mon_servicelogdb.update_many({"employee id": int(emp_id)}, servicelog)
+            
+
+            if result and update_membersdb and update_service_logdb:
                 self.ui.delete_notif.setFixedWidth(81)
                 QtCore.QTimer.singleShot(1300, lambda: self.ui.delete_notif.setFixedWidth(0))   
                 self.ui.emp_table.removeRow(selected_row)
