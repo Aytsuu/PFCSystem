@@ -166,6 +166,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.ui.services_table.horizontalHeader().setSectionResizeMode(QHeaderView.ResizeMode.Stretch)
         self.ui.emp_table.horizontalHeader().setSectionResizeMode(QHeaderView.ResizeMode.Stretch)
         self.ui.notif_table.horizontalHeader().setSectionResizeMode(QHeaderView.ResizeMode.Stretch)
+        self.ui.newMem_dashboard.horizontalHeader().setSectionResizeMode(QHeaderView.ResizeMode.Stretch)
         self.ui.notif_table.horizontalHeader().setSectionResizeMode(0, QHeaderView.Interactive)
         self.ui.notif_table.setColumnWidth(0, 450)
 
@@ -178,6 +179,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.ui.services_table.setFocusPolicy(Qt.NoFocus)
         self.ui.emp_table.setFocusPolicy(Qt.NoFocus)
         self.ui.notif_table.setFocusPolicy(Qt.NoFocus)
+        self.ui.newMem_dashboard.setFocusPolicy(Qt.NoFocus)
 
         #remove vertical headers
         self.ui.emp_table.verticalHeader().setVisible(False)
@@ -187,6 +189,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.ui.mem_table.verticalHeader().setVisible(False)
         self.ui.services_table.verticalHeader().setVisible(False)
         self.ui.notif_table.verticalHeader().setVisible(False)
+        self.ui.newMem_dashboard.verticalHeader().setVisible(False)
 
         self.ui.notif_table.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
         self.ui.notif_table.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
@@ -213,6 +216,12 @@ class MainWindow(QtWidgets.QMainWindow):
         self.ui.logout.clicked.connect(self.logoutpopup)
         self.ui.confLogout_btn.clicked.connect(self.confirm_logout)
         self.ui.cancelLogout_btn.clicked.connect(self.cancel_logout)
+
+        # ===========================================================================================================================================================================
+        # Dashboard method calling
+        # ===========================================================================================================================================================================
+            
+        self.show_dashboard_data()
 
         # ===========================================================================================================================================================================
         # SERVICES method calling
@@ -360,6 +369,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.ui.services.setStyleSheet("QPushButton{background-color: none} QPushButton:hover{background-color: rgba(255,255,255,50);}")
         self.ui.employees.setStyleSheet("QPushButton{background-color: none} QPushButton:hover{background-color: rgba(255,255,255,50);}")
         self.previous(1)
+        self.show_dashboard_data()
         self.ui.new_notifbtn.setFixedWidth(0)
         
     def select_memlist(self):
@@ -444,6 +454,50 @@ class MainWindow(QtWidgets.QMainWindow):
 
     def previous(self,page):
         self.prev_page = page
+
+
+    # ===========================================================================================================================================================================
+    # Dashboard menu functions
+    # ===========================================================================================================================================================================
+
+    def show_dashboard_data(self):
+        self.total_members()
+
+    def total_members(self):
+
+        pipeline = [
+            {
+                "$project" : {
+                    "_id" : 1,
+                    "first name": 1,
+                    "last name" : 1,
+                    "start date" : {
+                        "$dateToString" : {
+                            "format" : "%Y-%m-%d",
+                            "date" : {
+                                "$toDate": {
+                                    "$substr": [ "$start date", 0, 10 ] # Extracting the first 19 characters (yyyy-MM-dd)
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            {
+                "$match" : {
+                    "start date" : {"$eq" : str(datetime.date.today())}
+                }
+            }   
+        ]
+
+        new_members = self.membersdb.aggregate(pipeline)
+
+        self.ui.newMem_dashboard.setRowCount(0)
+        for row_number, new_member in enumerate(new_members):
+            self.ui.newMem_dashboard.insertRow(row_number)
+            for column_number, data in enumerate(new_member):
+                item = QtWidgets.QTableWidgetItem(str(new_member[data]))
+                self.ui.newMem_dashboard.setItem(row_number, column_number, item)
 
     # ===========================================================================================================================================================================
     # Services menu functions
@@ -2107,7 +2161,7 @@ class MainWindow(QtWidgets.QMainWindow):
                 
                 time.sleep(1)
 
-    #Displaying notifications in the home page
+    #Displaying notifications
     def display_notifs(self):
 
         to_display = {
@@ -2131,29 +2185,6 @@ class MainWindow(QtWidgets.QMainWindow):
 
                 item = QtWidgets.QTableWidgetItem(data if column_number == 1 else (member_fname + ' ' + member_lname + "'s " + str(notification[data])))
                 self.ui.notif_table.setItem(row_number, column_number, item)
-
-        # try:
-        #     params = config()
-        #     conn = psycopg2.connect(**params)
-
-        #     sql = "SELECT NOTIF_CONTENT, CONCAT(TO_CHAR(NOTIF_DATE, 'HH12:MI AM'), '  |  ', DATE(NOTIF_DATE)) FROM NOTIFICATION WHERE NOTIF_DATE BETWEEN CURRENT_TIMESTAMP - INTERVAL '30 Days' AND CURRENT_TIMESTAMP"
-        #     cursor = conn.cursor()
-        #     cursor.execute(sql)
-        #     result = cursor.fetchall()
-            
-        #     self.ui.notif_table.setRowCount(0)
-
-        #     for row_number, row_data in enumerate(result):
-        #         self.ui.notif_table.insertRow(0)
-        #         for column_number, data in enumerate(row_data):
-        #             self.ui.notif_table.setItem(0, column_number, QtWidgets.QTableWidgetItem(str(data)))
-            
-        # except (Exception, psycopg2.Error) as error:
-        #     print("Error retrieving data from the database:", error)
-        
-        # finally:
-        #     if conn is not None:
-        #         conn.close()
 
     # ===========================================================================================================================================================================
     # Monthly Service Log

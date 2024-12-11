@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 ################################################################################
-## Form generated from reading UI file 'mainUINLTCrV.ui'
+## Form generated from reading UI file 'mainUIxgWAoo.ui'
 ##
 ## Created by: Qt User Interface Compiler version 5.15.2
 ##
@@ -138,6 +138,10 @@ class Ui_MainWindow(object):
         self.menu_container = QStackedWidget(self.centralwidget)
         self.menu_container.setObjectName(u"menu_container")
         self.menu_container.setGeometry(QRect(421, 70, 921, 831))
+        font5 = QFont()
+        font5.setFamily(u"MS Shell Dlg 2")
+        font5.setPointSize(10)
+        self.menu_container.setFont(font5)
         self.menu_container.setLayoutDirection(Qt.LeftToRight)
         self.menu_container.setStyleSheet(u"background-color: #5F8B6D;")
         self.home_page = QWidget()
@@ -192,45 +196,46 @@ class Ui_MainWindow(object):
         self.label_84 = QLabel(self.frame_2)
         self.label_84.setObjectName(u"label_84")
         self.label_84.setGeometry(QRect(20, 0, 331, 51))
-        font5 = QFont()
-        font5.setFamily(u"Segoe UI Semibold")
-        font5.setPointSize(14)
-        font5.setBold(True)
-        font5.setLegacyWeight(75)
-        self.label_84.setFont(font5)
+        font6 = QFont()
+        font6.setFamily(u"Segoe UI Semibold")
+        font6.setPointSize(14)
+        font6.setBold(True)
+        font6.setLegacyWeight(75)
+        self.label_84.setFont(font6)
         self.label_84.setStyleSheet(u"background: none;\n"
 "color: #003910;")
         self.label_84.setWordWrap(True)
         self.label_85 = QLabel(self.frame_2)
         self.label_85.setObjectName(u"label_85")
         self.label_85.setGeometry(QRect(20, 30, 331, 31))
-        font6 = QFont()
-        font6.setFamily(u"Segoe UI Semibold")
-        font6.setPointSize(11)
-        font6.setBold(True)
-        font6.setLegacyWeight(75)
-        self.label_85.setFont(font6)
+        font7 = QFont()
+        font7.setFamily(u"Segoe UI Semibold")
+        font7.setPointSize(11)
+        font7.setBold(True)
+        font7.setLegacyWeight(75)
+        self.label_85.setFont(font7)
         self.label_85.setStyleSheet(u"background: none;\n"
 "color: rgba(0,0,0,60%);")
         self.label_85.setWordWrap(True)
         self.newMem_dashboard = QTableWidget(self.frame_2)
         if (self.newMem_dashboard.columnCount() < 3):
             self.newMem_dashboard.setColumnCount(3)
-        font7 = QFont()
-        font7.setPointSize(12)
-        __qtablewidgetitem = QTableWidgetItem()
-        __qtablewidgetitem.setFont(font7);
-        self.newMem_dashboard.setHorizontalHeaderItem(0, __qtablewidgetitem)
-        __qtablewidgetitem1 = QTableWidgetItem()
-        __qtablewidgetitem1.setFont(font7);
-        self.newMem_dashboard.setHorizontalHeaderItem(1, __qtablewidgetitem1)
-        __qtablewidgetitem2 = QTableWidgetItem()
-        __qtablewidgetitem2.setFont(font7);
-        self.newMem_dashboard.setHorizontalHeaderItem(2, __qtablewidgetitem2)
-        self.newMem_dashboard.setObjectName(u"newMem_dashboard")
-        self.newMem_dashboard.setGeometry(QRect(20, 70, 781, 411))
         font8 = QFont()
         font8.setPointSize(10)
+        __qtablewidgetitem = QTableWidgetItem()
+        __qtablewidgetitem.setTextAlignment(Qt.AlignCenter);
+        __qtablewidgetitem.setFont(font8);
+        self.newMem_dashboard.setHorizontalHeaderItem(0, __qtablewidgetitem)
+        __qtablewidgetitem1 = QTableWidgetItem()
+        __qtablewidgetitem1.setTextAlignment(Qt.AlignCenter);
+        __qtablewidgetitem1.setFont(font8);
+        self.newMem_dashboard.setHorizontalHeaderItem(1, __qtablewidgetitem1)
+        __qtablewidgetitem2 = QTableWidgetItem()
+        __qtablewidgetitem2.setTextAlignment(Qt.AlignCenter);
+        __qtablewidgetitem2.setFont(font8);
+        self.newMem_dashboard.setHorizontalHeaderItem(2, __qtablewidgetitem2)
+        self.newMem_dashboard.setObjectName(u"newMem_dashboard")
+        self.newMem_dashboard.setGeometry(QRect(30, 70, 761, 411))
         self.newMem_dashboard.setFont(font8)
         self.newMem_dashboard.setStyleSheet(u"QTableWidget {\n"
 "    background-color: #ffffff;\n"
@@ -241,24 +246,19 @@ class Ui_MainWindow(object):
 "}\n"
 "\n"
 "QHeaderView::section {\n"
-"	height: 0;\n"
 "    background-color: #ffffff;\n"
-"   	color: #fff;\n"
+"   	color: rgba(0,0,0, 80%);\n"
 "	border: none; 	\n"
+"	font-weight: 600;\n"
+"	border-bottom: 1px solid rgba(0,0,0,50%);	\n"
+"	margin-bottom: 5px;\n"
 "}\n"
 "\n"
 "QTableWidget::item {\n"
-"    background-color: #4B805A;\n"
+"    background-color: #ffffff;\n"
 "    color: rgba(0,0,0,70%);\n"
-"    border-bottom: 1px solid #467855;\n"
-"	padding: 3px;\n"
-"	font-size: 10px;\n"
-"}\n"
-"\n"
-"QTableWidget::item:selected {\n"
-"    background-color: rgba(255,255,255,20%);\n"
-"    color: #fff;\n"
-"	gridline-color: rgba(255,255,255,20%); \n"
+"	margin-bottom: 10px;\n"
+"	padding: 10px;\n"
 "}\n"
 "\n"
 "QScrollBar:vertical{\n"
@@ -424,23 +424,25 @@ class Ui_MainWindow(object):
         self.mem_table = QTableWidget(self.member_list_page)
         if (self.mem_table.columnCount() < 6):
             self.mem_table.setColumnCount(6)
+        font11 = QFont()
+        font11.setPointSize(12)
         __qtablewidgetitem3 = QTableWidgetItem()
-        __qtablewidgetitem3.setFont(font7);
+        __qtablewidgetitem3.setFont(font11);
         self.mem_table.setHorizontalHeaderItem(0, __qtablewidgetitem3)
         __qtablewidgetitem4 = QTableWidgetItem()
-        __qtablewidgetitem4.setFont(font7);
+        __qtablewidgetitem4.setFont(font11);
         self.mem_table.setHorizontalHeaderItem(1, __qtablewidgetitem4)
         __qtablewidgetitem5 = QTableWidgetItem()
-        __qtablewidgetitem5.setFont(font7);
+        __qtablewidgetitem5.setFont(font11);
         self.mem_table.setHorizontalHeaderItem(2, __qtablewidgetitem5)
         __qtablewidgetitem6 = QTableWidgetItem()
-        __qtablewidgetitem6.setFont(font7);
+        __qtablewidgetitem6.setFont(font11);
         self.mem_table.setHorizontalHeaderItem(3, __qtablewidgetitem6)
         __qtablewidgetitem7 = QTableWidgetItem()
-        __qtablewidgetitem7.setFont(font7);
+        __qtablewidgetitem7.setFont(font11);
         self.mem_table.setHorizontalHeaderItem(4, __qtablewidgetitem7)
         __qtablewidgetitem8 = QTableWidgetItem()
-        __qtablewidgetitem8.setFont(font7);
+        __qtablewidgetitem8.setFont(font11);
         self.mem_table.setHorizontalHeaderItem(5, __qtablewidgetitem8)
         self.mem_table.setObjectName(u"mem_table")
         self.mem_table.setGeometry(QRect(50, 110, 841, 651))
@@ -523,21 +525,21 @@ class Ui_MainWindow(object):
         if (self.mshipStat_table.columnCount() < 5):
             self.mshipStat_table.setColumnCount(5)
         __qtablewidgetitem9 = QTableWidgetItem()
-        __qtablewidgetitem9.setFont(font7);
+        __qtablewidgetitem9.setFont(font11);
         __qtablewidgetitem9.setBackground(QColor(70, 120, 85));
         self.mshipStat_table.setHorizontalHeaderItem(0, __qtablewidgetitem9)
         __qtablewidgetitem10 = QTableWidgetItem()
-        __qtablewidgetitem10.setFont(font7);
+        __qtablewidgetitem10.setFont(font11);
         __qtablewidgetitem10.setBackground(QColor(70, 120, 85));
         self.mshipStat_table.setHorizontalHeaderItem(1, __qtablewidgetitem10)
         __qtablewidgetitem11 = QTableWidgetItem()
-        __qtablewidgetitem11.setFont(font7);
+        __qtablewidgetitem11.setFont(font11);
         self.mshipStat_table.setHorizontalHeaderItem(2, __qtablewidgetitem11)
         __qtablewidgetitem12 = QTableWidgetItem()
-        __qtablewidgetitem12.setFont(font7);
+        __qtablewidgetitem12.setFont(font11);
         self.mshipStat_table.setHorizontalHeaderItem(3, __qtablewidgetitem12)
         __qtablewidgetitem13 = QTableWidgetItem()
-        __qtablewidgetitem13.setFont(font7);
+        __qtablewidgetitem13.setFont(font11);
         self.mshipStat_table.setHorizontalHeaderItem(4, __qtablewidgetitem13)
         self.mshipStat_table.setObjectName(u"mshipStat_table")
         self.mshipStat_table.setGeometry(QRect(50, 110, 841, 651))
@@ -642,30 +644,30 @@ class Ui_MainWindow(object):
         if (self.mon_serviceLog_table.columnCount() < 8):
             self.mon_serviceLog_table.setColumnCount(8)
         __qtablewidgetitem14 = QTableWidgetItem()
-        __qtablewidgetitem14.setFont(font7);
+        __qtablewidgetitem14.setFont(font11);
         __qtablewidgetitem14.setBackground(QColor(70, 120, 85));
         self.mon_serviceLog_table.setHorizontalHeaderItem(0, __qtablewidgetitem14)
         __qtablewidgetitem15 = QTableWidgetItem()
-        __qtablewidgetitem15.setFont(font7);
+        __qtablewidgetitem15.setFont(font11);
         __qtablewidgetitem15.setBackground(QColor(70, 120, 85));
         self.mon_serviceLog_table.setHorizontalHeaderItem(1, __qtablewidgetitem15)
         __qtablewidgetitem16 = QTableWidgetItem()
-        __qtablewidgetitem16.setFont(font7);
+        __qtablewidgetitem16.setFont(font11);
         self.mon_serviceLog_table.setHorizontalHeaderItem(2, __qtablewidgetitem16)
         __qtablewidgetitem17 = QTableWidgetItem()
-        __qtablewidgetitem17.setFont(font7);
+        __qtablewidgetitem17.setFont(font11);
         self.mon_serviceLog_table.setHorizontalHeaderItem(3, __qtablewidgetitem17)
         __qtablewidgetitem18 = QTableWidgetItem()
-        __qtablewidgetitem18.setFont(font7);
+        __qtablewidgetitem18.setFont(font11);
         self.mon_serviceLog_table.setHorizontalHeaderItem(4, __qtablewidgetitem18)
         __qtablewidgetitem19 = QTableWidgetItem()
-        __qtablewidgetitem19.setFont(font7);
+        __qtablewidgetitem19.setFont(font11);
         self.mon_serviceLog_table.setHorizontalHeaderItem(5, __qtablewidgetitem19)
         __qtablewidgetitem20 = QTableWidgetItem()
-        __qtablewidgetitem20.setFont(font7);
+        __qtablewidgetitem20.setFont(font11);
         self.mon_serviceLog_table.setHorizontalHeaderItem(6, __qtablewidgetitem20)
         __qtablewidgetitem21 = QTableWidgetItem()
-        __qtablewidgetitem21.setFont(font7);
+        __qtablewidgetitem21.setFont(font11);
         __qtablewidgetitem21.setBackground(QColor(70, 120, 85));
         self.mon_serviceLog_table.setHorizontalHeaderItem(7, __qtablewidgetitem21)
         self.mon_serviceLog_table.setObjectName(u"mon_serviceLog_table")
@@ -750,28 +752,28 @@ class Ui_MainWindow(object):
         if (self.transac_table.columnCount() < 8):
             self.transac_table.setColumnCount(8)
         __qtablewidgetitem22 = QTableWidgetItem()
-        __qtablewidgetitem22.setFont(font7);
+        __qtablewidgetitem22.setFont(font11);
         self.transac_table.setHorizontalHeaderItem(0, __qtablewidgetitem22)
         __qtablewidgetitem23 = QTableWidgetItem()
-        __qtablewidgetitem23.setFont(font7);
+        __qtablewidgetitem23.setFont(font11);
         self.transac_table.setHorizontalHeaderItem(1, __qtablewidgetitem23)
         __qtablewidgetitem24 = QTableWidgetItem()
-        __qtablewidgetitem24.setFont(font7);
+        __qtablewidgetitem24.setFont(font11);
         self.transac_table.setHorizontalHeaderItem(2, __qtablewidgetitem24)
         __qtablewidgetitem25 = QTableWidgetItem()
-        __qtablewidgetitem25.setFont(font7);
+        __qtablewidgetitem25.setFont(font11);
         self.transac_table.setHorizontalHeaderItem(3, __qtablewidgetitem25)
         __qtablewidgetitem26 = QTableWidgetItem()
-        __qtablewidgetitem26.setFont(font7);
+        __qtablewidgetitem26.setFont(font11);
         self.transac_table.setHorizontalHeaderItem(4, __qtablewidgetitem26)
         __qtablewidgetitem27 = QTableWidgetItem()
-        __qtablewidgetitem27.setFont(font7);
+        __qtablewidgetitem27.setFont(font11);
         self.transac_table.setHorizontalHeaderItem(5, __qtablewidgetitem27)
         __qtablewidgetitem28 = QTableWidgetItem()
-        __qtablewidgetitem28.setFont(font7);
+        __qtablewidgetitem28.setFont(font11);
         self.transac_table.setHorizontalHeaderItem(6, __qtablewidgetitem28)
         __qtablewidgetitem29 = QTableWidgetItem()
-        __qtablewidgetitem29.setFont(font7);
+        __qtablewidgetitem29.setFont(font11);
         self.transac_table.setHorizontalHeaderItem(7, __qtablewidgetitem29)
         self.transac_table.setObjectName(u"transac_table")
         self.transac_table.setGeometry(QRect(40, 110, 861, 651))
@@ -873,25 +875,25 @@ class Ui_MainWindow(object):
         if (self.emp_table.columnCount() < 7):
             self.emp_table.setColumnCount(7)
         __qtablewidgetitem30 = QTableWidgetItem()
-        __qtablewidgetitem30.setFont(font7);
+        __qtablewidgetitem30.setFont(font11);
         self.emp_table.setHorizontalHeaderItem(0, __qtablewidgetitem30)
         __qtablewidgetitem31 = QTableWidgetItem()
-        __qtablewidgetitem31.setFont(font7);
+        __qtablewidgetitem31.setFont(font11);
         self.emp_table.setHorizontalHeaderItem(1, __qtablewidgetitem31)
         __qtablewidgetitem32 = QTableWidgetItem()
-        __qtablewidgetitem32.setFont(font7);
+        __qtablewidgetitem32.setFont(font11);
         self.emp_table.setHorizontalHeaderItem(2, __qtablewidgetitem32)
         __qtablewidgetitem33 = QTableWidgetItem()
-        __qtablewidgetitem33.setFont(font7);
+        __qtablewidgetitem33.setFont(font11);
         self.emp_table.setHorizontalHeaderItem(3, __qtablewidgetitem33)
         __qtablewidgetitem34 = QTableWidgetItem()
-        __qtablewidgetitem34.setFont(font7);
+        __qtablewidgetitem34.setFont(font11);
         self.emp_table.setHorizontalHeaderItem(4, __qtablewidgetitem34)
         __qtablewidgetitem35 = QTableWidgetItem()
-        __qtablewidgetitem35.setFont(font7);
+        __qtablewidgetitem35.setFont(font11);
         self.emp_table.setHorizontalHeaderItem(5, __qtablewidgetitem35)
         __qtablewidgetitem36 = QTableWidgetItem()
-        __qtablewidgetitem36.setFont(font7);
+        __qtablewidgetitem36.setFont(font11);
         self.emp_table.setHorizontalHeaderItem(6, __qtablewidgetitem36)
         self.emp_table.setObjectName(u"emp_table")
         self.emp_table.setGeometry(QRect(50, 110, 841, 651))
@@ -1059,12 +1061,12 @@ class Ui_MainWindow(object):
         palette.setBrush(QPalette.Disabled, QPalette.PlaceholderText, brush4)
 #endif
         self.label_24.setPalette(palette)
-        font11 = QFont()
-        font11.setFamily(u"Segoe UI")
-        font11.setPointSize(10)
-        font11.setBold(True)
-        font11.setLegacyWeight(75)
-        self.label_24.setFont(font11)
+        font12 = QFont()
+        font12.setFamily(u"Segoe UI")
+        font12.setPointSize(10)
+        font12.setBold(True)
+        font12.setLegacyWeight(75)
+        self.label_24.setFont(font12)
         self.label_24.setAlignment(Qt.AlignCenter)
         self.widget_9 = QWidget(self.view_details_widget)
         self.widget_9.setObjectName(u"widget_9")
@@ -1073,10 +1075,7 @@ class Ui_MainWindow(object):
         self.viewmem_Id = QLabel(self.widget_9)
         self.viewmem_Id.setObjectName(u"viewmem_Id")
         self.viewmem_Id.setGeometry(QRect(10, 0, 201, 31))
-        font12 = QFont()
-        font12.setFamily(u"MS Shell Dlg 2")
-        font12.setPointSize(10)
-        self.viewmem_Id.setFont(font12)
+        self.viewmem_Id.setFont(font5)
         self.viewmem_Id.setStyleSheet(u"padding: 5px;\n"
 "color: #003910;")
         self.widget_24 = QWidget(self.view_details_widget)
@@ -1086,7 +1085,7 @@ class Ui_MainWindow(object):
         self.viewmem_name = QLabel(self.widget_24)
         self.viewmem_name.setObjectName(u"viewmem_name")
         self.viewmem_name.setGeometry(QRect(10, 0, 201, 31))
-        self.viewmem_name.setFont(font12)
+        self.viewmem_name.setFont(font5)
         self.viewmem_name.setStyleSheet(u"padding: 5px; color: #003910;")
         self.widget_40 = QWidget(self.view_details_widget)
         self.widget_40.setObjectName(u"widget_40")
@@ -1111,7 +1110,7 @@ class Ui_MainWindow(object):
         palette1.setBrush(QPalette.Disabled, QPalette.Base, brush1)
         palette1.setBrush(QPalette.Disabled, QPalette.Window, brush1)
         self.label_25.setPalette(palette1)
-        self.label_25.setFont(font11)
+        self.label_25.setFont(font12)
         self.label_25.setAlignment(Qt.AlignCenter)
         self.widget_39 = QWidget(self.view_details_widget)
         self.widget_39.setObjectName(u"widget_39")
@@ -1120,7 +1119,7 @@ class Ui_MainWindow(object):
         self.viewmem_DOB = QLabel(self.widget_39)
         self.viewmem_DOB.setObjectName(u"viewmem_DOB")
         self.viewmem_DOB.setGeometry(QRect(10, 0, 201, 31))
-        self.viewmem_DOB.setFont(font12)
+        self.viewmem_DOB.setFont(font5)
         self.viewmem_DOB.setStyleSheet(u"padding: 5px; color: #003910;")
         self.widget_42 = QWidget(self.view_details_widget)
         self.widget_42.setObjectName(u"widget_42")
@@ -1145,7 +1144,7 @@ class Ui_MainWindow(object):
         palette2.setBrush(QPalette.Disabled, QPalette.Base, brush1)
         palette2.setBrush(QPalette.Disabled, QPalette.Window, brush1)
         self.label_26.setPalette(palette2)
-        self.label_26.setFont(font11)
+        self.label_26.setFont(font12)
         self.label_26.setAlignment(Qt.AlignCenter)
         self.widget_41 = QWidget(self.view_details_widget)
         self.widget_41.setObjectName(u"widget_41")
@@ -1154,7 +1153,7 @@ class Ui_MainWindow(object):
         self.viewmem_address = QLabel(self.widget_41)
         self.viewmem_address.setObjectName(u"viewmem_address")
         self.viewmem_address.setGeometry(QRect(10, 0, 201, 31))
-        self.viewmem_address.setFont(font12)
+        self.viewmem_address.setFont(font5)
         self.viewmem_address.setStyleSheet(u"padding: 5px; color: #003910;")
         self.widget_44 = QWidget(self.view_details_widget)
         self.widget_44.setObjectName(u"widget_44")
@@ -1179,7 +1178,7 @@ class Ui_MainWindow(object):
         palette3.setBrush(QPalette.Disabled, QPalette.Base, brush1)
         palette3.setBrush(QPalette.Disabled, QPalette.Window, brush1)
         self.label_27.setPalette(palette3)
-        self.label_27.setFont(font11)
+        self.label_27.setFont(font12)
         self.label_27.setAlignment(Qt.AlignCenter)
         self.widget_43 = QWidget(self.view_details_widget)
         self.widget_43.setObjectName(u"widget_43")
@@ -1188,7 +1187,7 @@ class Ui_MainWindow(object):
         self.viewmem_telnum = QLabel(self.widget_43)
         self.viewmem_telnum.setObjectName(u"viewmem_telnum")
         self.viewmem_telnum.setGeometry(QRect(10, 0, 201, 31))
-        self.viewmem_telnum.setFont(font12)
+        self.viewmem_telnum.setFont(font5)
         self.viewmem_telnum.setStyleSheet(u"padding: 5px; color: #003910;")
         self.widget_46 = QWidget(self.view_details_widget)
         self.widget_46.setObjectName(u"widget_46")
@@ -1213,7 +1212,7 @@ class Ui_MainWindow(object):
         palette4.setBrush(QPalette.Disabled, QPalette.Base, brush1)
         palette4.setBrush(QPalette.Disabled, QPalette.Window, brush1)
         self.label_28.setPalette(palette4)
-        self.label_28.setFont(font11)
+        self.label_28.setFont(font12)
         self.label_28.setAlignment(Qt.AlignCenter)
         self.widget_45 = QWidget(self.view_details_widget)
         self.widget_45.setObjectName(u"widget_45")
@@ -1222,7 +1221,7 @@ class Ui_MainWindow(object):
         self.viewmem_physicalAct = QLabel(self.widget_45)
         self.viewmem_physicalAct.setObjectName(u"viewmem_physicalAct")
         self.viewmem_physicalAct.setGeometry(QRect(10, 0, 201, 31))
-        self.viewmem_physicalAct.setFont(font12)
+        self.viewmem_physicalAct.setFont(font5)
         self.viewmem_physicalAct.setStyleSheet(u"padding: 5px; color: #003910;")
         self.widget_48 = QWidget(self.view_details_widget)
         self.widget_48.setObjectName(u"widget_48")
@@ -1247,7 +1246,7 @@ class Ui_MainWindow(object):
         palette5.setBrush(QPalette.Disabled, QPalette.Base, brush1)
         palette5.setBrush(QPalette.Disabled, QPalette.Window, brush1)
         self.label_29.setPalette(palette5)
-        self.label_29.setFont(font11)
+        self.label_29.setFont(font12)
         self.label_29.setAlignment(Qt.AlignCenter)
         self.widget_47 = QWidget(self.view_details_widget)
         self.widget_47.setObjectName(u"widget_47")
@@ -1256,7 +1255,7 @@ class Ui_MainWindow(object):
         self.viewmem_medicalAilments = QLabel(self.widget_47)
         self.viewmem_medicalAilments.setObjectName(u"viewmem_medicalAilments")
         self.viewmem_medicalAilments.setGeometry(QRect(10, 0, 201, 21))
-        self.viewmem_medicalAilments.setFont(font12)
+        self.viewmem_medicalAilments.setFont(font5)
         self.viewmem_medicalAilments.setStyleSheet(u"padding: 5px; color: #003910;")
         self.widget_50 = QWidget(self.view_details_widget)
         self.widget_50.setObjectName(u"widget_50")
@@ -1281,7 +1280,7 @@ class Ui_MainWindow(object):
         palette6.setBrush(QPalette.Disabled, QPalette.Base, brush1)
         palette6.setBrush(QPalette.Disabled, QPalette.Window, brush1)
         self.label_30.setPalette(palette6)
-        self.label_30.setFont(font11)
+        self.label_30.setFont(font12)
         self.label_30.setAlignment(Qt.AlignCenter)
         self.widget_49 = QWidget(self.view_details_widget)
         self.widget_49.setObjectName(u"widget_49")
@@ -1290,7 +1289,7 @@ class Ui_MainWindow(object):
         self.viewmem_prevGym = QLabel(self.widget_49)
         self.viewmem_prevGym.setObjectName(u"viewmem_prevGym")
         self.viewmem_prevGym.setGeometry(QRect(10, 0, 201, 31))
-        self.viewmem_prevGym.setFont(font12)
+        self.viewmem_prevGym.setFont(font5)
         self.viewmem_prevGym.setStyleSheet(u"padding: 5px; color: #003910;")
         self.widget_38 = QWidget(self.view_details_widget)
         self.widget_38.setObjectName(u"widget_38")
@@ -1315,7 +1314,7 @@ class Ui_MainWindow(object):
         palette7.setBrush(QPalette.Disabled, QPalette.Base, brush1)
         palette7.setBrush(QPalette.Disabled, QPalette.Window, brush1)
         self.label_23.setPalette(palette7)
-        self.label_23.setFont(font11)
+        self.label_23.setFont(font12)
         self.label_23.setAlignment(Qt.AlignCenter)
         self.widget_54 = QWidget(self.view_details_widget)
         self.widget_54.setObjectName(u"widget_54")
@@ -1348,7 +1347,7 @@ class Ui_MainWindow(object):
         palette8.setBrush(QPalette.Disabled, QPalette.Base, brush1)
         palette8.setBrush(QPalette.Disabled, QPalette.Window, brush1)
         self.label_36.setPalette(palette8)
-        self.label_36.setFont(font11)
+        self.label_36.setFont(font12)
         self.label_36.setAlignment(Qt.AlignCenter)
         self.widget_56 = QWidget(self.view_details_widget)
         self.widget_56.setObjectName(u"widget_56")
@@ -1357,7 +1356,7 @@ class Ui_MainWindow(object):
         self.viewmem_status = QLabel(self.widget_56)
         self.viewmem_status.setObjectName(u"viewmem_status")
         self.viewmem_status.setGeometry(QRect(10, 0, 201, 31))
-        self.viewmem_status.setFont(font12)
+        self.viewmem_status.setFont(font5)
         self.viewmem_status.setStyleSheet(u"padding: 5px; color: #003910;")
         self.widget_55 = QWidget(self.view_details_widget)
         self.widget_55.setObjectName(u"widget_55")
@@ -1382,7 +1381,7 @@ class Ui_MainWindow(object):
         palette9.setBrush(QPalette.Disabled, QPalette.Base, brush1)
         palette9.setBrush(QPalette.Disabled, QPalette.Window, brush1)
         self.label_35.setPalette(palette9)
-        self.label_35.setFont(font11)
+        self.label_35.setFont(font12)
         self.label_35.setAlignment(Qt.AlignCenter)
         self.widget_58 = QWidget(self.view_details_widget)
         self.widget_58.setObjectName(u"widget_58")
@@ -1391,7 +1390,7 @@ class Ui_MainWindow(object):
         self.viewmem_BP = QLabel(self.widget_58)
         self.viewmem_BP.setObjectName(u"viewmem_BP")
         self.viewmem_BP.setGeometry(QRect(10, 0, 201, 31))
-        self.viewmem_BP.setFont(font12)
+        self.viewmem_BP.setFont(font5)
         self.viewmem_BP.setStyleSheet(u"padding: 5px; color: #003910;")
         self.widget_57 = QWidget(self.view_details_widget)
         self.widget_57.setObjectName(u"widget_57")
@@ -1416,7 +1415,7 @@ class Ui_MainWindow(object):
         palette10.setBrush(QPalette.Disabled, QPalette.Base, brush1)
         palette10.setBrush(QPalette.Disabled, QPalette.Window, brush1)
         self.label_34.setPalette(palette10)
-        self.label_34.setFont(font11)
+        self.label_34.setFont(font12)
         self.label_34.setAlignment(Qt.AlignCenter)
         self.widget_60 = QWidget(self.view_details_widget)
         self.widget_60.setObjectName(u"widget_60")
@@ -1441,7 +1440,7 @@ class Ui_MainWindow(object):
         palette11.setBrush(QPalette.Disabled, QPalette.Base, brush1)
         palette11.setBrush(QPalette.Disabled, QPalette.Window, brush1)
         self.label_33.setPalette(palette11)
-        self.label_33.setFont(font11)
+        self.label_33.setFont(font12)
         self.label_33.setAlignment(Qt.AlignCenter)
         self.widget_59 = QWidget(self.view_details_widget)
         self.widget_59.setObjectName(u"widget_59")
@@ -1450,7 +1449,7 @@ class Ui_MainWindow(object):
         self.viewmem_Gender = QLabel(self.widget_59)
         self.viewmem_Gender.setObjectName(u"viewmem_Gender")
         self.viewmem_Gender.setGeometry(QRect(10, 0, 201, 31))
-        self.viewmem_Gender.setFont(font12)
+        self.viewmem_Gender.setFont(font5)
         self.viewmem_Gender.setStyleSheet(u"padding: 5px; color: #003910;")
         self.widget_62 = QWidget(self.view_details_widget)
         self.widget_62.setObjectName(u"widget_62")
@@ -1475,7 +1474,7 @@ class Ui_MainWindow(object):
         palette12.setBrush(QPalette.Disabled, QPalette.Base, brush1)
         palette12.setBrush(QPalette.Disabled, QPalette.Window, brush1)
         self.label_31.setPalette(palette12)
-        self.label_31.setFont(font11)
+        self.label_31.setFont(font12)
         self.label_31.setAlignment(Qt.AlignCenter)
         self.widget_61 = QWidget(self.view_details_widget)
         self.widget_61.setObjectName(u"widget_61")
@@ -1484,7 +1483,7 @@ class Ui_MainWindow(object):
         self.viewmem_weight = QLabel(self.widget_61)
         self.viewmem_weight.setObjectName(u"viewmem_weight")
         self.viewmem_weight.setGeometry(QRect(10, 0, 201, 31))
-        self.viewmem_weight.setFont(font12)
+        self.viewmem_weight.setFont(font5)
         self.viewmem_weight.setStyleSheet(u"padding: 5px; color: #003910;")
         self.widget_64 = QWidget(self.view_details_widget)
         self.widget_64.setObjectName(u"widget_64")
@@ -1493,7 +1492,7 @@ class Ui_MainWindow(object):
         self.viewmem_height = QLabel(self.widget_64)
         self.viewmem_height.setObjectName(u"viewmem_height")
         self.viewmem_height.setGeometry(QRect(10, 0, 201, 31))
-        self.viewmem_height.setFont(font12)
+        self.viewmem_height.setFont(font5)
         self.viewmem_height.setStyleSheet(u"padding: 5px; color: #003910;")
         self.widget_63 = QWidget(self.view_details_widget)
         self.widget_63.setObjectName(u"widget_63")
@@ -1518,7 +1517,7 @@ class Ui_MainWindow(object):
         palette13.setBrush(QPalette.Disabled, QPalette.Base, brush1)
         palette13.setBrush(QPalette.Disabled, QPalette.Window, brush1)
         self.label_32.setPalette(palette13)
-        self.label_32.setFont(font11)
+        self.label_32.setFont(font12)
         self.label_32.setAlignment(Qt.AlignCenter)
         self.viewmem_backbtn = QPushButton(self.view_details_widget)
         self.viewmem_backbtn.setObjectName(u"viewmem_backbtn")
@@ -1569,7 +1568,7 @@ class Ui_MainWindow(object):
         palette14.setBrush(QPalette.Disabled, QPalette.Base, brush1)
         palette14.setBrush(QPalette.Disabled, QPalette.Window, brush1)
         self.label_82.setPalette(palette14)
-        self.label_82.setFont(font11)
+        self.label_82.setFont(font12)
         self.label_82.setAlignment(Qt.AlignCenter)
         self.widget_117 = QWidget(self.view_details_widget)
         self.widget_117.setObjectName(u"widget_117")
@@ -1578,7 +1577,7 @@ class Ui_MainWindow(object):
         self.viewmem_email = QLabel(self.widget_117)
         self.viewmem_email.setObjectName(u"viewmem_email")
         self.viewmem_email.setGeometry(QRect(10, 0, 201, 31))
-        self.viewmem_email.setFont(font12)
+        self.viewmem_email.setFont(font5)
         self.viewmem_email.setStyleSheet(u"padding: 5px; color: #003910;")
         self.widget_65.raise_()
         self.widget_24.raise_()
@@ -4126,13 +4125,13 @@ class Ui_MainWindow(object):
         if (self.services_table.columnCount() < 3):
             self.services_table.setColumnCount(3)
         __qtablewidgetitem37 = QTableWidgetItem()
-        __qtablewidgetitem37.setFont(font7);
+        __qtablewidgetitem37.setFont(font11);
         self.services_table.setHorizontalHeaderItem(0, __qtablewidgetitem37)
         __qtablewidgetitem38 = QTableWidgetItem()
-        __qtablewidgetitem38.setFont(font7);
+        __qtablewidgetitem38.setFont(font11);
         self.services_table.setHorizontalHeaderItem(1, __qtablewidgetitem38)
         __qtablewidgetitem39 = QTableWidgetItem()
-        __qtablewidgetitem39.setFont(font7);
+        __qtablewidgetitem39.setFont(font11);
         self.services_table.setHorizontalHeaderItem(2, __qtablewidgetitem39)
         self.services_table.setObjectName(u"services_table")
         self.services_table.setGeometry(QRect(0, 83, 701, 511))
@@ -4887,13 +4886,13 @@ class Ui_MainWindow(object):
         self.label_43 = QLabel(self.change_widget)
         self.label_43.setObjectName(u"label_43")
         self.label_43.setGeometry(QRect(70, 17, 41, 141))
-        self.label_43.setFont(font6)
+        self.label_43.setFont(font7)
         self.label_43.setStyleSheet(u"background: none;\n"
 "color: #003910;")
         self.change_field = QLineEdit(self.change_widget)
         self.change_field.setObjectName(u"change_field")
         self.change_field.setGeometry(QRect(110, 62, 321, 51))
-        self.change_field.setFont(font6)
+        self.change_field.setFont(font7)
         self.change_field.setStyleSheet(u"background-color: #eee;\n"
 "color: #000;\n"
 "border: none;\n"
