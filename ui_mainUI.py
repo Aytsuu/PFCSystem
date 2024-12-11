@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 ################################################################################
-## Form generated from reading UI file 'mainUIxgWAoo.ui'
+## Form generated from reading UI file 'mainUIAcHmdo.ui'
 ##
 ## Created by: Qt User Interface Compiler version 5.15.2
 ##
@@ -307,7 +307,7 @@ class Ui_MainWindow(object):
         self.expired_dashboard.setFlat(False)
         self.label_73 = QLabel(self.home_page)
         self.label_73.setObjectName(u"label_73")
-        self.label_73.setGeometry(QRect(480, 60, 141, 51))
+        self.label_73.setGeometry(QRect(480, 60, 141, 31))
         font9 = QFont()
         font9.setFamily(u"Segoe UI Semibold")
         font9.setPointSize(10)
@@ -320,7 +320,7 @@ class Ui_MainWindow(object):
         self.label_73.setWordWrap(True)
         self.label_74 = QLabel(self.home_page)
         self.label_74.setObjectName(u"label_74")
-        self.label_74.setGeometry(QRect(690, 60, 141, 41))
+        self.label_74.setGeometry(QRect(690, 60, 141, 31))
         self.label_74.setFont(font9)
         self.label_74.setStyleSheet(u"background: none;\n"
 "color: #003910;")
@@ -341,7 +341,7 @@ class Ui_MainWindow(object):
         self.label_76.setWordWrap(True)
         self.label_86 = QLabel(self.home_page)
         self.label_86.setObjectName(u"label_86")
-        self.label_86.setGeometry(QRect(690, 75, 141, 41))
+        self.label_86.setGeometry(QRect(690, 75, 141, 31))
         font10 = QFont()
         font10.setFamily(u"Segoe UI Semibold")
         font10.setPointSize(9)
@@ -353,7 +353,7 @@ class Ui_MainWindow(object):
         self.label_86.setWordWrap(True)
         self.label_101 = QLabel(self.home_page)
         self.label_101.setObjectName(u"label_101")
-        self.label_101.setGeometry(QRect(480, 80, 141, 41))
+        self.label_101.setGeometry(QRect(480, 80, 141, 21))
         self.label_101.setFont(font10)
         self.label_101.setStyleSheet(u"background: none;\n"
 "color: green;")
