@@ -28,6 +28,7 @@
    <property name="font">
     <font>
      <family>Yu Gothic UI</family>
+     <pointsize>8</pointsize>
     </font>
    </property>
    <property name="styleSheet">
@@ -108,6 +109,7 @@ border-radius:40px;</string>
      <property name="font">
       <font>
        <family>MS Gothic</family>
+       <pointsize>8</pointsize>
       </font>
      </property>
      <property name="styleSheet">
@@ -350,7 +352,7 @@ border-radius:40px;</string>
      <string notr="true">background-color: #5F8B6D;</string>
     </property>
     <property name="currentIndex">
-     <number>0</number>
+     <number>5</number>
     </property>
     <widget class="QWidget" name="home_page">
      <widget class="QPushButton" name="totalMembers_dashboard">
@@ -2124,6 +2126,16 @@ background-color: #075E20;
       <column>
        <property name="text">
         <string>LAST NAME</string>
+       </property>
+       <property name="font">
+        <font>
+         <pointsize>12</pointsize>
+        </font>
+       </property>
+      </column>
+      <column>
+       <property name="text">
+        <string>DATE OF BIRTH</string>
        </property>
        <property name="font">
         <font>
@@ -9141,6 +9153,7 @@ font-weight: 600;</string>
      <property name="font">
       <font>
        <family>Segoe UI</family>
+       <pointsize>8</pointsize>
        <weight>50</weight>
        <bold>false</bold>
       </font>
@@ -21389,7 +21402,10 @@ text-align: center;</string>
      </rect>
     </property>
     <property name="font">
-     <font/>
+     <font>
+      <family>MS Shell Dlg 2</family>
+      <pointsize>8</pointsize>
+     </font>
     </property>
     <property name="layoutDirection">
      <enum>Qt::LeftToRight</enum>
