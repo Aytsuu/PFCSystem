@@ -491,7 +491,9 @@ class MainWindow(QtWidgets.QMainWindow):
             }   
         ]
 
-        new_members = self.membersdb.aggregate(pipeline)
+        new_members = list(self.membersdb.aggregate(pipeline))
+
+        self.ui.total_newMem.setText(str(len(new_members)))
 
         self.ui.newMem_dashboard.setRowCount(0)
         for row_number, new_member in enumerate(new_members):
@@ -1334,6 +1336,8 @@ class MainWindow(QtWidgets.QMainWindow):
                 self.mon_servicelogdb.delete_one({"_id": temp_mem_id})
 
                 self.populate_mem_table() 
+
+                self.notificationdb.delete_many({"_id": temp_mem_id})
             
     #Displaying the member details in the edit page
     def edit_member(self):

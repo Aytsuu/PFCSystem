@@ -35,6 +35,7 @@ border-radius: 20px;
 border-radius: 10px;
 background-color: #FFFFFF;
 padding: 10px;
+color: #000000;
 }
 
 #signInBtn{
@@ -455,36 +456,6 @@ background-color: #FAD30A;
      <zorder>passLabel</zorder>
      <zorder>usernameField</zorder>
      <zorder>passwordField</zorder>
-    </widget>
-    <widget class="QWidget" name="cl3" native="true">
-     <property name="geometry">
-      <rect>
-       <x>760</x>
-       <y>30</y>
-       <width>20</width>
-       <height>20</height>
-      </rect>
-     </property>
-    </widget>
-    <widget class="QWidget" name="cl1" native="true">
-     <property name="geometry">
-      <rect>
-       <x>820</x>
-       <y>30</y>
-       <width>20</width>
-       <height>20</height>
-      </rect>
-     </property>
-    </widget>
-    <widget class="QWidget" name="cl2" native="true">
-     <property name="geometry">
-      <rect>
-       <x>790</x>
-       <y>30</y>
-       <width>20</width>
-       <height>20</height>
-      </rect>
-     </property>
     </widget>
    </widget>
    <widget class="QLabel" name="gymName">

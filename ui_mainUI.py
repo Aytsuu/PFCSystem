@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 ################################################################################
-## Form generated from reading UI file 'mainUIfEqGfz.ui'
+## Form generated from reading UI file 'mainUIVypsUF.ui'
 ##
 ## Created by: Qt User Interface Compiler version 5.15.2
 ##
@@ -190,9 +190,11 @@ class Ui_MainWindow(object):
         self.frame_2 = QFrame(self.home_page)
         self.frame_2.setObjectName(u"frame_2")
         self.frame_2.setGeometry(QRect(50, 200, 821, 561))
-        self.frame_2.setStyleSheet(u"background-color: #ffffff;\n"
+        self.frame_2.setStyleSheet(u"#frame_2{\n"
+"background-color: #ffffff;\n"
 "border: none;\n"
-"border-radius: 5px;")
+"border-radius: 5px;\n"
+"}")
         self.frame_2.setFrameShape(QFrame.StyledPanel)
         self.frame_2.setFrameShadow(QFrame.Raised)
         self.label_84 = QLabel(self.frame_2)
@@ -245,6 +247,7 @@ class Ui_MainWindow(object):
 "    gridline-color: transparent; \n"
 "	border-spacing: 0 1px;\n"
 "	border: none;\n"
+"	border-bottom: 1px solid rgba(0,0,0,50%);\n"
 "}\n"
 "\n"
 "QHeaderView::section {\n"
@@ -293,6 +296,20 @@ class Ui_MainWindow(object):
         self.newMem_dashboard.verticalHeader().setCascadingSectionResizes(False)
         self.newMem_dashboard.verticalHeader().setHighlightSections(False)
         self.newMem_dashboard.verticalHeader().setProperty("showSortIndicator", False)
+        self.label_102 = QLabel(self.frame_2)
+        self.label_102.setObjectName(u"label_102")
+        self.label_102.setGeometry(QRect(20, 510, 331, 31))
+        self.label_102.setFont(font7)
+        self.label_102.setStyleSheet(u"background: none;\n"
+"color: rgba(0,0,0,60%);")
+        self.label_102.setWordWrap(True)
+        self.total_newMem = QLabel(self.frame_2)
+        self.total_newMem.setObjectName(u"total_newMem")
+        self.total_newMem.setGeometry(QRect(70, 510, 331, 31))
+        self.total_newMem.setFont(font7)
+        self.total_newMem.setStyleSheet(u"background: none;\n"
+"color: rgba(0,0,0,100%);")
+        self.total_newMem.setWordWrap(True)
         self.expired_dashboard = QPushButton(self.home_page)
         self.expired_dashboard.setObjectName(u"expired_dashboard")
         self.expired_dashboard.setGeometry(QRect(680, 60, 191, 121))
@@ -5562,6 +5579,8 @@ class Ui_MainWindow(object):
         ___qtablewidgetitem1.setText(QCoreApplication.translate("MainWindow", u"FIRST NAME", None));
         ___qtablewidgetitem2 = self.newMem_dashboard.horizontalHeaderItem(2)
         ___qtablewidgetitem2.setText(QCoreApplication.translate("MainWindow", u"LAST NAME", None));
+        self.label_102.setText(QCoreApplication.translate("MainWindow", u"Total : ", None))
+        self.total_newMem.setText(QCoreApplication.translate("MainWindow", u"0", None))
         self.expired_dashboard.setText(QCoreApplication.translate("MainWindow", u" 0", None))
         self.label_73.setText(QCoreApplication.translate("MainWindow", u"Monthly Access", None))
         self.label_74.setText(QCoreApplication.translate("MainWindow", u"Monthly Access", None))

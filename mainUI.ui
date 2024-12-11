@@ -352,7 +352,7 @@ border-radius:40px;</string>
      <string notr="true">background-color: #5F8B6D;</string>
     </property>
     <property name="currentIndex">
-     <number>5</number>
+     <number>0</number>
     </property>
     <widget class="QWidget" name="home_page">
      <widget class="QPushButton" name="totalMembers_dashboard">
@@ -461,9 +461,11 @@ border-radius: 5px;</string>
        </rect>
       </property>
       <property name="styleSheet">
-       <string notr="true">background-color: #ffffff;
+       <string notr="true">#frame_2{
+background-color: #ffffff;
 border: none;
-border-radius: 5px;</string>
+border-radius: 5px;
+}</string>
       </property>
       <property name="frameShape">
        <enum>QFrame::StyledPanel</enum>
@@ -548,6 +550,7 @@ color: rgba(0,0,0,60%);</string>
     gridline-color: transparent; 
 	border-spacing: 0 1px;
 	border: none;
+	border-bottom: 1px solid rgba(0,0,0,50%);
 }
 
 QHeaderView::section {
@@ -664,6 +667,62 @@ background-color: #075E20;
          <set>AlignCenter</set>
         </property>
        </column>
+      </widget>
+      <widget class="QLabel" name="label_102">
+       <property name="geometry">
+        <rect>
+         <x>20</x>
+         <y>510</y>
+         <width>331</width>
+         <height>31</height>
+        </rect>
+       </property>
+       <property name="font">
+        <font>
+         <family>Segoe UI Semibold</family>
+         <pointsize>11</pointsize>
+         <weight>75</weight>
+         <bold>true</bold>
+        </font>
+       </property>
+       <property name="styleSheet">
+        <string notr="true">background: none;
+color: rgba(0,0,0,60%);</string>
+       </property>
+       <property name="text">
+        <string>Total : </string>
+       </property>
+       <property name="wordWrap">
+        <bool>true</bool>
+       </property>
+      </widget>
+      <widget class="QLabel" name="total_newMem">
+       <property name="geometry">
+        <rect>
+         <x>70</x>
+         <y>510</y>
+         <width>331</width>
+         <height>31</height>
+        </rect>
+       </property>
+       <property name="font">
+        <font>
+         <family>Segoe UI Semibold</family>
+         <pointsize>11</pointsize>
+         <weight>75</weight>
+         <bold>true</bold>
+        </font>
+       </property>
+       <property name="styleSheet">
+        <string notr="true">background: none;
+color: rgba(0,0,0,100%);</string>
+       </property>
+       <property name="text">
+        <string>0</string>
+       </property>
+       <property name="wordWrap">
+        <bool>true</bool>
+       </property>
       </widget>
      </widget>
      <widget class="QPushButton" name="expired_dashboard">
@@ -21433,7 +21492,7 @@ text-align: center;</string>
      </property>
      <property name="font">
       <font>
-       <pointsize>11</pointsize>
+       <pointsize>10</pointsize>
       </font>
      </property>
      <property name="styleSheet">
@@ -21555,6 +21614,20 @@ text-align: center;</string>
     <zorder>notif_close</zorder>
     <zorder>notif_table</zorder>
    </widget>
+   <widget class="QWidget" name="notif_redDot" native="true">
+    <property name="geometry">
+     <rect>
+      <x>1330</x>
+      <y>30</y>
+      <width>0</width>
+      <height>10</height>
+     </rect>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">background-color: red;
+border-radius: 5px;</string>
+    </property>
+   </widget>
    <zorder>menu_container</zorder>
    <zorder>menubar</zorder>
    <zorder>view_details_popup</zorder>
@@ -21584,6 +21657,7 @@ text-align: center;</string>
    <zorder>assigned_emp_delete</zorder>
    <zorder>notifBtn</zorder>
    <zorder>notification_popup</zorder>
+   <zorder>notif_redDot</zorder>
   </widget>
  </widget>
  <resources>
