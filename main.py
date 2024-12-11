@@ -98,6 +98,7 @@ class MainWindow(QtWidgets.QMainWindow):
         # ====== =====================================================================================================================================================================
 
         self.adminIsExist()
+        self.view_Dashboard()
         self.ui.addAdminBtn.clicked.connect(self.add_admin)
 
         # ===========================================================================================================================================================================
@@ -371,6 +372,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.previous(1)
         self.show_dashboard_data()
         self.ui.new_notifbtn.setFixedWidth(0)
+        self.view_Dashboard()
         
     def select_memlist(self):
         self.ui.menu_container.setCurrentWidget(self.ui.member_list_page)
@@ -1506,7 +1508,7 @@ class MainWindow(QtWidgets.QMainWindow):
 
 
         if result:
-            if float(tendered_amount) > (float(serv_price) + float(mship_fee)):
+            if float(tendered_amount) >= (float(serv_price) + float(mship_fee)):
 
                 #--------------Email for Member------------------
                 email_text = f"""
@@ -2207,6 +2209,31 @@ class MainWindow(QtWidgets.QMainWindow):
 
         if result:
             self.populate_monServiceLog()
+
+
+    # ===========================================================================================================================================================================
+    # Dashboard
+    # ===========================================================================================================================================================================
+    def view_Dashboard(self):
+        now = datetime.datetime.today()
+        active = 0
+        expired = 0
+
+        total_employees = self.employeedb.count_documents({})
+        total_members = self.membersdb.count_documents({})
+        service_log = list(self.mon_servicelogdb.find({}))
+        end_date  = [log['end date'] for log in service_log]
+
+        for date in end_date:
+            if date > str(now):
+                active += 1
+            else:
+                expired += 1
+
+        self.ui.totalEmployees_dashboard.setText(str(total_employees))
+        self.ui.totalMembers_dashboard.setText(str(total_members))
+        self.ui.active_dashboard.setText(str(active))
+        self.ui.expired_dashboard.setText(str(expired))
 
     
     # ===========================================================================================================================================================================
