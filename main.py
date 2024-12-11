@@ -843,6 +843,8 @@ class MainWindow(QtWidgets.QMainWindow):
                 else:
                     self.ui.renew_popup.setFixedWidth(1381)  
 
+                
+
     #Cancel renew
     def cancel_renew(self):
         self.ui.renew_popup.setFixedWidth(0)
@@ -856,6 +858,7 @@ class MainWindow(QtWidgets.QMainWindow):
         selected_row = self.ui.mon_serviceLog_table.currentRow()
         monserv_id = self.ui.mon_serviceLog_table.item(selected_row, 0).text()
         mon_id = monserv_id
+
         
         service_type = self.servicesdb.find_one({"_id" : service_id})['type']
 
@@ -880,11 +883,63 @@ class MainWindow(QtWidgets.QMainWindow):
 
             self.add_transaction_DB(service_id, renew_amt, renew_tendered, mem_contact)
 
-            if float(renew_tendered) > float(renew_amt):
+            if float(renew_tendered) >= float(renew_amt):
                 self.ui.change_popup.setFixedWidth(1381)
                 change = float(renew_tendered) - float(renew_amt)
                 self.ui.change_field.setText(f"{change:.2f}")
                 self.populate_monServiceLog()
+                member = self.membersdb.find_one({"_id": int(monserv_id)})
+                #--------------Email for Member------------------
+                email_text = f"""
+                <html>
+                <body style="font-family: Arial, sans-serif; color: #333; background-color: #f4f4f4; margin: 0; padding: 0;">
+                <div style="background-color: #ffffff; margin: 20px auto; width: 90%; max-width: 600px; padding: 30px; border-radius: 8px; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);">
+                    <h2 style="color: #1E90FF; text-align: left; margin-bottom: 20px;">Hi {member['first name']},</h2>
+                    <p style="line-height: 1.6; font-size: 16px; text-align: center;">Thank you for renewing your membership with <strong>People Fitness Center</strong>!</p>
+                    <p style="line-height: 1.6; font-size: 16px;">We're excited to let you know that your monthly service access has been successfully renewed. We're thrilled to continue supporting you in achieving your fitness goals!</p>
+                    <p style="line-height: 1.6; font-size: 16px;">If you have any questions or need assistance, feel free to reach out. We're here to help and ensure you have the best experience possible.</p>
+                    <p style="line-height: 1.6; font-size: 16px;">Thanks again for being a valued member of People Fitness Center. We look forward to seeing you in the gym soon!</p>
+                    <br>
+                    <div style="text-align: center;"> 
+                    <img src="https://drive.google.com/uc?export=view&id=1Am6E_LO5laC9XbiEQOoDtmZD_F4aOlU5" alt="Welcome Image" width="150" height="150"/>
+                    </div>
+                    <h3 style="text-align: center; font-size: 18px; color: #333; margin-top: 20px;">People Fitness Center</h3>
+                </div>
+                </body>
+                </html>
+                """
+                email_subject = 'Your Monthly Service Access Has Been Renewed!'
+                self.send_email(member['email'].lower(), email_text, email_subject)
+
+                if self.emp_id is not None:
+                    instructor_members = list(self. mon_servicelogdb.find({'employee id': self.emp_id}))
+                    instructor = self.employeedb.find_one({'_id': self.emp_id})
+                    member_list = ''.join([f'<li>{member["member_fname"]} {member["member_lname"] }</li>' for member in instructor_members])
+                
+                    #----------Email for Instructor-------------------
+                    instructor_text = f"""
+                    <html>
+                    <body style="font-family: Arial, sans-serif; color: #333; background-color: #f4f4f4; margin: 0; padding: 0;">
+                    <div style="background-color: #ffffff; margin: 20px auto; width: 90%; max-width: 600px; padding: 30px; border-radius: 8px; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);">
+                    <h2 style="color: #1E90FF; text-align: left; margin-bottom: 20px;">Hi {instructor['fname']},</h2>
+                        <p style="line-height: 1.6; font-size: 16px; text-align: center;">We hope you're doing well!</p>
+                        <p style="line-height: 1.6; font-size: 16px;">We are excited to inform you that a new member has been assigned to you. Below is the updated list of members you will be working with:</p>
+                        <ul style="font-size: 16px; line-height: 1.6;">
+                        {member_list} 
+                        </ul>
+                    <p style="line-height: 1.6; font-size: 16px;">Please make sure to provide them with the necessary guidance and support. If you have any questions or need assistance, feel free to reach out.</p>
+                    <p style="line-height: 1.6; font-size: 16px;">We look forward to a productive session together. Thanks for your continued dedication and support!</p>
+                    <br>
+                    <div style="text-align: center;">
+                    <img src="https://drive.google.com/uc?export=view&id=1Am6E_LO5laC9XbiEQOoDtmZD_F4aOlU5" alt="Welcome Image" width="150" height="150"/>
+                    </div>
+                    <h3 style="text-align: center; font-size: 18px; color: #333; margin-top: 20px;">People Fitness Center</h3>
+                    </div>
+                    </body>
+                    </html>
+                    """
+                    instructor_subject = "A New Member Is Assigned To You"  
+                    self.send_email(instructor['email'].lower(), instructor_text, instructor_subject)
 
             self.ui.renew_popup.setFixedWidth(0) 
 
@@ -1887,7 +1942,7 @@ class MainWindow(QtWidgets.QMainWindow):
                     "$set":{
                         "fname": emp_fname,
                         "lname": emp_lname,
-                        "DOB": emp_DOB,
+                        "DOB": emp_DOB, 
                         "contact": emp_contact,
                         "address": emp_address,
                         "email" : emp_email,
