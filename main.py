@@ -1887,10 +1887,10 @@ class MainWindow(QtWidgets.QMainWindow):
                     "$set":{
                         "fname": emp_fname,
                         "lname": emp_lname,
+                        "DOB": emp_DOB,
                         "contact": emp_contact,
                         "address": emp_address,
                         "email" : emp_email,
-                        "DOB": emp_DOB,
                     }
                 }
 
