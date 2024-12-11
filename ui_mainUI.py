@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 ################################################################################
-## Form generated from reading UI file 'mainUIAcHmdo.ui'
+## Form generated from reading UI file 'mainUInRyNhd.ui'
 ##
 ## Created by: Qt User Interface Compiler version 5.15.2
 ##
@@ -28,6 +28,7 @@ class Ui_MainWindow(object):
         self.centralwidget.setObjectName(u"centralwidget")
         font1 = QFont()
         font1.setFamily(u"Yu Gothic UI")
+        font1.setPointSize(8)
         self.centralwidget.setFont(font1)
         self.centralwidget.setStyleSheet(u"#centralwidget{\n"
 "background-color: #5F8B6D;\n"
@@ -80,6 +81,7 @@ class Ui_MainWindow(object):
         self.line.setGeometry(QRect(0, 215, 331, 2))
         font2 = QFont()
         font2.setFamily(u"MS Gothic")
+        font2.setPointSize(8)
         self.line.setFont(font2)
         self.line.setStyleSheet(u"background-color: #FFFFFF;")
         self.gym_name = QLabel(self.menubar)
@@ -872,8 +874,8 @@ class Ui_MainWindow(object):
         self.widget_8.setGeometry(QRect(440, 40, 21, 21))
         self.widget_8.setStyleSheet(u"background-color: #ffffff;")
         self.emp_table = QTableWidget(self.employees_page)
-        if (self.emp_table.columnCount() < 7):
-            self.emp_table.setColumnCount(7)
+        if (self.emp_table.columnCount() < 8):
+            self.emp_table.setColumnCount(8)
         __qtablewidgetitem30 = QTableWidgetItem()
         __qtablewidgetitem30.setFont(font11);
         self.emp_table.setHorizontalHeaderItem(0, __qtablewidgetitem30)
@@ -895,6 +897,9 @@ class Ui_MainWindow(object):
         __qtablewidgetitem36 = QTableWidgetItem()
         __qtablewidgetitem36.setFont(font11);
         self.emp_table.setHorizontalHeaderItem(6, __qtablewidgetitem36)
+        __qtablewidgetitem37 = QTableWidgetItem()
+        __qtablewidgetitem37.setFont(font11);
+        self.emp_table.setHorizontalHeaderItem(7, __qtablewidgetitem37)
         self.emp_table.setObjectName(u"emp_table")
         self.emp_table.setGeometry(QRect(50, 110, 841, 651))
         self.emp_table.setFont(font8)
@@ -2496,6 +2501,7 @@ class Ui_MainWindow(object):
         self.edit_widget.setPalette(palette32)
         font17 = QFont()
         font17.setFamily(u"Segoe UI")
+        font17.setPointSize(8)
         font17.setBold(False)
         font17.setLegacyWeight(50)
         self.edit_widget.setFont(font17)
@@ -4124,15 +4130,15 @@ class Ui_MainWindow(object):
         self.services_table = QTableWidget(self.services_widget)
         if (self.services_table.columnCount() < 3):
             self.services_table.setColumnCount(3)
-        __qtablewidgetitem37 = QTableWidgetItem()
-        __qtablewidgetitem37.setFont(font11);
-        self.services_table.setHorizontalHeaderItem(0, __qtablewidgetitem37)
         __qtablewidgetitem38 = QTableWidgetItem()
         __qtablewidgetitem38.setFont(font11);
-        self.services_table.setHorizontalHeaderItem(1, __qtablewidgetitem38)
+        self.services_table.setHorizontalHeaderItem(0, __qtablewidgetitem38)
         __qtablewidgetitem39 = QTableWidgetItem()
         __qtablewidgetitem39.setFont(font11);
-        self.services_table.setHorizontalHeaderItem(2, __qtablewidgetitem39)
+        self.services_table.setHorizontalHeaderItem(1, __qtablewidgetitem39)
+        __qtablewidgetitem40 = QTableWidgetItem()
+        __qtablewidgetitem40.setFont(font11);
+        self.services_table.setHorizontalHeaderItem(2, __qtablewidgetitem40)
         self.services_table.setObjectName(u"services_table")
         self.services_table.setGeometry(QRect(0, 83, 701, 511))
         palette61 = QPalette()
@@ -5413,6 +5419,8 @@ class Ui_MainWindow(object):
         self.notification_popup.setObjectName(u"notification_popup")
         self.notification_popup.setGeometry(QRect(730, 50, 0, 611))
         font24 = QFont()
+        font24.setFamily(u"MS Shell Dlg 2")
+        font24.setPointSize(8)
         self.notification_popup.setFont(font24)
         self.notification_popup.setLayoutDirection(Qt.LeftToRight)
         self.notification_popup.setStyleSheet(u"#notification_popup{\n"
@@ -5424,10 +5432,10 @@ class Ui_MainWindow(object):
         self.notif_table = QTableWidget(self.notification_popup)
         if (self.notif_table.columnCount() < 2):
             self.notif_table.setColumnCount(2)
-        __qtablewidgetitem40 = QTableWidgetItem()
-        self.notif_table.setHorizontalHeaderItem(0, __qtablewidgetitem40)
         __qtablewidgetitem41 = QTableWidgetItem()
-        self.notif_table.setHorizontalHeaderItem(1, __qtablewidgetitem41)
+        self.notif_table.setHorizontalHeaderItem(0, __qtablewidgetitem41)
+        __qtablewidgetitem42 = QTableWidgetItem()
+        self.notif_table.setHorizontalHeaderItem(1, __qtablewidgetitem42)
         self.notif_table.setObjectName(u"notif_table")
         self.notif_table.setGeometry(QRect(20, 40, 541, 551))
         self.notif_table.setFont(font)
@@ -5519,7 +5527,7 @@ class Ui_MainWindow(object):
 
         self.retranslateUi(MainWindow)
 
-        self.menu_container.setCurrentIndex(0)
+        self.menu_container.setCurrentIndex(5)
 
 
         QMetaObject.connectSlotsByName(MainWindow)
@@ -5629,13 +5637,15 @@ class Ui_MainWindow(object):
         ___qtablewidgetitem32 = self.emp_table.horizontalHeaderItem(2)
         ___qtablewidgetitem32.setText(QCoreApplication.translate("MainWindow", u"LAST NAME", None));
         ___qtablewidgetitem33 = self.emp_table.horizontalHeaderItem(3)
-        ___qtablewidgetitem33.setText(QCoreApplication.translate("MainWindow", u"CONTACT", None));
+        ___qtablewidgetitem33.setText(QCoreApplication.translate("MainWindow", u"DATE OF BIRTH", None));
         ___qtablewidgetitem34 = self.emp_table.horizontalHeaderItem(4)
-        ___qtablewidgetitem34.setText(QCoreApplication.translate("MainWindow", u"ADDRESS", None));
+        ___qtablewidgetitem34.setText(QCoreApplication.translate("MainWindow", u"CONTACT", None));
         ___qtablewidgetitem35 = self.emp_table.horizontalHeaderItem(5)
-        ___qtablewidgetitem35.setText(QCoreApplication.translate("MainWindow", u"EMAIL", None));
+        ___qtablewidgetitem35.setText(QCoreApplication.translate("MainWindow", u"ADDRESS", None));
         ___qtablewidgetitem36 = self.emp_table.horizontalHeaderItem(6)
-        ___qtablewidgetitem36.setText(QCoreApplication.translate("MainWindow", u"POSITION", None));
+        ___qtablewidgetitem36.setText(QCoreApplication.translate("MainWindow", u"EMAIL", None));
+        ___qtablewidgetitem37 = self.emp_table.horizontalHeaderItem(7)
+        ___qtablewidgetitem37.setText(QCoreApplication.translate("MainWindow", u"POSITION", None));
         self.add_employee.setText("")
         self.pushButton_9.setText("")
         self.delete_employee.setText("")
@@ -5832,12 +5842,12 @@ class Ui_MainWindow(object):
         self.label_4.setText(QCoreApplication.translate("MainWindow", u"SERVICES", None))
         self.deleteService_btn.setText("")
         self.editService_btn.setText("")
-        ___qtablewidgetitem37 = self.services_table.horizontalHeaderItem(0)
-        ___qtablewidgetitem37.setText(QCoreApplication.translate("MainWindow", u"ID", None));
-        ___qtablewidgetitem38 = self.services_table.horizontalHeaderItem(1)
-        ___qtablewidgetitem38.setText(QCoreApplication.translate("MainWindow", u"TYPE", None));
-        ___qtablewidgetitem39 = self.services_table.horizontalHeaderItem(2)
-        ___qtablewidgetitem39.setText(QCoreApplication.translate("MainWindow", u"AMOUNT", None));
+        ___qtablewidgetitem38 = self.services_table.horizontalHeaderItem(0)
+        ___qtablewidgetitem38.setText(QCoreApplication.translate("MainWindow", u"ID", None));
+        ___qtablewidgetitem39 = self.services_table.horizontalHeaderItem(1)
+        ___qtablewidgetitem39.setText(QCoreApplication.translate("MainWindow", u"TYPE", None));
+        ___qtablewidgetitem40 = self.services_table.horizontalHeaderItem(2)
+        ___qtablewidgetitem40.setText(QCoreApplication.translate("MainWindow", u"AMOUNT", None));
         self.services_exitbtn.setText("")
         self.label_14.setText(QCoreApplication.translate("MainWindow", u"ADD A SERVICE", None))
         self.addService_name.setText("")

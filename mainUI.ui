@@ -337,6 +337,12 @@ border-radius:40px;</string>
       <height>831</height>
      </rect>
     </property>
+    <property name="font">
+     <font>
+      <family>MS Shell Dlg 2</family>
+      <pointsize>10</pointsize>
+     </font>
+    </property>
     <property name="layoutDirection">
      <enum>Qt::LeftToRight</enum>
     </property>
@@ -372,10 +378,6 @@ border-radius: 5px;</string>
       <property name="text">
        <string> 0</string>
       </property>
-      <property name="icon">
-       <iconset resource="resources.qrc">
-        <normaloff>:/icons/icons/member.png</normaloff>:/icons/icons/member.png</iconset>
-      </property>
       <property name="iconSize">
        <size>
         <width>50</width>
@@ -408,10 +410,6 @@ border-radius: 5px;</string>
       <property name="text">
        <string> 0</string>
       </property>
-      <property name="icon">
-       <iconset resource="resources.qrc">
-        <normaloff>:/icons/icons/member.png</normaloff>:/icons/icons/member.png</iconset>
-      </property>
       <property name="iconSize">
        <size>
         <width>50</width>
@@ -443,10 +441,6 @@ border-radius: 5px;</string>
       </property>
       <property name="text">
        <string> 0</string>
-      </property>
-      <property name="icon">
-       <iconset resource="resources.qrc">
-        <normaloff>:/icons/icons/Checkmark.png</normaloff>:/icons/icons/Checkmark.png</iconset>
       </property>
       <property name="iconSize">
        <size>
@@ -534,9 +528,9 @@ color: rgba(0,0,0,60%);</string>
       <widget class="QTableWidget" name="newMem_dashboard">
        <property name="geometry">
         <rect>
-         <x>20</x>
+         <x>30</x>
          <y>70</y>
-         <width>781</width>
+         <width>761</width>
          <height>411</height>
         </rect>
        </property>
@@ -555,24 +549,19 @@ color: rgba(0,0,0,60%);</string>
 }
 
 QHeaderView::section {
-	height: 0;
     background-color: #ffffff;
-   	color: #fff;
+   	color: rgba(0,0,0, 80%);
 	border: none; 	
+	font-weight: 600;
+	border-bottom: 1px solid rgba(0,0,0,50%);	
+	margin-bottom: 5px;
 }
 
 QTableWidget::item {
-    background-color: #4B805A;
+    background-color: #ffffff;
     color: rgba(0,0,0,70%);
-    border-bottom: 1px solid #467855;
-	padding: 3px;
-	font-size: 10px;
-}
-
-QTableWidget::item:selected {
-    background-color: rgba(255,255,255,20%);
-    color: #fff;
-	gridline-color: rgba(255,255,255,20%); 
+	margin-bottom: 10px;
+	padding: 10px;
 }
 
 QScrollBar:vertical{
@@ -640,8 +629,11 @@ background-color: #075E20;
         </property>
         <property name="font">
          <font>
-          <pointsize>12</pointsize>
+          <pointsize>10</pointsize>
          </font>
+        </property>
+        <property name="textAlignment">
+         <set>AlignCenter</set>
         </property>
        </column>
        <column>
@@ -650,8 +642,11 @@ background-color: #075E20;
         </property>
         <property name="font">
          <font>
-          <pointsize>12</pointsize>
+          <pointsize>10</pointsize>
          </font>
+        </property>
+        <property name="textAlignment">
+         <set>AlignCenter</set>
         </property>
        </column>
        <column>
@@ -660,8 +655,11 @@ background-color: #075E20;
         </property>
         <property name="font">
          <font>
-          <pointsize>12</pointsize>
+          <pointsize>10</pointsize>
          </font>
+        </property>
+        <property name="textAlignment">
+         <set>AlignCenter</set>
         </property>
        </column>
       </widget>
@@ -691,10 +689,6 @@ border-radius: 5px;</string>
       <property name="text">
        <string> 0</string>
       </property>
-      <property name="icon">
-       <iconset resource="resources.qrc">
-        <normaloff>:/icons/icons/notice.png</normaloff>:/icons/icons/notice.png</iconset>
-      </property>
       <property name="iconSize">
        <size>
         <width>50</width>
@@ -711,7 +705,7 @@ border-radius: 5px;</string>
         <x>480</x>
         <y>60</y>
         <width>141</width>
-        <height>51</height>
+        <height>31</height>
        </rect>
       </property>
       <property name="font">
@@ -727,7 +721,7 @@ border-radius: 5px;</string>
 color: #003910;</string>
       </property>
       <property name="text">
-       <string>Monthly Access (Active)</string>
+       <string>Monthly Access</string>
       </property>
       <property name="textFormat">
        <enum>Qt::AutoText</enum>
@@ -742,7 +736,7 @@ color: #003910;</string>
         <x>690</x>
         <y>60</y>
         <width>141</width>
-        <height>41</height>
+        <height>31</height>
        </rect>
       </property>
       <property name="font">
@@ -758,7 +752,7 @@ color: #003910;</string>
 color: #003910;</string>
       </property>
       <property name="text">
-       <string>Monthly Access (Expired)</string>
+       <string>Monthly Access</string>
       </property>
       <property name="wordWrap">
        <bool>true</bool>
@@ -820,6 +814,62 @@ color: #003910;</string>
        <bool>true</bool>
       </property>
      </widget>
+     <widget class="QLabel" name="label_86">
+      <property name="geometry">
+       <rect>
+        <x>690</x>
+        <y>75</y>
+        <width>141</width>
+        <height>31</height>
+       </rect>
+      </property>
+      <property name="font">
+       <font>
+        <family>Segoe UI Semibold</family>
+        <pointsize>9</pointsize>
+        <weight>75</weight>
+        <bold>true</bold>
+       </font>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">background: none;
+color: red;</string>
+      </property>
+      <property name="text">
+       <string>Expired</string>
+      </property>
+      <property name="wordWrap">
+       <bool>true</bool>
+      </property>
+     </widget>
+     <widget class="QLabel" name="label_101">
+      <property name="geometry">
+       <rect>
+        <x>480</x>
+        <y>80</y>
+        <width>141</width>
+        <height>21</height>
+       </rect>
+      </property>
+      <property name="font">
+       <font>
+        <family>Segoe UI Semibold</family>
+        <pointsize>9</pointsize>
+        <weight>75</weight>
+        <bold>true</bold>
+       </font>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">background: none;
+color: green;</string>
+      </property>
+      <property name="text">
+       <string>Active</string>
+      </property>
+      <property name="wordWrap">
+       <bool>true</bool>
+      </property>
+     </widget>
      <zorder>totalEmployees_dashboard</zorder>
      <zorder>totalMembers_dashboard</zorder>
      <zorder>active_dashboard</zorder>
@@ -829,6 +879,8 @@ color: #003910;</string>
      <zorder>label_74</zorder>
      <zorder>label_75</zorder>
      <zorder>label_76</zorder>
+     <zorder>label_86</zorder>
+     <zorder>label_101</zorder>
     </widget>
     <widget class="QWidget" name="member_list_page">
      <widget class="QLineEdit" name="mem_search">
