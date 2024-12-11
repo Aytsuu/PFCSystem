@@ -371,7 +371,6 @@ class MainWindow(QtWidgets.QMainWindow):
         self.ui.employees.setStyleSheet("QPushButton{background-color: none} QPushButton:hover{background-color: rgba(255,255,255,50);}")
         self.previous(1)
         self.show_dashboard_data()
-        self.ui.new_notifbtn.setFixedWidth(0)
         self.view_Dashboard()
         
     def select_memlist(self):
@@ -499,6 +498,7 @@ class MainWindow(QtWidgets.QMainWindow):
             self.ui.newMem_dashboard.insertRow(row_number)
             for column_number, data in enumerate(new_member):
                 item = QtWidgets.QTableWidgetItem(str(new_member[data]))
+                item.setTextAlignment(Qt.AlignHCenter)
                 self.ui.newMem_dashboard.setItem(row_number, column_number, item)
 
     # ===========================================================================================================================================================================
@@ -1965,6 +1965,7 @@ class MainWindow(QtWidgets.QMainWindow):
     def show_notif(self):
         self.ui.notification_popup.setFixedWidth(581)
         self.display_notifs()
+        self.ui.notif_redDot.setFixedWidth(0)
 
     def close_notif(self):
         self.ui.notification_popup.setFixedWidth(0)
@@ -2003,7 +2004,7 @@ class MainWindow(QtWidgets.QMainWindow):
                         "$match": {
                             "end date": {"$lte": datetime.datetime.today()}  # Compare with current local time
                         }
-                    }
+                    },
                 ]
 
                 monthly_serviceAccess = self.mon_servicelogdb.aggregate(pipeline)
@@ -2036,8 +2037,7 @@ class MainWindow(QtWidgets.QMainWindow):
 
                                 stripped_content = notification['content'].rstrip('.')
                                 email_subject = 'Reminder: Days Remaining on Your Monthly Service Access'
-                                self.ui.new_notifbtn.setFixedWidth(271)
-                                QtCore.QTimer.singleShot(1300, lambda: self.ui.new_notifbtn.setFixedWidth(0))   
+                                self.ui.notif_redDot.setFixedWidth(10) 
                                 email_text = f"""
                                 <html>
                                 <body style="font-family: Arial, sans-serif; color: #333; background-color: #f4f4f4; margin: 0; padding: 0;">
@@ -2156,8 +2156,7 @@ class MainWindow(QtWidgets.QMainWindow):
                                 """
 
                                 self.send_email(member_details['email'].lower(), email_text, email_subject)
-                                self.ui.new_notifbtn.setFixedWidth(271)
-                                QtCore.QTimer.singleShot(1300, lambda: self.ui.new_notifbtn.setFixedWidth(0))   
+                                self.ui.notif_redDot.setFixedWidth(10)
 
                         if days == 0: self.populate_mem_table() 
                 
@@ -2172,7 +2171,7 @@ class MainWindow(QtWidgets.QMainWindow):
             'date' : 1,
             'member id' : 1
         }
-        notifications = self.notificationdb.find({}, to_display)
+        notifications = list(self.notificationdb.find({}, to_display))[::-1]
 
 
         self.ui.notif_table.setRowCount(0)

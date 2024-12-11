@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 ################################################################################
-## Form generated from reading UI file 'loginUIOFzbkR.ui'
+## Form generated from reading UI file 'loginUIxDAJaY.ui'
 ##
 ## Created by: Qt User Interface Compiler version 5.15.2
 ##
@@ -39,7 +39,7 @@ class Ui_LoginWindow(object):
 "border-radius: 10px;\n"
 "background-color: #FFFFFF;\n"
 "padding: 10px;\n"
-"color: #000;\n"
+"color: #000000;\n"
 "}\n"
 "\n"
 "#signInBtn{\n"
@@ -179,15 +179,6 @@ class Ui_LoginWindow(object):
         self.passLabel.raise_()
         self.usernameField.raise_()
         self.passwordField.raise_()
-        self.cl3 = QWidget(self.widget)
-        self.cl3.setObjectName(u"cl3")
-        self.cl3.setGeometry(QRect(760, 30, 20, 20))
-        self.cl1 = QWidget(self.widget)
-        self.cl1.setObjectName(u"cl1")
-        self.cl1.setGeometry(QRect(820, 30, 20, 20))
-        self.cl2 = QWidget(self.widget)
-        self.cl2.setObjectName(u"cl2")
-        self.cl2.setGeometry(QRect(790, 30, 20, 20))
         self.gymName = QLabel(self.centralwidget)
         self.gymName.setObjectName(u"gymName")
         self.gymName.setGeometry(QRect(90, 460, 311, 51))

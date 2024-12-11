@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 ################################################################################
-## Form generated from reading UI file 'mainUInRyNhd.ui'
+## Form generated from reading UI file 'mainUIfEqGfz.ui'
 ##
 ## Created by: Qt User Interface Compiler version 5.15.2
 ##
@@ -5438,7 +5438,7 @@ class Ui_MainWindow(object):
         self.notif_table.setHorizontalHeaderItem(1, __qtablewidgetitem42)
         self.notif_table.setObjectName(u"notif_table")
         self.notif_table.setGeometry(QRect(20, 40, 541, 551))
-        self.notif_table.setFont(font)
+        self.notif_table.setFont(font8)
         self.notif_table.setStyleSheet(u"QTableWidget{\n"
 "background-color: rgba(0,0,0,0%);\n"
 "gridline-color: transparent;\n"
@@ -5494,6 +5494,11 @@ class Ui_MainWindow(object):
         self.notiflabel.raise_()
         self.notif_close.raise_()
         self.notif_table.raise_()
+        self.notif_redDot = QWidget(self.centralwidget)
+        self.notif_redDot.setObjectName(u"notif_redDot")
+        self.notif_redDot.setGeometry(QRect(1330, 30, 0, 10))
+        self.notif_redDot.setStyleSheet(u"background-color: red;\n"
+"border-radius: 5px;")
         MainWindow.setCentralWidget(self.centralwidget)
         self.menu_container.raise_()
         self.menubar.raise_()
@@ -5524,10 +5529,11 @@ class Ui_MainWindow(object):
         self.assigned_emp_delete.raise_()
         self.notifBtn.raise_()
         self.notification_popup.raise_()
+        self.notif_redDot.raise_()
 
         self.retranslateUi(MainWindow)
 
-        self.menu_container.setCurrentIndex(5)
+        self.menu_container.setCurrentIndex(0)
 
 
         QMetaObject.connectSlotsByName(MainWindow)
