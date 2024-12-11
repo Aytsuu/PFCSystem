@@ -145,16 +145,14 @@ class MainWindow(QtWidgets.QMainWindow):
         self.ui.memRenew_tendered.setValidator(decimal_validator)
         self.ui.mem_fee.setValidator(decimal_validator)
         self.ui.service_Amount.setValidator(decimal_validator)
-        self.ui.addService_amount.setValidator(decimal_validator)
+        self.ui.addService_amount.setValidator(decimal_validator)   
     
         # ===========================================================================================================================================================================
         # NOTIFICATIONS
         # ===========================================================================================================================================================================
 
-        self.display_notifs()
-        self.ui.expand_notif.clicked.connect(self.notif_area_displaySize)
-        self.ui.minimize_notif.clicked.connect(self.notif_area_displaySize)
-        self.ui.new_notifbtn.clicked.connect(self.select_home)
+        self.ui.notifBtn.clicked.connect(self.show_notif)
+        self.ui.notif_close.clicked.connect(self.close_notif)
         
         # ===========================================================================================================================================================================
         # TABLE WIDGETS MODIFICATIONS
@@ -169,7 +167,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.ui.emp_table.horizontalHeader().setSectionResizeMode(QHeaderView.ResizeMode.Stretch)
         self.ui.notif_table.horizontalHeader().setSectionResizeMode(QHeaderView.ResizeMode.Stretch)
         self.ui.notif_table.horizontalHeader().setSectionResizeMode(0, QHeaderView.Interactive)
-        self.ui.notif_table.setColumnWidth(0, 580)
+        self.ui.notif_table.setColumnWidth(0, 450)
 
 
         #Remove outline on selecting a row/item
@@ -191,6 +189,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.ui.notif_table.verticalHeader().setVisible(False)
 
         self.ui.notif_table.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
+        self.ui.notif_table.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
 
         # ===========================================================================================================================================================================
         # MENU method calling
@@ -361,7 +360,6 @@ class MainWindow(QtWidgets.QMainWindow):
         self.ui.services.setStyleSheet("QPushButton{background-color: none} QPushButton:hover{background-color: rgba(255,255,255,50);}")
         self.ui.employees.setStyleSheet("QPushButton{background-color: none} QPushButton:hover{background-color: rgba(255,255,255,50);}")
         self.previous(1)
-        self.display_notifs()
         self.ui.new_notifbtn.setFixedWidth(0)
         
     def select_memlist(self):
@@ -428,7 +426,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.populate_employee_table()
 
     # ===========================================================================================================================================================================
-    # Check if employee record has admin
+    # Check if employee record has admin 
     # ===========================================================================================================================================================================
     
     def adminIsExist(self):
@@ -1892,21 +1890,12 @@ class MainWindow(QtWidgets.QMainWindow):
     # ===========================================================================================================================================================================
 
     #Notification display
-    def notif_area_displaySize(self):
-        if self.ui.notif_table.height() == 41:
-            self.maximize_notifArea()
-        else:
-            self.minimize_notifArea()
+    def show_notif(self):
+        self.ui.notification_popup.setFixedWidth(581)
+        self.display_notifs()
 
-    def maximize_notifArea(self):
-        self.ui.notif_table.setFixedHeight(651)
-        self.ui.expand_notif.setFixedWidth(0)
-        self.ui.minimize_notif.setFixedWidth(30)
-
-    def minimize_notifArea(self):
-        self.ui.notif_table.setFixedHeight(41)
-        self.ui.expand_notif.setFixedWidth(30)
-        self.ui.minimize_notif.setFixedWidth(0)
+    def close_notif(self):
+        self.ui.notification_popup.setFixedWidth(0)
 
     #Constantly checking the status of monthly service access
     def monitor_monServiceAccess(self):
@@ -2104,7 +2093,29 @@ class MainWindow(QtWidgets.QMainWindow):
 
     #Displaying notifications in the home page
     def display_notifs(self):
-        conn = None
+
+        to_display = {
+            '_id': 0,
+            'content' : 1,
+            'date' : 1,
+            'member id' : 1
+        }
+        notifications = self.notificationdb.find({}, to_display)
+
+
+        self.ui.notif_table.setRowCount(0)
+        for row_number, notification in enumerate(notifications):
+            member_fname = self.membersdb.find_one({"_id" : notification['member id']})['first name']
+            member_lname = self.membersdb.find_one({"_id" : notification['member id']})['last name']
+            self.ui.notif_table.insertRow(row_number)
+            for column_number, data in enumerate(notification):
+
+                if column_number == 1:
+                    data = str(notification[data]).split(" ")[0]
+
+                item = QtWidgets.QTableWidgetItem(data if column_number == 1 else (member_fname + ' ' + member_lname + "'s " + str(notification[data])))
+                self.ui.notif_table.setItem(row_number, column_number, item)
+
         # try:
         #     params = config()
         #     conn = psycopg2.connect(**params)
